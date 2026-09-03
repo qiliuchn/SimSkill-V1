@@ -4,7 +4,7 @@
   <b>A Lifelong Learning AI Agent for Autonomous Mastery of Traffic Simulation</b>
 </p>
 
-![Feature: Multi-Agent](https://img.shields.io/badge/✨%20Feature-Multi--Agent-800080)![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)![Feature: Easy-to-use](https://img.shields.io/badge/✨%20Feature-Easy--to--use-f1c40f)![Feature: Transparent](https://img.shields.io/badge/✨%20Feature-Transparent-7ed321)![Feature: Customization](https://img.shields.io/badge/✨%20Feature-Customization-5dade2)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+![Feature: Multi-Agent](https://img.shields.io/badge/✨%20Feature-Multi--Agent-800080)![Feature: Visualization](https://img.shields.io/badge/✨%20Feature-Visualization-9b59b6)![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)![Feature: Easy-to-use](https://img.shields.io/badge/✨%20Feature-Easy--to--use-f1c40f)![Feature: Transparent](https://img.shields.io/badge/✨%20Feature-Transparent-7ed321)![Feature: Customization](https://img.shields.io/badge/✨%20Feature-Customization-5dade2)[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ![framework](assets/framework.png)
 
@@ -227,7 +227,8 @@ Return learning statistics
 ```
 
 
-## Procedural Memory Formatting
+## Memory Representation
+### Procedural Memory Formatting
 File structure for a skill:
 ```
 your-skill-name/
@@ -252,13 +253,13 @@ description: What it does. Use when user asks to [specific phrases].
 SimSkill use `skill-creator` skill to create a new skill. Other skill-creating skills are also compatible.
 
 
-## Semantic Memory Formatting and Graph View
+### Semantic Memory Formatting
 
 **Knowledge Page Format**
 ![Semantic Memory Visualization](assets/knowledge_page_format.png)
 
 
-**Graph View**
+### Graph View
 Use Obsidian to open the project root directory.
 
 Run the following command in terminal to copy skills for graph visualization:
