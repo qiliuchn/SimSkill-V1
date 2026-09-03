@@ -1,4 +1,4 @@
-# SimSkill
+# SimSkill: A Lifelong Learning AI Agent for Autonomous Mastery of Traffic Simulation
 
 SimSkill is a self-evolving AI agent that discovers traffic simulation skills within the SUMO (Simulation of Urban MObility) environment. It self-improves by continuously proposing novel tasks, finding solutions to them, and distilling new skills and knowledge from the experience.
 
