@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Diamond interchange: N-S freeway (z=0) passes UNDER E-W arterial (z=6).
+     W and E are the two signalized ramp-terminal junctions, 110 m apart. -->
+<nodes>
+    <!-- Arterial (z=6, over the freeway) -->
+    <node id="AW" x="-450" y="0" z="6.0" type="priority"/>
+    <node id="W"  x="-55"  y="0" z="6.0" type="traffic_light"/>
+    <node id="E"  x="55"   y="0" z="6.0" type="traffic_light"/>
+    <node id="AE" x="450"  y="0" z="6.0" type="priority"/>
+
+    <!-- Freeway mainline (z=0, under the arterial), centerline x=0 -->
+    <node id="ff_S" x="0" y="-500" z="0.0" type="priority"/>
+    <node id="ff_s" x="0" y="-150" z="0.0" type="priority"/>
+    <node id="ff_n" x="0" y="150"  z="0.0" type="priority"/>
+    <node id="ff_N" x="0" y="500"  z="0.0" type="priority"/>
+</nodes>

@@ -1,0 +1,9 @@
+zone,production_release_2h,attraction_release_2h,laplace_scale_vehicles,epsilon,structural_zero_destinations
+Z1,612,438,35,0.8,Z1;Z2
+Z2,505,526,35,0.8,Z2
+Z3,421,548,35,0.8,Z3;Z4
+Z4,347,473,35,0.8,Z4
+Z5,458,382,35,0.8,Z5;Z6
+Z6,533,471,35,0.8,Z6
+Z7,579,352,35,0.8,Z7;Z8
+Z8,386,628,35,0.8,Z8

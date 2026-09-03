@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Road edges: ordinary two-way road (allow passenger), one lane each way.
+     Rail edges: vClass rail only, single lane, spreadType=center so the
+     opposite-direction pair overlays exactly and netconvert recognises the
+     track as bidirectional (bidi= attribute in the compiled net). -->
+<edges>
+    <!-- Two-way ROAD  N <-> X <-> S -->
+    <edge id="N_X" from="N" to="X" priority="2" numLanes="1" speed="13.89" allow="passenger"/>
+    <edge id="X_S" from="X" to="S" priority="2" numLanes="1" speed="13.89" allow="passenger"/>
+    <edge id="S_X" from="S" to="X" priority="2" numLanes="1" speed="13.89" allow="passenger"/>
+    <edge id="X_N" from="X" to="N" priority="2" numLanes="1" speed="13.89" allow="passenger"/>
+
+    <!-- Bidirectional RAIL  W <-> X <-> E -->
+    <edge id="W_X" from="W" to="X" priority="1" numLanes="1" speed="30.0" spreadType="center" allow="rail"/>
+    <edge id="X_E" from="X" to="E" priority="1" numLanes="1" speed="30.0" spreadType="center" allow="rail"/>
+    <edge id="E_X" from="E" to="X" priority="1" numLanes="1" speed="30.0" spreadType="center" allow="rail"/>
+    <edge id="X_W" from="X" to="W" priority="1" numLanes="1" speed="30.0" spreadType="center" allow="rail"/>
+</edges>

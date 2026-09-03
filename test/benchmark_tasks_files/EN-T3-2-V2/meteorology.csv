@@ -1,0 +1,7 @@
+case_id,wind_from_deg,wind_speed_mps,mixing_height_m,stability_class,background_nox_ug_m3,case_weight
+M1,0,1.2,450,D,28,0.20
+M2,45,2.5,600,C,24,0.15
+M3,90,1.0,350,E,35,0.20
+M4,180,3.0,700,C,20,0.15
+M5,225,1.5,400,D,30,0.15
+M6,315,0.8,300,E,38,0.15

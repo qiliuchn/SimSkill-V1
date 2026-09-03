@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shared vType definitions for the opposite-direction overtaking study.
+     SSM device is equipped via vType <param> on EVERY type so every vehicle logs
+     conflict encounters (incl. oncoming/head-on, encounter type 20). The SSM
+     OUTPUT FILE is NOT set here (device.ssm.file) - it is passed per-run on the
+     sumo command line, per the analyze-intersection-safety-with-ssm gotcha.
+
+     ATTEMPT 2 RETUNE (collision fix): attempt 1's `car` used an OVERLY AGGRESSIVE
+     opposite-lane gap-acceptance (lcAssertive=1.5, lcPushy=0.5, lcImpatience=0.6),
+     which let cars commit to oncoming-lane passes they could not complete before
+     the opposing vehicle arrived -> genuine SUMO <collision type="frontal"> events
+     (10-17 real crashes per run). Here the `car` uses SUMO's CONSERVATIVE DEFAULTS
+     for lane-change safety (lcAssertive=1.0, lcPushy=0.0, lcImpatience=0.0), so
+     LC2013's own gap-acceptance logic REFUSES a pass when the oncoming gap is
+     genuinely unsafe rather than executing it. Overtaking is still enabled via
+     lcOpposite=1.0 (default willingness) - passes still happen when the oncoming
+     lane is clear enough, so the sweep's opportunity/delay/near-miss signal is
+     preserved while literal collisions are eliminated. -->
+<additional>
+    <!-- Slow leader: truck capped at 60 km/h. lcOpposite=0 => never overtakes. -->
+    <vType id="truck" vClass="truck" length="12.0" minGap="3.0"
+           maxSpeed="16.67" speedFactor="1.0"
+           accel="1.3" decel="4.0" sigma="0.5" color="1,0,0"
+           laneChangeModel="LC2013" lcOpposite="0">
+        <param key="has.ssm.device" value="true"/>
+        <param key="device.ssm.measures" value="TTC DRAC PET BR"/>
+        <param key="device.ssm.thresholds" value="3.0 3.0 2.0 0.0"/>
+        <param key="device.ssm.range" value="100.0"/>
+        <param key="device.ssm.extratime" value="5.0"/>
+    </vType>
+
+    <!-- Fast car in the PRIMARY direction, willing to overtake via the oncoming
+         lane. Desired ~100 km/h. lcOpposite=1.0 (default) enables opposite-lane
+         overtaking; lcAssertive/lcPushy/lcImpatience left at SUMO's CONSERVATIVE
+         DEFAULTS (1.0 / 0.0 / 0.0) so a genuinely-unsafe oncoming gap is REFUSED
+         by LC2013's gap-acceptance rather than executed into a crash. This is the
+         mechanism the sweep probes: as oncoming flow rises, safe gaps get rarer,
+         so the model refuses more passes (fewer overtakes, more delay). -->
+    <vType id="car" vClass="passenger" length="5.0" minGap="2.5"
+           maxSpeed="30.0" speedFactor="1.0"
+           accel="2.6" decel="4.5" sigma="0.5" color="0,1,0"
+           carFollowModel="Krauss" laneChangeModel="LC2013"
+           lcStrategic="1.0" lcSpeedGain="3.0" lcOpposite="1.0"
+           lcAssertive="1.0" lcPushy="0.0" lcImpatience="0.0">
+        <param key="has.ssm.device" value="true"/>
+        <param key="device.ssm.measures" value="TTC DRAC PET BR"/>
+        <param key="device.ssm.thresholds" value="3.0 3.0 2.0 0.0"/>
+        <param key="device.ssm.range" value="100.0"/>
+        <param key="device.ssm.extratime" value="5.0"/>
+    </vType>
+
+    <!-- Opposing-direction car: uniform flow, no overtaking (no slow leader in
+         its own direction). Desired ~100 km/h. -->
+    <vType id="opp_car" vClass="passenger" length="5.0" minGap="2.5"
+           maxSpeed="30.0" speedFactor="1.0"
+           accel="2.6" decel="4.5" sigma="0.5" color="0,0,1"
+           carFollowModel="Krauss" laneChangeModel="LC2013" lcOpposite="0">
+        <param key="has.ssm.device" value="true"/>
+        <param key="device.ssm.measures" value="TTC DRAC PET BR"/>
+        <param key="device.ssm.thresholds" value="3.0 3.0 2.0 0.0"/>
+        <param key="device.ssm.range" value="100.0"/>
+        <param key="device.ssm.extratime" value="5.0"/>
+    </vType>
+</additional>

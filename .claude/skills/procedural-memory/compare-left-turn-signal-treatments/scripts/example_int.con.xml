@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connections>
+    <!-- lane 0 (right) = through + right ; lane 1 (left) = exclusive left turn -->
+
+    <!-- From N (heading south): through->out_S, right->out_W, left->out_E -->
+    <connection from="in_N" to="out_S" fromLane="0" toLane="1"/>
+    <connection from="in_N" to="out_W" fromLane="0" toLane="0"/>
+    <connection from="in_N" to="out_E" fromLane="1" toLane="1"/>
+
+    <!-- From S (heading north): through->out_N, right->out_E, left->out_W -->
+    <connection from="in_S" to="out_N" fromLane="0" toLane="1"/>
+    <connection from="in_S" to="out_E" fromLane="0" toLane="0"/>
+    <connection from="in_S" to="out_W" fromLane="1" toLane="1"/>
+
+    <!-- From E (heading west): through->out_W, right->out_N, left->out_S -->
+    <connection from="in_E" to="out_W" fromLane="0" toLane="1"/>
+    <connection from="in_E" to="out_N" fromLane="0" toLane="0"/>
+    <connection from="in_E" to="out_S" fromLane="1" toLane="1"/>
+
+    <!-- From W (heading east): through->out_E, right->out_S, left->out_N -->
+    <connection from="in_W" to="out_E" fromLane="0" toLane="1"/>
+    <connection from="in_W" to="out_S" fromLane="0" toLane="0"/>
+    <connection from="in_W" to="out_N" fromLane="1" toLane="1"/>
+</connections>

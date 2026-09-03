@@ -1,0 +1,13 @@
+interval_start,screenline,dp_count_release_30min,laplace_scale_vehicles,epsilon,edges_crossed
+07:00,north_south,731,28,1.0,N10-N20;N11-N21;N12-N22;N13-N23
+07:00,east_west,654,28,1.0,N01-N02;N11-N12;N21-N22;N31-N32
+07:00,local_access,18,28,1.0,N00-N01
+07:30,north_south,928,28,1.0,N10-N20;N11-N21;N12-N22;N13-N23
+07:30,east_west,847,28,1.0,N01-N02;N11-N12;N21-N22;N31-N32
+07:30,local_access,-7,28,1.0,N00-N01
+08:00,north_south,1017,28,1.0,N10-N20;N11-N21;N12-N22;N13-N23
+08:00,east_west,936,28,1.0,N01-N02;N11-N12;N21-N22;N31-N32
+08:00,local_access,31,28,1.0,N00-N01
+08:30,north_south,812,28,1.0,N10-N20;N11-N21;N12-N22;N13-N23
+08:30,east_west,759,28,1.0,N01-N02;N11-N12;N21-N22;N31-N32
+08:30,local_access,12,28,1.0,N00-N01

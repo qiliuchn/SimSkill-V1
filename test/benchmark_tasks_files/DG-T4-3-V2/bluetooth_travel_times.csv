@@ -1,0 +1,17 @@
+interval_start,od_pair,sample_size,median_seconds,p90_seconds,measurement_sd_seconds,holdout
+07:00,Z1-Z4,34,214,292,18,false
+07:00,Z2-Z5,27,188,251,16,false
+07:15,Z3-Z6,31,226,310,19,true
+07:15,Z1-Z5,25,241,329,20,false
+07:30,Z1-Z4,42,248,351,22,false
+07:30,Z2-Z5,38,219,306,20,false
+07:45,Z3-Z6,36,271,388,24,false
+07:45,Z1-Z5,33,289,417,26,true
+08:00,Z1-Z4,48,302,446,28,false
+08:00,Z2-Z5,44,267,391,25,false
+08:15,Z3-Z6,39,284,409,26,false
+08:15,Z1-Z5,35,314,468,30,false
+08:30,Z1-Z4,37,263,372,24,true
+08:30,Z2-Z5,32,233,327,21,false
+08:45,Z3-Z6,29,238,326,20,false
+08:45,Z1-Z5,24,257,358,23,false

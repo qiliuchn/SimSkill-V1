@@ -1,0 +1,10 @@
+<connections>
+    <connection from="W_ml_in"  to="W_weave"   fromLane="0" toLane="1"/>
+    <connection from="W_ml_in"  to="W_weave"   fromLane="1" toLane="2"/>
+    <connection from="W_ml_in"  to="W_weave"   fromLane="2" toLane="3"/>
+    <connection from="W_onramp" to="W_weave"   fromLane="0" toLane="0"/>
+    <connection from="W_weave"  to="W_ml_out"  fromLane="1" toLane="0"/>
+    <connection from="W_weave"  to="W_ml_out"  fromLane="2" toLane="1"/>
+    <connection from="W_weave"  to="W_ml_out"  fromLane="3" toLane="2"/>
+    <connection from="W_weave"  to="W_offramp" fromLane="0" toLane="0"/>
+</connections>

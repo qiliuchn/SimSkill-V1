@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shared connection list (IDENTICAL for DDI and conventional). The DDI vs conventional
+     difference comes purely from the internal-edge geometry (which side each runs on),
+     which changes whether these same connections physically cross -> different foes. -->
+<connections>
+    <!-- ============ West terminal (W): SB ramps ============ -->
+    <!-- EB through (2 lanes) -->
+    <connection from="Aw_EB" to="I_EB" fromLane="0" toLane="0"/>
+    <connection from="Aw_EB" to="I_EB" fromLane="1" toLane="1"/>
+    <!-- EB -> SB on-ramp (RIGHT turn from EB, uses shared lane0) -->
+    <connection from="Aw_EB" to="SBon" fromLane="0" toLane="0"/>
+    <!-- WB through (2 lanes) -->
+    <connection from="I_WB" to="Aw_WB" fromLane="0" toLane="0"/>
+    <connection from="I_WB" to="Aw_WB" fromLane="1" toLane="1"/>
+    <!-- WB -> SB on-ramp (LEFT turn, dedicated left lane1) : the HEAVY DDI-unopposed left -->
+    <connection from="I_WB" to="SBon" fromLane="1" toLane="0"/>
+    <!-- SB off-ramp -> arterial (ramp discharges to EB and WB) -->
+    <connection from="SBoff" to="I_EB" fromLane="0" toLane="0"/>
+    <connection from="SBoff" to="Aw_WB" fromLane="0" toLane="0"/>
+
+    <!-- ============ East terminal (E): NB ramps ============ -->
+    <!-- WB through (2 lanes) -->
+    <connection from="Ae_WB" to="I_WB" fromLane="0" toLane="0"/>
+    <connection from="Ae_WB" to="I_WB" fromLane="1" toLane="1"/>
+    <!-- WB -> NB on-ramp (RIGHT turn from WB, shared lane0) -->
+    <connection from="Ae_WB" to="NBon" fromLane="0" toLane="0"/>
+    <!-- EB through (2 lanes) -->
+    <connection from="I_EB" to="Ae_EB" fromLane="0" toLane="0"/>
+    <connection from="I_EB" to="Ae_EB" fromLane="1" toLane="1"/>
+    <!-- EB -> NB on-ramp (LEFT turn, dedicated left lane1) : the HEAVY DDI-unopposed left -->
+    <connection from="I_EB" to="NBon" fromLane="1" toLane="0"/>
+    <!-- NB off-ramp -> arterial (ramp discharges to WB and EB) -->
+    <connection from="NBoff" to="I_WB" fromLane="0" toLane="0"/>
+    <connection from="NBoff" to="Ae_EB" fromLane="0" toLane="0"/>
+
+    <!-- ============ Freeway junctions (priority, NOT signals; no arterial-at-grade) ============ -->
+    <!-- Fn: SB through + SB off diverge ; NB on-ramp merge (accel lane0) + NB through shift up -->
+    <connection from="fw_sb_1" to="fw_sb_2" fromLane="0" toLane="0"/>
+    <connection from="fw_sb_1" to="fw_sb_2" fromLane="1" toLane="1"/>
+    <connection from="fw_sb_1" to="SBoff"  fromLane="0" toLane="0"/>
+    <connection from="NBon"    to="fw_nb_3" fromLane="0" toLane="0"/>   <!-- NB on-ramp -> accel lane0 -->
+    <connection from="fw_nb_2" to="fw_nb_3" fromLane="0" toLane="1"/>   <!-- NB through shifts up -->
+    <connection from="fw_nb_2" to="fw_nb_3" fromLane="1" toLane="2"/>
+    <!-- Fn2: NB accel-lane drop (3 -> 2), lane0 merges into lane0 -->
+    <connection from="fw_nb_3" to="fw_nb_4" fromLane="0" toLane="0"/>
+    <connection from="fw_nb_3" to="fw_nb_4" fromLane="1" toLane="0"/>
+    <connection from="fw_nb_3" to="fw_nb_4" fromLane="2" toLane="1"/>
+    <!-- Fs: SB on-ramp merge (accel lane0) + SB through shift up ; NB through + NB off diverge -->
+    <connection from="SBon"    to="fw_sb_3" fromLane="0" toLane="0"/>   <!-- SB on-ramp -> accel lane0 -->
+    <connection from="fw_sb_2" to="fw_sb_3" fromLane="0" toLane="1"/>   <!-- SB through shifts up -->
+    <connection from="fw_sb_2" to="fw_sb_3" fromLane="1" toLane="2"/>
+    <connection from="fw_nb_1" to="fw_nb_2" fromLane="0" toLane="0"/>
+    <connection from="fw_nb_1" to="fw_nb_2" fromLane="1" toLane="1"/>
+    <connection from="fw_nb_1" to="NBoff"   fromLane="0" toLane="0"/>
+    <!-- Fs2: SB accel-lane drop (3 -> 2), lane0 merges into lane0 -->
+    <connection from="fw_sb_3" to="fw_sb_4" fromLane="0" toLane="0"/>
+    <connection from="fw_sb_3" to="fw_sb_4" fromLane="1" toLane="0"/>
+    <connection from="fw_sb_3" to="fw_sb_4" fromLane="2" toLane="1"/>
+</connections>

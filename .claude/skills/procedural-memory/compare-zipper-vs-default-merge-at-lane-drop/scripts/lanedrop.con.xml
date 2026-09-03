@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Forced 2-into-1 merge: BOTH lanes of the last 2-lane approach edge
+     (app3) feed the single lane 0 of the bottleneck edge. This makes
+     n_merge a genuine 2-into-1 contested merge. Identical across both
+     runs; only n_merge's node 'type' differs. -->
+<connections>
+    <connection from="app3" to="bott" fromLane="0" toLane="0"/>
+    <connection from="app3" to="bott" fromLane="1" toLane="0"/>
+</connections>

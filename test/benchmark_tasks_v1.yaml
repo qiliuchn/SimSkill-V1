@@ -1,0 +1,499 @@
+# SimSkill efficacy benchmark — fixed, held-out task suite (test/experiments.md §2).
+#
+# This file is authored and frozen BEFORE any experiment runs, per test/experiments.md
+# §2's contamination-control requirement and §7's "curriculum bias" threat: none of these
+# tasks were drawn from curriculum-agent's proposal history, and none should be fed back
+# into curriculum-agent or memory-ingest. Any edit after `frozen: true` is set must bump
+# `version` and be recorded in log.md like any other memory change, since this suite is
+# itself an experimental instrument, not a living document.
+# NOTE: log.md's own tables are scoped to procedural/semantic memory rows only (they feed
+# memory_snapshots.py's snapshot reconstruction) — a benchmark-suite edit doesn't fit that
+# schema, so it's tracked here via `version`/`notes` instead; see this file's own history
+# below rather than log.md for what changed and why.
+#
+# Schema per task:
+#   id:                 stable short identifier, referenced from test/results/<run_id>.json
+#   category:           one of the 9 categories below (mirrors the procedural-memory spread)
+#   tier:               1 (easy tasks) | 2 (tasks that require some reasoning and adaptation) |
+#                       3 (compositional tasks) | 4 (novel task that require highest reasoning and generalization ability)
+#   task:               the verbatim prompt text handed to `claude -p`. Must be fully
+#                        self-contained — it is the ONLY context `action-agent` receives, so
+#                        it must never assume knowledge of another task's id or text. Every
+#                        task should carry enough concrete numbers (geometry, demand, targets)
+#                        that two independent solvers would be attempting the same well-posed
+#                        problem, not each inventing their own — see input_files below for
+#                        when a number/table is too unwieldy to inline as prose.
+#   input_files:         OPTIONAL. A list of paths, relative to the repo root, to supporting
+#                        files this task's prompt refers to (e.g. an OD matrix, detector counts,
+#                        a GTFS feed). Files live under
+#                        test/benchmark_tasks_files/<task_id>/ — see that convention documented
+#                        in test/experiments.md §2. A trailing slash means "every file in this
+#                        directory" (used for multi-file formats like GTFS). Omit the field
+#                        entirely for tasks that need no files — don't add an empty list or an
+#                        empty directory. Files here are RAW, tool-agnostic data (plain CSV,
+#                        not a pre-formatted SUMO input) — converting them into whatever a
+#                        specific SUMO tool expects is part of the task being tested, not
+#                        something to do for the solver in advance.
+#   related_skills:    procedural-memory skill(s) this task is "supposed to" draw on —
+#                       used for the skill/knowledge-reuse metric (§3.1 item 4)
+#   related_knowledge: semantic-memory page(s) this task is "supposed to" draw on (best-effort;
+#                       left empty where no single obvious page applies)
+#
+# Categories: network-generation, demand-generation, signal-control-optimization,
+#             traci-closed-loop-control, output-analysis-visualization, safety-ssm,
+#             emissions-energy, multimodal-transit, calibration
+#
+# Tier 3/4 tasks are the guard against RQ5 (Generalization Test) being unfalsifiable:
+# they require combining skills in ways no single skill or episodic-memory record already
+# documents, or have no matching skill/page in current memory at all.
+#
+# Recurring canonical scenarios: several tasks below deliberately reuse the same geometry
+# (a single 4-legged intersection: 2 lanes/approach, 300 m link length; a 3-signal arterial:
+# 400 m spacing, 50 km/h; a 4x4 grid: 200 m block spacing) with different demand or parameters
+# layered on top — this is intentional (mirrors the tier-2 "parametric variation" definition
+# above) and keeps scenario geometry from being arbitrarily reinvented per task. Each task still
+# restates the numbers in full rather than referencing another task's id, since only the task's
+# own text is ever handed to `action-agent`.
+#
+# Naming convention:
+#   <category>-<tier>
+#   e.g. "NG-T1"
+
+suite_meta:
+  version: "0.2.0"
+  frozen: true
+  frozen_at: "2026-08-04"
+  memory_snapshot_at_freeze:
+    procedural_skill_count: 112
+    semantic_page_count: 112
+  notes: >
+    Task counts against procedural/semantic memory were captured via
+    utils/get_memory_statistics.py at freeze time, for reference only —
+    Experiment #4 (Learning Curve) reconstructs earlier snapshots separately
+    and does not depend on this number.
+  version_history:
+    - version: "0.1.0"
+      date: "2026-08-04"
+      change: "Initial freeze."
+    - version: "0.2.0"
+      date: "2026-08-05"
+      change: >
+        Tightened every task's prompt text with concrete geometry/demand/target numbers
+        (several were under-specified — e.g. SC-T1 referenced a "measured saturation flow"
+        with no intersection or demand given, making it unreproducible across solvers).
+        Added test/benchmark_tasks_files/<task_id>/ input files for the 5 tasks where the
+        needed data (an OD matrix, detector counts, a GTFS feed) was too unwieldy to inline
+        as prose: DG-T2, DG-T3, MT-T3, CA-T2, CA-T3. No task's id, category, tier,
+        related_skills, or related_knowledge changed — only `task` text and the new
+        `input_files` field.
+
+tasks:
+  # --- network-generation ---
+  - id: NG-T1
+    category: network-generation
+    tier: 1
+    task: >-
+      Build a single 4-legged intersection in SUMO with traffic-light control on all
+      approaches, each approach 2 lanes wide with a 300 m link length.
+
+  - id: NG-T2
+    category: network-generation
+    tier: 2
+    task: >-
+      Build a 3x3 grid network in SUMO with traffic-light-controlled junctions, where
+      the north-south block spacing is 150 m and the east-west block spacing is 400 m.
+
+  - id: NG-T3
+    category: network-generation
+    tier: 3
+    task: >-
+      Import the real intersection of University Avenue and Emerson Street in Palo Alto,
+      California, USA from OpenStreetMap (query OSM for this named intersection and use a
+      bounding box of roughly 300 m x 300 m centered on it), repair any network defects the
+      import introduces, then convert the resulting network's best-suited junction into a
+      roundabout using netconvert's roundabout-guessing pass.
+
+  - id: NG-T4
+    category: network-generation
+    tier: 4
+    task: >-
+      Build a spider (radial) network with 3 concentric ring roads and 8 radial spokes,
+      whose ring roads are speed-limited to 30 km/h while the radial spokes remain at
+      50 km/h, and verify that every junction still ends up signalized as intended (not
+      silently left uncontrolled by the network generator).
+
+  # --- demand-generation ---
+  - id: DG-T1
+    category: demand-generation
+    tier: 1
+    task: >-
+      Generate random trip demand for a 4x4 grid network (200 m block spacing) covering a
+      1-hour peak period, using a fringe factor of 5 so through traffic is favored over
+      short internal trips.
+
+  - id: DG-T2
+    category: demand-generation
+    tier: 2
+    task: >-
+      Convert the 4-zone origin-destination matrix given in
+      test/benchmark_tasks_files/DG-T2/od_matrix.csv into routed vehicle demand using
+      od2trips, producing a distinct AM-peak (7:00-9:00, the matrix's `am` rows) and
+      PM-peak (16:00-18:00, the matrix's `pm` rows) route file rather than a single flat
+      matrix.
+    input_files:
+      - test/benchmark_tasks_files/DG-T2/od_matrix.csv
+
+  - id: DG-T3
+    category: demand-generation
+    tier: 3
+    task: >-
+      Reconstruct demand for a one-way, 5-segment linear corridor (500 m per segment,
+      2 lanes, 50 km/h speed limit, one detector per segment) using dfrouter, from the
+      induction-loop-style detector counts in
+      test/benchmark_tasks_files/DG-T3/reconstruction_counts.csv (segment 1 is
+      upstream-most, segment 5 downstream-most). Then calibrate the resulting routes with
+      routeSampler against the independent counts in
+      test/benchmark_tasks_files/DG-T3/validation_counts.csv, which were not used in the
+      reconstruction.
+    input_files:
+      - test/benchmark_tasks_files/DG-T3/reconstruction_counts.csv
+      - test/benchmark_tasks_files/DG-T3/validation_counts.csv
+
+  - id: DG-T4
+    category: demand-generation
+    tier: 4
+    task: >-
+      Generate activity-based demand for a small synthetic city on a 4x4 grid network
+      (200 m block spacing), with a school-run morning peak concentrated at 7:30-8:00 AM
+      and directed at a small, distinct subset of edges representing school locations,
+      kept spatially separate from a broader general-commute peak spanning 7:00-9:00 AM
+      across the rest of the network.
+
+  # --- signal-control-optimization ---
+  - id: SC-T1
+    category: signal-control-optimization
+    tier: 1
+    task: >-
+      Optimize the fixed-time signal plan of a single 4-legged intersection (each
+      approach 2 lanes wide, 300 m link length, all approaches signal-controlled) using
+      tlsCycleAdaptation, under a demand of 600 veh/h per approach. Report the
+      before/after cycle length alongside the Webster-implied cycle length computed from
+      the saturation flow measured from this simulation.
+
+  - id: SC-T2
+    category: signal-control-optimization
+    tier: 2
+    task: >-
+      Coordinate three consecutive signals along a one-way arterial (signals spaced
+      400 m apart, posted speed limit 50 km/h) into a green wave using tlsCoordinator,
+      at a progression speed 15% below the posted speed limit (42.5 km/h).
+
+  - id: SC-T3
+    category: signal-control-optimization
+    tier: 3
+    task: >-
+      Design an arterial's signal offset plan by hand from saturation flows measured
+      under a demand of 500 veh/h per approach, for an arterial with 3 consecutive
+      signals spaced 400 m apart and a posted speed limit of 50 km/h. Verify the
+      resulting through-band bandwidth analytically, then compare it against
+      tlsCoordinator's own automatically-generated offset solution on the same
+      corridor.
+
+  - id: SC-T4
+    category: signal-control-optimization
+    tier: 4
+    task: >-
+      Retime the signals of an arterial with 3 consecutive signals spaced 400 m apart
+      (posted speed limit 50 km/h) under a demand of 500 veh/h per approach, using only
+      detector-derived, ATSPM-style performance measures extracted from a running
+      simulation — without assuming the true Webster splits are known in advance.
+
+  # --- traci-closed-loop-control ---
+  - id: TR-T1
+    category: traci-closed-loop-control
+    tier: 1
+    task: >-
+      Using TraCI, read the speed, current lane, and stopped state of every vehicle on a
+      single approach edge (300 m long, 2 lanes) of a 4-legged signalized intersection
+      under moderate demand (400 veh/h on that approach), at every simulation step for a
+      15-minute simulation.
+
+  - id: TR-T2
+    category: traci-closed-loop-control
+    tier: 2
+    task: >-
+      Implement a max-pressure TraCI signal controller for a single 4-legged
+      intersection (each approach 2 lanes, 300 m link length) and compare its average
+      delay against a fixed-time baseline at three demand levels: 300, 600, and 900
+      veh/h per approach.
+
+  - id: TR-T3
+    category: traci-closed-loop-control
+    tier: 3
+    task: >-
+      Implement a GLOSA eco-driving speed-advisory controller for a single 500 m
+      signalized arterial approach (2 lanes, 50 km/h speed limit) under a demand of
+      400 veh/h, then layer emergency-vehicle preemption on top of it at the same
+      intersection, and verify preemption always overrides the eco-driving advisory
+      rather than the two conflicting.
+
+  - id: TR-T4
+    category: traci-closed-loop-control
+    tier: 4
+    task: >-
+      Implement a reservation-based autonomous intersection management controller for a
+      single 4-legged junction (each approach 2 lanes, 300 m link length) and quantify
+      its throughput gain over max-pressure control at a matched demand of 800 veh/h
+      per approach.
+
+  # --- output-analysis-visualization ---
+  - id: OA-T1
+    category: output-analysis-visualization
+    tier: 1
+    task: >-
+      Produce two SUMO simulation runs of the same single 4-legged intersection (2 lanes
+      per approach, 300 m link length) that differ only in signal timing — an
+      unoptimized fixed-time baseline versus a tlsCycleAdaptation-optimized plan — then
+      parse their tripinfo and summary output and produce a side-by-side comparison
+      table of mean travel time, mean waiting time, and throughput.
+
+  - id: OA-T2
+    category: output-analysis-visualization
+    tier: 2
+    task: >-
+      Produce a time-space trajectory diagram for a single arterial corridor with 3
+      consecutive signals spaced 400 m apart (posted speed limit 50 km/h) under a
+      demand of 500 veh/h per approach, overlaid with the signal phase state active at
+      each point in time.
+
+  - id: OA-T3
+    category: output-analysis-visualization
+    tier: 3
+    task: >-
+      Build a spatial congestion heatmap from edgeData output for a 4x4 grid network
+      (200 m block spacing) under heavy demand (1000 veh/h entering from each fringe
+      edge), then cross-check whether its hotspots coincide with the edges the SSM
+      device flags as highest-conflict for the same scenario.
+
+  - id: OA-T4
+    category: output-analysis-visualization
+    tier: 4
+    task: >-
+      Quantify SUMO's own run-to-run stochastic variability (across different random
+      seeds) for a 4x4 grid network (200 m block spacing) under congested demand
+      (1200 veh/h entering from each fringe edge), and report how many replications
+      would be needed before a 10% travel-time difference between two candidate
+      designs is distinguishable from seed noise.
+
+  # --- safety-ssm ---
+  - id: SF-T1
+    category: safety-ssm
+    tier: 1
+    task: >-
+      Enable the SSM device on a single 4-legged signalized intersection (2 lanes per
+      approach, 300 m link length, protected left-turn phasing on all approaches) under
+      a demand of 500 veh/h per approach (10% of which are left turns), and report the
+      time-to-collision (TTC) and post-encroachment-time (PET) distributions separately
+      for through and protected left-turn movements.
+
+  - id: SF-T2
+    category: safety-ssm
+    tier: 2
+    task: >-
+      Compare surrogate safety measures between a signalized version and an
+      unsignalized (all-way-stop) version of the same single 4-legged intersection
+      (2 lanes per approach, 300 m link length), at a matched demand of 500 veh/h per
+      approach.
+
+  - id: SF-T3
+    category: safety-ssm
+    tier: 3
+    task: >-
+      For a single 4-legged intersection (2 lanes per approach, 300 m link length) with
+      per-approach demand of 600 veh/h — 20% of which turn left on the heaviest
+      approach and 10% on the other three — design a left-turn storage bay length for
+      the heaviest left-turn movement, and confirm via the SSM device that
+      spillback-induced conflicts drop relative to a no-bay baseline at the same
+      demand.
+
+  - id: SF-T4
+    category: safety-ssm
+    tier: 4
+    task: >-
+      Determine, via a signal warrant analysis, whether a currently-unsignalized 4-way
+      intersection carrying a major-street peak-hour volume of 700 veh/h and a
+      minor-street peak-hour volume of 250 veh/h justifies signalization, and
+      cross-check that volume-based recommendation against measured conflict rates (via
+      the SSM device) rather than volume alone.
+
+  # --- emissions-energy ---
+  - id: EM-T1
+    category: emissions-energy
+    tier: 1
+    task: >-
+      Model a heterogeneous vehicle fleet (70% passenger cars, 20% light trucks, 10%
+      heavy trucks) using an HBEFA3 emissions-class distribution on a 4x4 grid network
+      (200 m block spacing) under 800 veh/h fringe demand, and report total CO2 and NOx
+      emissions broken down by vehicle type.
+
+  - id: EM-T2
+    category: emissions-energy
+    tier: 2
+    task: >-
+      Quantify the effect of road gradient on energy consumption for an all-electric
+      vehicle fleet (20 vehicles) climbing a 2 km, 4% grade freeway segment (2 lanes,
+      100 km/h speed limit), and report state-of-charge at the top of the grade
+      relative to the bottom.
+
+  - id: EM-T3
+    category: emissions-energy
+    tier: 3
+    task: >-
+      On a 4x4 grid network (200 m block spacing) with a heterogeneous vehicle fleet
+      under 800 veh/h fringe demand, compare total network emissions with and without
+      an eco-routing device active, holding the network, vehicle fleet, and demand
+      fixed between the two runs.
+
+  - id: EM-T4
+    category: emissions-energy
+    tier: 4
+    task: >-
+      Model adverse weather's (heavy rain) effect on the capacity of a 3-lane freeway
+      segment (3 km, 100 km/h nominal speed limit) under a demand of 1800 veh/h/lane,
+      and quantify the resulting change in per-vehicle emissions caused by the added
+      stop-and-go driving.
+
+  # --- multimodal-transit ---
+  - id: MT-T1
+    category: multimodal-transit
+    tier: 1
+    task: >-
+      Set up a single bus route with 6 scheduled stops along a 3 km arterial (stop
+      spacing roughly 500 m) at a scheduled headway of 10 minutes, and measure headway
+      regularity (bus bunching) over a 2-hour simulation.
+
+  - id: MT-T2
+    category: multimodal-transit
+    tier: 2
+    task: >-
+      Add pedestrian crossings and signal phasing to an existing single 4-legged
+      vehicle-only intersection (2 lanes per approach, 300 m link length) with a
+      pedestrian demand of 200 ped/h per crossing, and measure the added pedestrian
+      crossing delay this introduces relative to the vehicle-only baseline.
+
+  - id: MT-T3
+    category: multimodal-transit
+    tier: 3
+    task: >-
+      Import the GTFS feed in test/benchmark_tasks_files/MT-T3/gtfs/ for a small
+      single-route transit network (6 stops, hourly service), add transit signal
+      priority at its busiest signalized stop, and quantify the resulting
+      schedule-adherence improvement relative to no priority.
+    input_files:
+      - test/benchmark_tasks_files/MT-T3/gtfs/
+
+  - id: MT-T4
+    category: multimodal-transit
+    tier: 4
+    task: >-
+      Build a park-and-ride corridor scenario (a 5 km corridor connecting a
+      residential fringe to a downtown-bound transit line) and evaluate how sensitive
+      the resulting car/transit mode split is to the park-and-ride facility's parking
+      capacity, sweeping capacity across 50, 100, and 200 spaces.
+
+  # --- calibration ---
+  - id: CA-T1
+    category: calibration
+    tier: 1
+    task: >-
+      Calibrate car-following parameters for a single freeway segment (2 lanes, 3 km,
+      100 km/h speed limit) against the following field-style speed-flow targets (flow
+      in veh/h/lane, speed in km/h): (400, 98), (800, 95), (1200, 88), (1600, 75),
+      (1900, 55), (2000, 35).
+
+  - id: CA-T2
+    category: calibration
+    tier: 2
+    task: >-
+      For a 4x4 grid network (200 m block spacing) whose 16 fringe edges serve as
+      traffic analysis zones (numbered Z1-Z16 clockwise starting from the northwest
+      fringe edge), estimate an origin-destination matrix using ODME from the prior
+      seed matrix in test/benchmark_tasks_files/CA-T2/seed_od_matrix.csv and the
+      partial set of link counts in
+      test/benchmark_tasks_files/CA-T2/partial_link_counts.csv (only 6 of the
+      network's fringe edges have observed counts). Report how identifiable the
+      resulting matrix is given the available count locations.
+    input_files:
+      - test/benchmark_tasks_files/CA-T2/seed_od_matrix.csv
+      - test/benchmark_tasks_files/CA-T2/partial_link_counts.csv
+
+  - id: CA-T3
+    category: calibration
+    tier: 3
+    task: >-
+      For a 3x3 grid network (150 m block spacing) whose 12 fringe edges are numbered
+      Z1-Z12 clockwise starting from the northwest fringe edge, calibrate demand with
+      routeSampler against the synthetic ground-truth counts in
+      test/benchmark_tasks_files/CA-T3/ground_truth_counts.csv, then validate the
+      calibrated scenario's edge counts against the independent validation counts in
+      test/benchmark_tasks_files/CA-T3/validation_counts.csv, which the calibration
+      never saw.
+    input_files:
+      - test/benchmark_tasks_files/CA-T3/ground_truth_counts.csv
+      - test/benchmark_tasks_files/CA-T3/validation_counts.csv
+
+  - id: CA-T4
+    category: calibration
+    tier: 4
+    task: >-
+      Reproduce the classical 4-node Braess's-paradox network in SUMO: a start node S
+      and end node E connected via two parallel routes through intermediate nodes A
+      and B, where edges S->A and B->E have travel time that increases with flow
+      (capacity-sensitive — 2 km at 50 km/h free-flow, congesting under load) while
+      edges S->B and A->E have a fixed travel time independent of flow (a 3-minute
+      fixed-time edge each), plus a new low-cost bridging edge A->B. Empirically
+      verify, under a fixed demand of 4000 veh/h from S to E, whether adding the A->B
+      bridge makes average travel time worse under dynamic user equilibrium, rather
+      than assuming the classical result transfers unchanged.
+
+  # --- cross-category (compositional / novel generalization guard, RQ5) ---
+  - id: XC-T1
+    category: cross-category
+    tier: 3
+    task: >-
+      Build both a diverging diamond interchange and a conventional diamond
+      interchange (with signal offset and spillback) for the same freeway crossing
+      (freeway: 3 lanes/direction, 110 km/h; cross street: 2 lanes/direction, 50 km/h),
+      generate matched demand for both with random trips at a ramp volume of 1200
+      veh/h per ramp, and compare their SSM safety profiles at equal volume.
+
+  - id: XC-T2
+    category: cross-category
+    tier: 3
+    task: >-
+      Simulate an emergency evacuation of a 4x4 grid network (200 m block spacing)
+      whose demand surges to 3x its normal 600 veh/h fringe-entry rate for the
+      evacuation period, using ALINEA ramp metering on the single freeway on-ramp
+      gateway (2-lane freeway, 100 km/h) to keep the evacuation route's mainline from
+      breaking down under the surge in demand.
+
+  - id: XC-T3
+    category: cross-category
+    tier: 4
+    task: >-
+      Model a 5 km freight corridor (3 lanes/direction, 100 km/h, with a hard shoulder
+      available for dynamic use) with dynamic hard-shoulder running triggered when
+      measured mainline occupancy exceeds 25%, and evaluate whether activating the
+      hard shoulder changes urban freight delivery tour completion times for a fleet
+      of 20 delivery vehicles making multi-stop tours along the corridor.
+
+  - id: XC-T4
+    category: cross-category
+    tier: 4
+    task: >-
+      Design a restricted-crossing U-turn (RCUT) retrofit for a corridor currently
+      modeled as a conventional signalized intersection (2 lanes per approach, 300 m
+      link length) with heavy left-turn demand (300 veh/h turning left on the major
+      approaches, out of 700 veh/h total per approach), and determine whether it
+      actually reduces total intersection delay once the added U-turn travel distance
+      is accounted for.

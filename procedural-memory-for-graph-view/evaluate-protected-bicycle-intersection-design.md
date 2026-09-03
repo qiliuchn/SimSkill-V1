@@ -1,0 +1,69 @@
+---
+name: evaluate-protected-bicycle-intersection-design
+description: Use this skill when the user wants to model bicycle safety and delay at a signalized intersection in SUMO — comparing a protected intersection (setback crossing, tight corner radius) against a conventional bike lane, a mixing zone, an exclusive bicycle signal phase, or a timing-only Leading Bicycle Interval. Covers verifying whether SUMO's junction foe/priority logic actually treats a right-turning car as conflicting with a through bicycle (the right-hook conflict) and whether corner geometry genuinely slows the turn, classifying SSM conflicts by vClass pair and movement type, and a critical gotcha: combining a tight turn radius with a connection-shape geometric setback in the same junction can produce genuine simulated collisions that neither treatment alone produces. Trigger on mentions of protected intersection, bike lane right hook, cycle track, corner island, Leading Bicycle Interval, or bicycle-vehicle conflict at a junction.
+related_skills:
+  - model-dedicated-bicycle-lane-infrastructure
+  - build-pedestrian-crossings-and-phasing
+  - evaluate-right-turn-on-red-and-leading-pedestrian-interval
+  - analyze-intersection-safety-with-ssm
+  - design-signal-change-and-clearance-intervals
+  - compare-left-turn-signal-treatments
+related_skills_for_graph_view:
+  - "[[model-dedicated-bicycle-lane-infrastructure]]"
+  - "[[build-pedestrian-crossings-and-phasing]]"
+  - "[[evaluate-right-turn-on-red-and-leading-pedestrian-interval]]"
+  - "[[analyze-intersection-safety-with-ssm]]"
+  - "[[design-signal-change-and-clearance-intervals]]"
+  - "[[compare-left-turn-signal-treatments]]"
+related_pages:
+  - "[[dedicated-bicycle-lanes-and-mode-share]]"
+  - "[[pedestrian-crossings-and-signal-phasing]]"
+  - "[[right-turn-on-red-and-leading-pedestrian-interval]]"
+  - "[[surrogate-safety-measures]]"
+  - "[[left-turn-treatment-tradeoffs]]"
+  - "[[horizontal-curvature-and-curve-speed-in-sumo]]"
+  - "[[multimodal-signal-progression-and-the-bicycle-green-wave]]"
+---
+
+# Evaluate Protected Bicycle Intersection Design
+
+Determines whether geometric bicycle protection at a signalized intersection buys anything a timing-only treatment cannot, and at what cost to cars and pedestrians. The right-hook conflict (a right-turning car crossing a through bicycle's path) is where bicycle crashes concentrate in practice, but nothing in memory had built or measured it before this skill.
+
+## Verify the conflict mechanism exists before designing anything — don't trust the raw foes bitstring
+
+**Read the compiled net's `<request>`/`<connection>` foes/response bitstring with suspicion.** It can look asymmetric across geometrically identical corners of the same junction, which naively suggests the yield mechanism is unreliable. It usually isn't — **verify behaviorally instead**: run a light, non-saturating demand (long enough headways that free-flow gaps exist to observe *selective* yielding, not just general queueing) with cars and bicycles on a shared or adjacent-lane approach, and measure via-lane speed with vs. without a bicycle present. Verified: SUMO's junction logic does give a through bicycle priority over an adjacent right-turning car — right-turn via-lane speed collapsed uniformly (roughly halved) at every tested corner when paired with a bicycle, while bicycle speed stayed unaffected, with zero collisions in the clean test. **The raw bitstring is not safely human-readable for this question; only a paired baseline-vs-interaction behavioral measurement should be trusted.**
+
+**Confirm the SSM device actually records these encounters, filtered by vClass pair, not by raw count.** Total SSM conflicts logged in a busy scenario can run into the thousands, but only a small fraction are the specific car-bike pair you care about once you filter — and SSM double-logs every conflict from both participants' perspectives, so dedupe before reporting a count.
+
+**Corner geometry does not slow a turning vehicle by itself — you must enable `--junctions.limit-turn-speed` explicitly, and even then it may not activate.** Verified factorial: node `radius` alone (tested 3–15 m) has *no* independent effect on measured turn speed — the tightest radius tested actually showed the *highest* unconstrained speed of any tested value, replicating `[[horizontal-curvature-and-curve-speed-in-sumo]]`'s "SUMO doesn't read geometry into speed choice" finding at junctions specifically, not just on curved edges. `--junctions.limit-turn-speed` **does** produce a real, substantial speed reduction (verified ~20%), but **only at genuinely tight radii** — it was a complete no-op at moderate radii (10–15 m) in the tested range, consistent with that page's angle/deadband finding. If your "protected intersection" design depends on a tight corner physically slowing right-turning traffic, verify the flag is both present *and* actually activating at your chosen radius — don't assume geometry alone does the work.
+
+## Build design variants that isolate what you're actually testing
+
+A useful comparison set spans: a **mixing zone** (bike lane dropped upstream, bicycles share the through/right lane), a **conventional** bike lane carried through to the right of a permitted right turn (the right-hook baseline), a **protected intersection** proxy (setback crossing + tight corner radius), that **plus an exclusive bicycle signal phase**, and a **timing-only** control — a Leading Bicycle Interval (the bicycle green starts a few seconds before the parallel vehicle movement, reusing the Leading Pedestrian Interval pattern from `evaluate-right-turn-on-red-and-leading-pedestrian-interval`) on the conventional lane, with no geometric change at all. Build every variant from one shared base geometry so only the treatment differs, and drive every variant with identical (CRN) demand.
+
+**Build isolated single-factor variants, not just the combined "protected" treatment, if you want to know which lever is doing the work.** A protected intersection typically bundles two distinct mechanisms — a setback crossing (changes conflict *location/geometry*) and a tight corner radius (changes conflict *speed*, per above). Build `radius-only` and `setback-only` variants alongside the combined design and compare all three against baseline. Verified: turn speed isolated cleanly to radius alone (the setback-only variant's speed matched baseline); conflict *rate*, however, did not isolate cleanly — both single-factor variants independently measured a *higher* conflict rate than the plain baseline, and the combination was not simply additive. Don't assume a compound treatment's effect decomposes into the sum of its parts; measure each factor alone.
+
+## Critical gotcha: combining geometric levers in one junction can silently produce real collisions
+
+**This is the single most important finding in this skill, and it must be checked, not assumed away.** Combining a tight turn radius with a connection-shape geometric perturbation (used to fake a setback crossing within a single compiled junction, rather than building a genuinely separate corner-refuge node) can produce an emergent construction defect: the resulting internal via-lane geometry becomes measurably longer and more convoluted than either treatment alone, and — verified directly — this produced genuine simulated collisions (both bike-bike and car-bike) at moderate-to-high bicycle volumes, while every other variant, and critically every *single-factor* isolation variant, showed zero collisions. **Any time two geometric treatments are combined within one junction (rather than as physically separate junction nodes), check the collision count on the combined variant specifically, and compare it against each factor tested alone** — a defect that only appears in combination is easy to miss if you only sanity-check the individual treatments. If found, do not silently discard or hide it: report it prominently, and re-qualify every downstream conclusion that depends on the affected variant, since its conflict-rate numbers are likely contaminated by the construction defect rather than reflecting genuine treatment performance.
+
+**A topologically faithful protected intersection needs a physically separate corner-refuge junction, not a same-junction shape override.** The single-junction connection-shape approximation used here is a pragmatic shortcut, not a claim of geometric fidelity — any conclusion that "protected geometry measured worse than a timing-only treatment" should be scoped explicitly to this proxy, not generalized to real protected intersections, until validated against a genuinely separate-node construction.
+
+## Measurement discipline
+
+- **Use CRN-paired comparisons, not independent per-arm confidence intervals**, when comparing design variants — pair by `(demand cell, seed)` across variants so the comparison isolates the treatment effect from demand-realization noise.
+- **Report severity (mean TTC, TTC-below-threshold share) alongside conflict count**, not count alone — a design that produces fewer but far more severe conflicts (or vice versa) is a materially different finding than one that changes both proportionally. A pure lane-sharing/following encounter genuinely has no PET (no crossing point) — SSM correctly returns NA for it; don't treat a missing PET as a data-quality problem.
+- **Report person-delay, not just per-mode delay**, when comparing treatments that trade delay between modes (e.g. an exclusive bicycle phase reduces bicycle conflict exposure by adding delay to every mode) — state your assumed occupancy factors explicitly as a documented assumption, not a measured quantity.
+- **Enable the sublane lateral-resolution model for any bicycle-lane comparison** (per `[[multimodal-signal-progression-and-the-bicycle-green-wave]]`'s gotcha — SUMO's default single-file lane model makes dedicated bike infrastructure measure as artificially worse than mixed traffic because it can't represent in-lane bicycle overtaking) — but don't assume enabling it guarantees safe overtaking actually occurs; verify from lane-change output if bicycle-bicycle interaction at high volume matters to your conclusions.
+- **A background sweep across dozens to hundreds of parameter cells needs incremental checkpointing and per-job exception handling.** A single job's uncaught timeout/exception in a process-pool sweep can silently kill the entire pool and lose all completed work; wrap every per-job call in try/except, convert failures into recorded (not crashing) results, and checkpoint incrementally (e.g. JSONL, one line per completed cell) rather than writing results only at the very end.
+
+## Related
+
+- `model-dedicated-bicycle-lane-infrastructure`, `[[dedicated-bicycle-lanes-and-mode-share]]` — the base vClass="bicycle" lane-permission mechanics this skill's variants build on.
+- `build-pedestrian-crossings-and-phasing`, `[[pedestrian-crossings-and-signal-phasing]]` — crossing/sidewalk generation reused so pedestrian delay is accounted for in every variant.
+- `evaluate-right-turn-on-red-and-leading-pedestrian-interval`, `[[right-turn-on-red-and-leading-pedestrian-interval]]` — the Leading Interval design pattern this skill's Leading Bicycle Interval variant is built on.
+- `analyze-intersection-safety-with-ssm`, `[[surrogate-safety-measures]]` — SSM conflict measurement and the double-logging/vClass-filtering discipline.
+- `design-signal-change-and-clearance-intervals` — clearance-interval sizing reused for the leading-interval and exclusive-phase timing.
+- `compare-left-turn-signal-treatments`, `[[left-turn-treatment-tradeoffs]]` — the single-factor-isolation methodology this skill's radius-vs-setback isolation follows.
+- `[[horizontal-curvature-and-curve-speed-in-sumo]]` — the "SUMO doesn't read geometry into speed choice" finding this skill reconfirms at junctions via `--junctions.limit-turn-speed`.
+- `[[multimodal-signal-progression-and-the-bicycle-green-wave]]` — the sublane-model gotcha for any dedicated-bike-lane delay comparison.

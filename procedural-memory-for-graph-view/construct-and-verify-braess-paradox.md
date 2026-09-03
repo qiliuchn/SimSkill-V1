@@ -1,0 +1,92 @@
+---
+name: construct-and-verify-braess-paradox
+description: Use this skill when the user wants to construct and empirically test Braess's Paradox in SUMO — the classic result that adding a road link to a congested network can make travel time worse for every driver at selfish user equilibrium — or more generally wants to study how network topology, not signal control or demand alone, interacts with route choice to produce a counter-intuitive outcome. Covers building the classic S-A-B-T topology with engineered flow-dependent and flow-independent links, measuring real link-performance functions before claiming any paradox, running dynamic user equilibrium (duaIterate) with a dual Wardrop check, sweeping demand to find the threshold where the paradox switches on and off, and computing Price of Anarchy against a coordinated route split. Trigger on mentions of Braess's paradox, price of anarchy, network topology paradox, adding a link makes traffic worse, or selfish routing vs system optimum.
+related_skills:
+  - compute-dynamic-user-equilibrium
+  - create-single-intersection
+  - analyze-simulation-outputs
+  - equilibrate-departure-time-choice-in-bottleneck-model
+  - equilibrate-endogenous-mode-choice-with-transit-supply-feedback
+  - scan-network-link-criticality-and-vulnerability
+  - specify-route-choice-models-and-generate-route-sets
+related_skills_for_graph_view:
+  - "[[compute-dynamic-user-equilibrium]]"
+  - "[[create-single-intersection]]"
+  - "[[analyze-simulation-outputs]]"
+  - "[[equilibrate-departure-time-choice-in-bottleneck-model]]"
+  - "[[equilibrate-endogenous-mode-choice-with-transit-supply-feedback]]"
+  - "[[scan-network-link-criticality-and-vulnerability]]"
+  - "[[specify-route-choice-models-and-generate-route-sets]]"
+related_pages:
+  - "[[dynamic-user-equilibrium-and-wardrop]]"
+  - "[[braess-paradox-in-sumo]]"
+  - "[[route-choice-model-verification-overlap-and-route-set-effects]]"
+---
+
+# Construct and Verify Braess's Paradox
+
+Builds the classic Braess network topology in SUMO and empirically tests whether adding a nearly-costless link between two intermediate nodes makes equilibrium travel time worse for every driver — a **topology-and-route-choice** effect, distinct from every other counter-intuitive finding in memory (which are control-mechanism effects like `implement-mfd-based-perimeter-gating`'s accumulation control, or demand-shape effects). This skill builds directly on `compute-dynamic-user-equilibrium`'s dual-cost Wardrop methodology and extends it to a genuinely different topology (a diamond with a cross-link, not two parallel routes).
+
+## Building the topology
+
+Origin `S`, destination `T`, intermediate nodes `A` and `B`, four "diamond" edges (`S->A`, `A->T`, `S->B`, `B->T`) plus an optional cross link `A->B`. Engineer a genuine cost asymmetry via link geometry, not by fiat:
+- **Flow-dependent edges** (`S->A`, `B->T`): short, single-lane, deliberately low capacity, so travel time rises steeply with volume.
+- **Flow-independent edges** (`A->T`, `S->B`): long, multi-lane, high speed, so travel time stays near-constant across the relevant demand range.
+- **The cross link** (`A->B`): short, high-capacity, near-costless — this is what creates the "zig-zag" route `S->A->B->T` combining one cheap-at-low-flow segment from each class.
+
+Build **two network variants differing by exactly this one edge** (verify with a direct file diff of the plain-XML sources, plus the compiled `.net.xml` connections — confirm nothing else differs).
+
+**Critical gotcha: audit every diverge/merge junction's request matrix for spurious yield conflicts before trusting the topology.** A naive lane-wiring at the `S` diverge (e.g. every `S_in` lane feeding both branches) can make `netconvert` produce geometrically crossing internal links, which it then resolves into a real yielding conflict — silently capping that junction's throughput well below the demand range under study, right in the middle of where the interesting behavior should be. This is a **fatal, silent confound**: it looks like a topology result but is actually an artificial bottleneck. Fix by giving the diverging edge dedicated, side-correct lane groups (e.g. specific lanes feeding each branch) so no lane at the junction requires yielding to another. Verify the fix by checking the compiled network's request/foes matrix has zero must-yield entries at that junction — don't just assume a lane-count fix worked.
+
+**Use `zipper`-type merges, not `priority`**, wherever routes rejoin (at `A`, `B`, and `T`) — a `priority` merge injects asymmetric congestion unrelated to either route's own capacity, the same lesson `compute-dynamic-user-equilibrium` established for parallel-route networks.
+
+## Measuring link performance functions before claiming anything
+
+Don't assume the intended cost structure — measure it. Run isolated loading sweeps (increasing steady flow, one edge/route in isolation) and extract per-vehicle link travel time via `--vehroute-output.exit-times` (gives exact per-vehicle per-link times — a better source for this than `edgeData`'s aggregated travel-time output, which showed measurable disagreement with the per-vehicle ground truth in one verified test, on the order of a few percent). Fit a queueing-style model `t = t0 + s*max(0, q - C)` (point-queue delay above a capacity threshold) rather than defaulting to a BPR power-law form — in one verified comparison the queueing fit had a materially better R² (0.98 vs 0.94-0.95) because the underlying physics genuinely is deterministic point-queue delay, not a smooth power curve. Confirm the flow-dependent class shows a travel-time ratio (max/min over the sweep) many times larger than the flow-independent class (verified case: ~5.7x vs ~1.08x) before proceeding — if the ratio isn't clearly distinguishable, the topology's cost asymmetry isn't strong enough to produce a clean result.
+
+**Watch for storage-ceiling contamination in the sweep itself**: at high enough flow, a queue on a short bottleneck edge can outgrow the edge's own storage and back up onto the upstream edge being measured, corrupting that edge's own isolated-sweep numbers. Use genuinely isolated loading (measure one edge/route at a time, not the full topology) and cap the sweep range below where this happens, reporting the domain explicitly rather than extrapolating a fit into the ceiling regime.
+
+## Computing equilibrium and checking Wardrop on both cost definitions
+
+Run `duaIterate.py` for both variants at every demand level with identical seed and settings (see `compute-dynamic-user-equilibrium` for the tool's location and iteration-subdirectory convergence-trace pattern). Check Wardrop's principle on **both** in-network duration and total experienced time (duration + departDelay) — the two can disagree if origin-insertion queueing is significant, though in one verified Braess-topology test they agreed closely (both spreads under 5%) because departDelay stayed near-zero at every equilibrium in that particular geometry; **check this rather than assume it**, since a different geometry could reintroduce the gap documented in `compute-dynamic-user-equilibrium`. Cross-check the converged equilibrium link costs against a closed-form prediction where one exists (e.g. in a Braess topology at the sign-change threshold, the equilibrium flow-dependent link cost should approach `t_flow_independent - t_cross_link`).
+
+**Convergence iteration counts are not uniform across demand levels — don't claim they are without checking each one.** In one verified sweep, most demand levels converged in 15-25 iterations, but one specific level took 60. Report the actual per-level iteration count from each run's own convergence trace rather than generalizing from a couple of spot-checked cases.
+
+## Sweeping demand to find the threshold
+
+Run both variants across a wide demand range (at least 4-5 levels, denser near the expected transition) and compute the percentage difference in equilibrium mean travel time (LINK vs. NOLINK) at each level. The expected, falsifiable Braess pattern is a **sign change**: the added link helps or is neutral at low demand, strictly hurts above a threshold, and the effect fades again at very high demand as the zig-zag route's equilibrium share collapses (verified case: helped by up to -39% below threshold, hurt by up to +38% at the worst point, faded back to ~0% well above it). Report the threshold explicitly (interpolated between the bracketing simulated points) and the equilibrium route-share trajectory (verified case: the zig-zag share fell from ~100% at low demand to ~0.1% at the highest demand tested) as direct evidence of the mechanism, not just the aggregate delay number.
+
+## Price of Anarchy
+
+At a demand level well past the paradox threshold, compare the selfish equilibrium's network-mean travel time against a coordinated/forced route split (an explicit route file with fixed probabilities suppressing or forbidding the zig-zag route), holding the same vehicles and departure schedule. Search more than the two obvious endpoints (0% and equilibrium share) — a coarse grid over intermediate zig-zag shares can reveal that the true system optimum uses a **nonzero but much smaller** zig-zag share than the selfish equilibrium, not zero (verified case: best found at ~10% vs. ~45% selfish share). Report this grid-search result explicitly as a **lower bound** on the true Price of Anarchy unless a finer search or an actual optimization is performed — don't claim the two-endpoint comparison found the true system optimum.
+
+## Distinguishing genuine route-choice congestion from a departure-ordering artifact
+
+Apply `compute-dynamic-user-equilibrium`'s ordering-artifact diagnostic here too: re-simulate the converged route split with departures cleanly interleaved across routes instead of `duaIterate`'s actual emitted ordering, and compare the paradox magnitude. In one verified test, interleaving reduced the paradox from the as-simulated magnitude by a modest fraction (roughly 1/9 of the total effect) — confirming the great majority of the measured degradation is genuine route-choice-induced congestion, not an artifact of departure-time clustering, but also confirming the ordering effect is real and non-negligible enough to check rather than assume away.
+
+## Route-choice-model robustness — check it, and report honestly if it fails
+
+Run both Gawron (default) and logit route-choice models as a robustness check, per `compute-dynamic-user-equilibrium`'s recommendation. **This is not guaranteed to pass, and a failure is a genuine, reportable finding, not something to hide.** In one verified test, logit disagreed with Gawron in *direction* at one demand level and never reached a stable converged split at two others even after sweeping the logit temperature parameter (`--logittheta`) — the logit iterations kept oscillating between all-or-nothing route assignments.
+
+**This failure has since been diagnosed and partially fixed — see `specify-route-choice-models-and-generate-route-sets`.** Root cause: `duaIterate`'s default auto-θ scales as roughly a constant divided by the spread of competing route costs, and since Wardrop equilibrium is by definition the state where those costs converge, auto-θ mechanically explodes exactly as the search approaches its own goal, forcing pathological all-or-nothing reassignment. A naive fixed θ alone doesn't fix it either (logit is exactly memoryless, so a fixed θ with no damping just trades the blow-up for 100% churn every iteration). The working recipe — explicit fixed θ plus `duaIterate.py --weight-memory` — was verified to restore genuine, monotonically-decaying convergence on this exact Braess topology, though it converged measurably *more slowly* than Gawron and was not confirmed to reach the identical fixed point within a bounded iteration budget on the harder (LINK) network. So: before reporting a bare Gawron-vs-logit disagreement as evidence the paradox can't be tested against logit, try the fixed-θ + `--weight-memory` recipe first and check whether logit now converges (even slowly) toward Gawron's split — a disagreement under *default* auto-θ settings is not on its own strong evidence of a fundamental model incompatibility.
+
+## Gotchas
+
+- **A naive diverge's lane wiring can create a hidden must-yield conflict** that caps throughput right in the middle of the demand range under study — audit the compiled network's request/foes matrix for every diverge/merge junction, don't just count lanes.
+- **`priority`-type merges inject asymmetric congestion unrelated to route capacity** — use `zipper` wherever routes rejoin.
+- **A loading sweep used to measure a link performance function can itself be corrupted by storage-ceiling spillback** onto the edge being measured — use genuinely isolated loading and report the fit's valid domain explicitly.
+- **Convergence iteration counts vary by demand level** — check each run's own trace, don't generalize "converges in N iterations" from a couple of spot checks.
+- **A two-endpoint Price-of-Anarchy comparison (0% vs. equilibrium share) likely understates the true gap to system optimum** — grid-search intermediate splits, since the real optimum is often a nonzero but smaller share than the selfish equilibrium's.
+- **The Gawron-vs-logit robustness check can fail outright** (disagreement in sign, or the alternate model never converging) — this is a legitimate finding about which route-choice models are testable against an equilibrium claim, not a bug to suppress. Try the fixed-θ + `--weight-memory` recipe from `specify-route-choice-models-and-generate-route-sets` before concluding logit simply can't be tested here.
+- **`--vehroute-output.exit-times` gives more reliable per-link travel times for measuring a link performance function than `edgeData`'s aggregated output** — the two can disagree by a few percent, and the per-vehicle source is ground truth.
+
+## Related
+
+- `compute-dynamic-user-equilibrium` — the dual-cost Wardrop-check methodology, the `duaIterate.py` location/convergence-trace pattern, the zipper-merge lesson, and the departure-ordering-artifact diagnostic this skill directly reuses and extends to a new topology.
+- `create-single-intersection` — the plain-XML+netconvert technique this skill's topology is built from.
+- `analyze-simulation-outputs` — general tripinfo/summary comparison conventions this skill's demand-sweep analysis follows.
+- [[dynamic-user-equilibrium-and-wardrop]] — the underlying DUE/Wardrop theory and the in-network-vs-total-time distinction this skill's Wardrop check builds on.
+- [[braess-paradox-in-sumo]] — the verified threshold/magnitude findings, the Price-of-Anarchy result, and the Gawron-vs-logit robustness limitation.
+- `equilibrate-departure-time-choice-in-bottleneck-model` / `equilibrate-endogenous-mode-choice-with-transit-supply-feedback` — the sibling departure-time-choice and mode-choice equilibrium/paradox skills, completing this memory's trio of classical traveller-choice-dimension paradoxes alongside this skill's route-choice paradox.
+- `scan-network-link-criticality-and-vulnerability` — applies this skill's rigorous single-run-is-not-evidence replication discipline to flag and test for Braess-like (closure-helps) links across a whole network scan, rather than one hand-built topology; found no link survived replication as genuinely beneficial in the tested network.
+- `specify-route-choice-models-and-generate-route-sets`, [[route-choice-model-verification-overlap-and-route-set-effects]] — diagnoses and partially fixes this skill's open logit-non-convergence failure, and establishes that Gawron (the model behind this skill's own headline magnitudes) is exactly overlap-blind and can be history-locked at tied costs — a caveat on how to read this skill's results, not just a robustness-check footnote.

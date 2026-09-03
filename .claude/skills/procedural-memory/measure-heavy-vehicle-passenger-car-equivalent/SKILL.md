@@ -1,0 +1,53 @@
+---
+name: measure-heavy-vehicle-passenger-car-equivalent
+description: Use this skill when the user wants to empirically measure SUMO's own emergent Passenger-Car Equivalent (PCE / E_T) factor for heavy vehicles (trucks), or wants to check whether SUMO's default truck vType reproduces real-world (HCM) heavy-vehicle capacity impacts. Covers dual-testbed measurement (signalized saturation headway + freeway lane-drop capacity), two/three independent E_T estimation methods, road-grade sensitivity testing, single-parameter decomposition (which vType attribute drives the effect), and a verified vType calibration procedure. Trigger on mentions of passenger-car equivalent, PCE, E_T, heavy-vehicle adjustment factor, f_HV, truck capacity impact, or HCM heavy-vehicle factor.
+---
+
+# Measure Heavy-Vehicle Passenger-Car Equivalent (PCE/E_T)
+
+Empirically measures SUMO's emergent Passenger-Car Equivalent factor for heavy vehicles — how much a truck "counts as" multiple cars in terms of capacity impact — and checks it against HCM (Highway Capacity Manual) reference values. This treats heavy vehicles as a traffic-FLOW factor for the first time in memory; every other heavy-vehicle-related skill covers emissions (`simulate-fleet-emissions`) or lane permissions (`model-vclass-lane-permissions`), never capacity impact.
+
+## Two independent testbeds, and why both are needed
+
+1. **Signalized approach saturation headway** — extends `measure-saturation-flow-and-validate-webster-method`'s rig: a permanently oversaturated standing queue, discharge headway measured from stop-line crossings.
+2. **Freeway lane-drop bottleneck** — extends `build-macroscopic-fundamental-diagram`'s discipline: queue-discharge capacity at a genuine downstream bottleneck.
+
+**Verified finding: these two measurements can disagree substantially, and that disagreement is itself informative.** In one verified test, SUMO's default truck vType gave a freeway-measured E_T close to the HCM level-terrain reference (~1.5) but a signal-measured E_T far below it (~1.16-1.18) — a 21-28% gap between methods with non-overlapping confidence intervals. This isn't a measurement error to be reconciled away; it reflects that the two scenarios stress genuinely different vType parameters (see the decomposition section below). **Report both methods' results honestly rather than picking whichever one looks more plausible or forcing apparent agreement.**
+
+## Computing E_T two (or three) ways
+
+- **Capacity-ratio / headway method** (signal): back out E_T from the HCM heavy-vehicle adjustment factor `f_HV = 1/(1 + P_HV*(E_T-1))`, using the measured capacity ratio between mixed and pure-car saturation flow at a given truck fraction `P_HV`.
+- **Equal-capacity equivalency method** (freeway): find the car-only flow rate that yields the same measured discharge capacity as a given mixed-fleet flow rate.
+- **A third, disaggregate cross-check**: measure discharge headway conditioned on the specific vehicle class of the discharging vehicle (car-following-car vs. car-following-truck vs. truck-following-car, etc.), which can independently validate one of the two aggregate methods without relying on the aggregate capacity-ratio formula at all.
+
+## Road grade: verified, near-total null result for capacity
+
+**Grade in SUMO's default car-following models does not measurably affect longitudinal capacity dynamics.** Verified across 0-6% grades (authored via z-coordinates and verified from the compiled network's lane shape, per `model-road-gradient-effects-on-energy`) and all of SUMO's built-in car-following models (Krauss, KraussOrig1, IDM, EIDM, ACC, CACC, W99, Wiedemann, PWagner2009, BKerner, Daniel1): a single vehicle's acceleration/speed trajectory on a graded edge was essentially identical to its trajectory on a flat edge across every model tested, even though `traci.vehicle.getSlope()` correctly reports the actual grade to the vehicle. **Grade in SUMO feeds only the emission/energy models** (see `model-road-gradient-effects-on-energy`), not the car-following/longitudinal-dynamics models — HCM's steep E_T escalation on grades is a real-world phenomenon that SUMO's default car-following models simply do not reproduce. Report a genuine null result plainly if this is what's found — don't force a grade effect that isn't there, and note precisely how close to "identical" the measurement actually is (e.g. flag any datapoint differing by more than floating-point noise, rather than claiming literal byte-identity if even one field shows a tiny but real difference).
+
+## Parameter decomposition: isolate one vType attribute at a time
+
+Build controlled single-parameter variants (e.g. "truck length + car everything-else," "truck tau + car everything-else," etc.) to identify which specific attribute (length, tau, accel, decel, maxSpeed) actually drives the measured E_T in each testbed. **Verified finding: the driving parameter differs by testbed** — a signal-approach saturation-flow effect can be dominated by `tau` (reaction/gap time) with length a secondary contributor and acceleration/maxSpeed contributing essentially nothing, while a freeway capacity effect can be dominated by acceleration and a speed-differential effect instead. **Check whether a parameter's apparent inertness is itself explained by the specific default value used** — e.g. a truck's default maxSpeed sitting *above* the relevant road's speed limit produces zero speed-differential effect at that road, even though maxSpeed would matter on a road with a genuinely binding truck speed limit. Also check additivity: sum the individually-measured single-parameter effects (in headway-increment space) and compare to the full multi-parameter truck's measured effect — near-perfect additivity in one testbed and clear sub-additivity in another is itself a finding worth reporting, not an error to force into agreement.
+
+## HCM's linear-blend formula can be the wrong shape for SUMO
+
+**Verified, counter-intuitive finding**: measuring E_T on a *pure* heavy-vehicle fleet (100% trucks) can give a *lower* E_T than the value backed out from a *mixed* fleet at a moderate truck share — i.e., HCM's standard `f_HV` formula (which implicitly assumes the truck's effect is a linear, fleet-composition-independent constant) does not correctly describe SUMO's behavior. The mechanism: a meaningful share of the measured "truck effect" in a mixed fleet can come from fleet **heterogeneity itself** (cars and trucks having different equilibrium speeds/gaps, creating extra following/merging friction), not from the truck's own intrinsic slower/longer properties alone — an effect a pure-truck fleet, with no heterogeneity, doesn't experience. Check this by comparing the pure-heavy-vehicle E_T against the mixed-fleet E_T curve's implied value at low/moderate truck share; don't assume they must agree.
+
+## Calibrating a truck vType to hit an HCM-consistent E_T
+
+If SUMO's default truck vType doesn't match the desired reference E_T, fit a single parameter (e.g. `tau`) against a small sweep of trial values, then **verify the calibration by independently re-measuring E_T at the calibrated parameter value across multiple truck shares** — don't just trust the fit's interpolated prediction. A genuinely successful calibration should show the target E_T falling inside the confidence interval of the re-measured value at every tested share, not just matching a point estimate.
+
+## Gotchas
+
+- **The green-duration regression estimator (from `measure-saturation-flow-and-validate-webster-method`) is integer-quantization-limited on a deterministic (sigma=0) fleet** — vehicles discharged per cycle can land on an exact integer lattice (e.g. always exactly 11, 16, 21, or 26 for four tested green durations), forcing the regression onto a coarse, potentially nonsensical slope (verified case: producing E_T < 1, physically impossible). **Prefer a continuous-valued asymptotic-headway estimator** (measuring the headway of the n-th and later queued vehicles directly, choosing n from where the measured headway profile visibly converges) as the primary saturation-flow/E_T estimator when the fleet has zero driver-behavior noise; keep the green-duration regression only as a secondary cross-check, or add stochastic driver noise (`sigma > 0`) if the regression must remain primary.
+- **`--max-depart-delay` preferentially discards heavy vehicles from a spilled-back demand stream** — trucks need a larger gap to insert, so a capped insertion delay silently biases the realized fleet composition well below the nominal demand-generation share. **Always compute the truck share from detector/discharge data, never from the nominal demand-generation parameter**, whenever `--max-depart-delay` (or an equivalent insertion cap) is in use.
+- **`netconvert` can shorten an authored edge length during compilation** (junction-geometry trimming) — any detector `endPos` or similar position parameter should be read from the compiled network's actual length, not the source XML's authored length, or SUMO will hard-error.
+- **A `tlLogic` link-index map built for one network cannot be reused on a differently-built network**, even a superficially similar one — always derive the link-to-movement mapping from the specific compiled network being used, not copied from a prior build.
+
+## Related
+
+- `measure-saturation-flow-and-validate-webster-method` — the saturation-headway measurement rig this skill's signal testbed extends; this skill's finding about the green-duration regression estimator's integer-quantization limitation is a direct correction to that skill's recommended primary method.
+- `build-macroscopic-fundamental-diagram` — the bottleneck-verification discipline this skill's freeway testbed extends.
+- `model-road-gradient-effects-on-energy` — the z-coordinate grade-authoring and compiled-net grade-verification technique this skill's grade-sensitivity test uses; this skill found grade affects that skill's emission/energy models but not car-following/capacity dynamics.
+- `quantify-sumo-run-to-run-variability` — the replication/CI methodology this skill's truck-share and grade sweeps apply.
+- [[heavy-vehicle-passenger-car-equivalent-in-sumo]] — the verified method-disagreement, grade-null-result, mechanism-decomposition, and HCM-linearity-violation findings.
+- `model-urban-freight-delivery-tours` — applies this skill's signalized-approach E_T measurement to test whether truck-route restrictions concentrating freight onto an arterial cause a detectable car-delay increase; confirms the PCE mechanism directly but finds it undetectable at realistic urban freight volumes.

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Single-track bidirectional rail corridor with a mid-point passing siding.
+     Layout: A .. SA .. W ==(main + siding)== E .. SB .. B   (total ~3 km)
+     A,B   : station end nodes (dead-end platforms)
+     SA,SB : entrance/exit rail signals giving each station its own block, so a
+             dwelling train does NOT occupy the through single-track section
+     W,E   : siding turnouts, rail_signal junctions (arbitrate the meet/pass) -->
+<nodes>
+    <node id="A"  x="0"    y="0" type="priority"/>
+    <node id="SA" x="300"  y="0" type="rail_signal"/>
+    <node id="W"  x="1300" y="0" type="rail_signal"/>
+    <node id="E"  x="1700" y="0" type="rail_signal"/>
+    <node id="SB" x="2700" y="0" type="rail_signal"/>
+    <node id="B"  x="3000" y="0" type="priority"/>
+</nodes>

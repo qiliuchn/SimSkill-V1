@@ -1,0 +1,16 @@
+Cost accounting: repriced 80/80 run(s) from raw whole-tree modelUsage using /Users/liuqi/Desktop/simskill1/test/harness/price_table.yaml (price_table_date=2026-08-17, pricing_basis=peak).
+
+=== 80 run(s) loaded from test/experiment_tasks_qwen_benchmark_v2_two_conditions.jsonl ===
+
+ condition       model  n  n_verified_success  n_verified_failure  n_unverified  n_costed  median_cost_usd  total_cost_usd  median_wall_clock_total_s  median_attempts  disagreements  success_rate
+  full-ver qwen3.7-max 40                   2                  38             0        40         2.156552      181.648674                   916.2285              2.0             28          0.05
+vanilla-cc qwen3.7-max 40                   0                  40             0        40         2.346766      113.205174                  1968.9280              1.0             40          0.00
+
+=== §5 pre-registered primary comparisons ===
+
+  full-ver vs vanilla-cc  (model=qwen3.7-max):  success_rate  0.05 vs 0.00  |  median_cost_usd  2.16 vs 2.35  |  median_wall_clock_total_s  916.23 vs 1968.93
+  full-ver vs proc-mem-ver  (model=qwen3.7-max):  no results for proc-mem-ver
+  full-ver vs sem-mem-ver  (model=qwen3.7-max):  no results for sem-mem-ver
+  full-ver vs infer-frame-only  (model=qwen3.7-max):  no results for infer-frame-only
+
+Plot saved to /Users/liuqi/Desktop/simskill1/test/success_at_budget_curves_cost_usd.png

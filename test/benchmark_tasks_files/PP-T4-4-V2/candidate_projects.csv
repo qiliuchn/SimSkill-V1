@@ -1,0 +1,8 @@
+project_id,description,cost_million,annual_om_million,affected_elements,implementation,exclusive_with
+P1,widen north cross-town link,6.0,0.08,N01-N02;N02-N01,add one 50 km/h general lane per direction,P2
+P2,build northeast diagonal bypass,9.0,0.12,N00-N13;N13-N00,add one 70 km/h general lane per direction,P1
+P3,central bus-priority corridor,4.0,0.10,row1 N10-N13 both directions,convert one general lane per direction to bus-only and allow 8 s TSP extension,
+P4,west protected-bicycle spine,2.5,0.04,column0 N00-N30 both directions,convert one general lane per direction to bicycle-only and limit remaining lane to 40 km/h,
+P5,south adaptive-signal package,3.5,0.14,N21;N22,replace fixed-time with actuated control using 80 m approach detectors,
+P6,east freight access road,5.5,0.09,N03-N33;N33-N03,add one 60 km/h truck-only lane per direction with no intermediate access,
+P7,school-zone pedestrian package,1.5,0.05,N20-N21;N21-N20;N21,set both links to 30 km/h and add a raised signalized crossing at N21,

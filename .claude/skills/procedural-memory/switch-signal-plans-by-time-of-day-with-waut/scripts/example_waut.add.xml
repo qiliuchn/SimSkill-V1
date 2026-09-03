@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Time-of-day WAUT: switches junction "center" between programs A/B/C at the
+  two period boundaries.
+    startProg A active from refTime=0  (Period A, 0-600)
+    switch to B at t=600               (Period B, 600-1200)
+    switch to C at t=1200              (Period C, 1200-1800)
+  procedure="Immediate" forces the program change at the exact switch time
+  (no cycle-alignment interpolation), so the switch is observable at 600/1200.
+-->
+<additional>
+    <WAUT id="tod" refTime="0" startProg="A">
+        <wautSwitch time="600"  to="B"/>
+        <wautSwitch time="1200" to="C"/>
+    </WAUT>
+    <wautJunction wautID="tod" junctionID="center" procedure="Immediate"/>
+</additional>

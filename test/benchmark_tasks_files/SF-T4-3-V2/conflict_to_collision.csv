@@ -1,0 +1,10 @@
+road_user_pair,surrogate_metric,threshold_min_seconds,threshold_max_seconds,p_collision_low,p_collision_base,p_collision_high
+vehicle_vehicle,TTC,0.00,0.50,0.010,0.020,0.040
+vehicle_vehicle,TTC,0.50,1.00,0.004,0.009,0.018
+vehicle_vehicle,TTC,1.00,1.50,0.001,0.003,0.007
+vehicle_pedestrian,PET,0.00,0.50,0.020,0.040,0.080
+vehicle_pedestrian,PET,0.50,1.00,0.008,0.018,0.035
+vehicle_pedestrian,PET,1.00,2.00,0.002,0.006,0.014
+vehicle_bicycle,PET,0.00,0.50,0.018,0.038,0.075
+vehicle_bicycle,PET,0.50,1.00,0.007,0.016,0.032
+vehicle_bicycle,PET,1.00,2.00,0.002,0.005,0.012

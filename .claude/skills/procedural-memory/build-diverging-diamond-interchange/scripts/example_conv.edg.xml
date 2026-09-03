@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edges for CONV design. Internal arterial edges I_EB/I_WB differ in side. -->
+<edges>
+    <!-- ===== Arterial outer approaches/exits (normal sides, identical both designs) ===== -->
+    <edge id="Aw_EB" from="WA_s" to="W" numLanes="2" speed="13.89" spreadType="center"
+          shape="-450,-6.0 -70,-6.0 -55,0"/>
+    <edge id="Aw_WB" from="W" to="WA_n" numLanes="2" speed="13.89" spreadType="center"
+          shape="-55,0 -70,6.0 -450,6.0"/>
+    <edge id="Ae_EB" from="E" to="EA_s" numLanes="2" speed="13.89" spreadType="center"
+          shape="55,0 70,-6.0 450,-6.0"/>
+    <edge id="Ae_WB" from="EA_n" to="E" numLanes="2" speed="13.89" spreadType="center"
+          shape="450,6.0 70,6.0 55,0"/>
+
+    <!-- ===== Internal arterial edges between terminals (SIDE differs by design) ===== -->
+    <edge id="I_EB" from="W" to="E" numLanes="2" speed="13.89" spreadType="center"
+          shape="-55,0 -45,-6.0 45,-6.0 55,0"/>
+    <edge id="I_WB" from="E" to="W" numLanes="2" speed="13.89" spreadType="center"
+          shape="55,0 45,6.0 -45,6.0 -55,0"/>
+
+    <!-- ===== Ramps (single lane, grade-change z 6->0, identical both designs) ===== -->
+    <edge id="SBon"  from="W" to="Fs" numLanes="1" speed="13.89" spreadType="center"
+          shape="-55,0 -40,-40 -10,-100 0,-130"/>
+    <edge id="SBoff" from="Fn" to="W" numLanes="1" speed="13.89" spreadType="center"
+          shape="0,130 -10,100 -40,40 -55,0"/>
+    <edge id="NBon"  from="E" to="Fn" numLanes="1" speed="13.89" spreadType="center"
+          shape="55,0 40,40 10,100 0,130"/>
+    <edge id="NBoff" from="Fs" to="E" numLanes="1" speed="13.89" spreadType="center"
+          shape="0,-130 10,-100 40,-40 55,0"/>
+
+    <!-- ===== Freeway mainline (z=0), SB = north->south, NB = south->north ===== -->
+    <!-- On-ramps merge via a 3-lane ACCELERATION segment (fw_*_3) that drops back to 2
+         lanes downstream (fw_*_4), so the on-ramp merge is high-capacity and is NOT the
+         binding constraint - the terminal SIGNAL is. Identical for both designs. -->
+    <edge id="fw_sb_1" from="FN" to="Fn"  numLanes="2" speed="27.78"/>
+    <edge id="fw_sb_2" from="Fn" to="Fs"  numLanes="2" speed="27.78"/>
+    <edge id="fw_sb_3" from="Fs" to="Fs2" numLanes="3" speed="27.78"/>          <!-- SB on-ramp accel lane (lane0) -->
+    <edge id="fw_sb_4" from="Fs2" to="FS" numLanes="2" speed="27.78"/>
+    <edge id="fw_nb_1" from="FS" to="Fs"  numLanes="2" speed="27.78"/>
+    <edge id="fw_nb_2" from="Fs" to="Fn"  numLanes="2" speed="27.78"/>
+    <edge id="fw_nb_3" from="Fn" to="Fn2" numLanes="3" speed="27.78"/>          <!-- NB on-ramp accel lane (lane0) -->
+    <edge id="fw_nb_4" from="Fn2" to="FN" numLanes="2" speed="27.78"/>
+</edges>

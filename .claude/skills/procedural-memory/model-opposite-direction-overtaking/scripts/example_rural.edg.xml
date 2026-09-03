@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- One lane per direction. 100 km/h = 27.78 m/s.
+     Primary direction is West->East (edges W_A, A_B, B_E).
+     Opposing direction is East->West (edges E_B, B_A, A_W).
+     Opposing edges use the same node pairs reversed so netconvert can pair them
+     as opposite-direction neighbours. numLanes=1 (NO passing lane). -->
+<edges>
+    <!-- primary direction: W -> A -> B -> E -->
+    <edge id="W_A" from="W" to="A" numLanes="1" speed="27.78" priority="1"/>
+    <edge id="A_B" from="A" to="B" numLanes="1" speed="27.78" priority="1"/>
+    <edge id="B_E" from="B" to="E" numLanes="1" speed="27.78" priority="1"/>
+    <!-- opposing direction: E -> B -> A -> W -->
+    <edge id="E_B" from="E" to="B" numLanes="1" speed="27.78" priority="1"/>
+    <edge id="B_A" from="B" to="A" numLanes="1" speed="27.78" priority="1"/>
+    <edge id="A_W" from="A" to="W" numLanes="1" speed="27.78" priority="1"/>
+</edges>

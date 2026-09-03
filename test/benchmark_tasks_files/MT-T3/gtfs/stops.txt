@@ -1,0 +1,7 @@
+stop_id,stop_name,stop_lat,stop_lon
+S1,Stop 1 - West Terminal,39.0000,-98.0000
+S2,Stop 2,39.0000,-97.9950
+S3,Stop 3,39.0000,-97.9900
+S4,Stop 4,39.0000,-97.9850
+S5,Stop 5,39.0000,-97.9800
+S6,Stop 6 - East Terminal,39.0000,-97.9750

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Straight 2-lane arterial/freeway that drops to 1 lane at n_merge.
+     n_merge is the lane-drop bottleneck junction whose 'type' we vary
+     between the default-merge run and the zipper run. All other nodes
+     are plain priority nodes and are IDENTICAL across both runs. -->
+<nodes>
+    <node id="n0"      x="0"    y="0" type="priority"/>
+    <node id="n1"      x="350"  y="0" type="priority"/>
+    <node id="n2"      x="700"  y="0" type="priority"/>
+    <node id="n_merge" x="1050" y="0"/>
+    <node id="n_end"   x="1650" y="0" type="priority"/>
+</nodes>

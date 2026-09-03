@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Worked, verified example: a calibrator on edge E2 enforcing three
+     consecutive target-flow/speed intervals, with jam-clearing enabled.
+     "route" must name a <route> defined in an additional file that loads
+     BEFORE this one (see the vType-loading-order gotcha in SKILL.md) --
+     it cannot reference a route/vType defined only in a -r route file. -->
+<additional>
+    <calibrator id="cal_E2" edge="E2" pos="250" output="out/calstats.xml" period="60" jamThreshold="0.5">
+        <flow begin="0" end="600" route="corridor" type="car" vehsPerHour="1200.0" speed="25.0"/>
+        <flow begin="600" end="1200" route="corridor" type="car" vehsPerHour="2000.0" speed="25.0"/>
+        <flow begin="1200" end="1800" route="corridor" type="car" vehsPerHour="1600.0" speed="25.0"/>
+    </calibrator>
+</additional>

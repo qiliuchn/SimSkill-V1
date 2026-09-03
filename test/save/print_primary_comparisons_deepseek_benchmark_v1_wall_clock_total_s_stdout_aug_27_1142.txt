@@ -1,0 +1,21 @@
+Cost accounting: repriced 199/200 run(s) from raw whole-tree modelUsage using /Users/liuqi/Desktop/simskill3/test/harness/price_table.yaml (price_table_date=2026-08-17, pricing_basis=peak).
+[warn] 1 cost-repricing warning(s):
+  - cannot reprice /Users/liuqi/Desktop/simskill/test/results/20260811T075534Z_full-ver_deepseek-v4-pro_MT-T3_r1_76da16.json from /Users/liuqi/Desktop/simskill/test/results/raw/20260811T075534Z_full-ver_deepseek-v4-pro_MT-T3_r1_76da16.stdout.log: Expecting value: line 1 column 1 (char 0)
+
+=== 200 run(s) loaded from test/experiment_tasks_deepseek_benchmark_v1_all_conditions.jsonl ===
+
+       condition           model  n  n_verified_success  n_verified_failure  n_unverified  n_costed  median_cost_usd  total_cost_usd  median_wall_clock_total_s  median_attempts  disagreements  success_rate
+        full-ver deepseek-v4-pro 40                  38                   2             0        39         0.781373       42.364659                  1056.0350              1.0              0         0.950
+infer-frame-only deepseek-v4-pro 40                  34                   6             0        40         1.337953       66.668325                  2906.9095              1.0              6         0.850
+    proc-mem-ver deepseek-v4-pro 40                  37                   3             0        40         1.408722       65.015047                  2423.0040              1.0              3         0.925
+     sem-mem-ver deepseek-v4-pro 40                  35                   5             0        40         1.306854       63.322389                  2382.5935              1.0              5         0.875
+      vanilla-cc deepseek-v4-pro 40                  34                   6             0        40         0.487374       21.143188                   650.0640              1.0              6         0.850
+
+=== §5 pre-registered primary comparisons ===
+
+  full-ver vs vanilla-cc  (model=deepseek-v4-pro):  success_rate  0.95 vs 0.85  |  median_cost_usd  0.78 vs 0.49  |  median_wall_clock_total_s  1056.04 vs 650.06
+  full-ver vs proc-mem-ver  (model=deepseek-v4-pro):  success_rate  0.95 vs 0.93  |  median_cost_usd  0.78 vs 1.41  |  median_wall_clock_total_s  1056.04 vs 2423.00
+  full-ver vs sem-mem-ver  (model=deepseek-v4-pro):  success_rate  0.95 vs 0.88  |  median_cost_usd  0.78 vs 1.31  |  median_wall_clock_total_s  1056.04 vs 2382.59
+  full-ver vs infer-frame-only  (model=deepseek-v4-pro):  success_rate  0.95 vs 0.85  |  median_cost_usd  0.78 vs 1.34  |  median_wall_clock_total_s  1056.04 vs 2906.91
+
+Plot saved to /Users/liuqi/Desktop/simskill3/test/success_at_budget_curves_wall_clock_total_s.png

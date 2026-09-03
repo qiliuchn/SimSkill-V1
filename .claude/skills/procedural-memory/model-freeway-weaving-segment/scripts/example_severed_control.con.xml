@@ -1,0 +1,21 @@
+<connections>
+    <connection from="C_ml_in"   to="C_merge"   fromLane="0" toLane="1"/>
+    <connection from="C_ml_in"   to="C_merge"   fromLane="1" toLane="2"/>
+    <connection from="C_ml_in"   to="C_merge"   fromLane="2" toLane="3"/>
+    <connection from="C_onramp"  to="C_merge"   fromLane="0" toLane="0"/>
+
+    <connection from="C_merge"   to="C_mid"     fromLane="0" toLane="0"/>
+    <connection from="C_merge"   to="C_mid"     fromLane="1" toLane="0"/>
+    <connection from="C_merge"   to="C_mid"     fromLane="2" toLane="1"/>
+    <connection from="C_merge"   to="C_mid"     fromLane="3" toLane="2"/>
+
+    <connection from="C_mid"     to="C_diverge" fromLane="0" toLane="0"/>
+    <connection from="C_mid"     to="C_diverge" fromLane="0" toLane="1"/>
+    <connection from="C_mid"     to="C_diverge" fromLane="1" toLane="2"/>
+    <connection from="C_mid"     to="C_diverge" fromLane="2" toLane="3"/>
+
+    <connection from="C_diverge" to="C_offramp" fromLane="0" toLane="0"/>
+    <connection from="C_diverge" to="C_ml_out"  fromLane="1" toLane="0"/>
+    <connection from="C_diverge" to="C_ml_out"  fromLane="2" toLane="1"/>
+    <connection from="C_diverge" to="C_ml_out"  fromLane="3" toLane="2"/>
+</connections>

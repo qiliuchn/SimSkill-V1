@@ -1,0 +1,22 @@
+Cost accounting: repriced 198/200 run(s) from raw whole-tree modelUsage using /Users/liuqi/Desktop/simskill3/test/harness/price_table.yaml (price_table_date=2026-08-17, pricing_basis=peak).
+[warn] 2 cost-repricing warning(s):
+  - cannot reprice /Users/liuqi/Desktop/simskill6/test/results/20260820T035910Z_full-ver_qwen3.7-max_CA-T4_r1_c286e1.json from /Users/liuqi/Desktop/simskill6/test/results/raw/20260820T035910Z_full-ver_qwen3.7-max_CA-T4_r1_c286e1.stdout.log: Expecting value: line 1 column 1 (char 0)
+  - cannot reprice /Users/liuqi/Desktop/simskill6/test/results/20260820T031832Z_full-ver_qwen3.7-max_XC-T1_r1_07a028.json from /Users/liuqi/Desktop/simskill6/test/results/raw/20260820T031832Z_full-ver_qwen3.7-max_XC-T1_r1_07a028.stdout.log: Expecting value: line 1 column 1 (char 0)
+
+=== 200 run(s) loaded from test/experiment_tasks_qwen_all_conditions.jsonl ===
+
+       condition       model  n  n_verified_success  n_verified_failure  n_unverified  n_costed  median_cost_usd  total_cost_usd  median_wall_clock_total_s  median_attempts  disagreements  success_rate
+        full-ver qwen3.7-max 40                  23                  17             0        38         1.842011       92.107893                   851.2615              1.0             17         0.575
+infer-frame-only qwen3.7-max 40                  16                  24             0        40         1.126607       72.492340                   875.1600              1.0             24         0.400
+    proc-mem-ver qwen3.7-max 40                  20                  20             0        40         1.156726       71.577200                   420.0225              1.0             20         0.500
+     sem-mem-ver qwen3.7-max 40                  19                  21             0        40         1.456858       90.849081                   487.2495              1.0             20         0.475
+      vanilla-cc qwen3.7-max 40                  13                  27             0        40         1.030386       46.114614                   683.2600              1.0             27         0.325
+
+=== §5 pre-registered primary comparisons ===
+
+  full-ver vs vanilla-cc  (model=qwen3.7-max):  success_rate  0.57 vs 0.33  |  median_cost_usd  1.84 vs 1.03  |  median_wall_clock_total_s  851.26 vs 683.26
+  full-ver vs proc-mem-ver  (model=qwen3.7-max):  success_rate  0.57 vs 0.50  |  median_cost_usd  1.84 vs 1.16  |  median_wall_clock_total_s  851.26 vs 420.02
+  full-ver vs sem-mem-ver  (model=qwen3.7-max):  success_rate  0.57 vs 0.47  |  median_cost_usd  1.84 vs 1.46  |  median_wall_clock_total_s  851.26 vs 487.25
+  full-ver vs infer-frame-only  (model=qwen3.7-max):  success_rate  0.57 vs 0.40  |  median_cost_usd  1.84 vs 1.13  |  median_wall_clock_total_s  851.26 vs 875.16
+
+Plot saved to /Users/liuqi/Desktop/simskill3/test/success_at_budget_curves_cost_usd.png

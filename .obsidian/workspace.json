@@ -1,0 +1,233 @@
+{
+  "main": {
+    "id": "7f333d8d2d8028f7",
+    "type": "split",
+    "children": [
+      {
+        "id": "9cde70636bdcb74c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "09760aced733bc74",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Graph view"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3ba486977a2159c9",
+    "type": "split",
+    "children": [
+      {
+        "id": "b5e31115f2c74b43",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "fa2cb8dc563d0fd6",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "683dab0010380b5e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "15bc9e2feb6df42f",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "cf711e8b7860d48f",
+    "type": "split",
+    "children": [
+      {
+        "id": "146e04f5d06ee64a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ce2ab7880555e166",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "semantic-memory/index.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for index"
+            }
+          },
+          {
+            "id": "cb9539be9c71e62a",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "semantic-memory/index.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from index"
+            }
+          },
+          {
+            "id": "78e93c4b41fa17f4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "52bbd158a4eaf5f5",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "f298261e4df994cf",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "semantic-memory/index.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of index"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "09760aced733bc74",
+  "lastOpenFiles": [
+    "procedural-memory-for-graph-view/set-vehicle-state.md",
+    "test/save/experiment_tasks_qwen_benchmark_v1_two_conditions.jsonl",
+    "test/save/experiment_tasks_deepseek_benchmark_v2_two_conditions.jsonl",
+    "test/save/experiment_tasks_deepseek_benchmark_v1_two_conditions.jsonl",
+    "test/save/experiment_tasks_deepseek_benchmark_v1_two_conditions_unordered.jsonl",
+    "test/save/experiment_tasks_deepseek_benchmark_v1_all_conditions.jsonl",
+    "test/experiment_tasks_qwen_benchmark_v1_two_conditions.jsonl",
+    "test/experiment_tasks_deepseek_benchmark_v1_two_conditions_unordered.jsonl",
+    "test/experiment_tasks_deepseek_benchmark_v2_two_conditions.jsonl",
+    "test/experiment_tasks_deepseek_benchmark_v1_two_conditions.jsonl",
+    "test/experiment_tasks_deepseek_benchmark_v1_all_conditions.jsonl",
+    "test/save/success_at_budget_curves_deepseek_wall_clock_total_s_two_conditions_aug_19_2028..png",
+    "test/save/success_at_budget_curves_deepseek_wall_clock_total_s_all_conditions_aug_19_2028.png",
+    "test/save/success_at_budget_curves_deepseek_cost_usd_two_conditions_aug_19_2028.png",
+    "test/save/success_at_budget_curves_deepseek_cost_usd_all_conditions_aug_19_2028.png",
+    "test/success_at_budget_curves_deepseek_wall_clock_total_s_two_conditions_aug_19_2028..png",
+    "test/success_at_budget_curves_deepseek_wall_clock_total_s_all_conditions_aug_19_2028.png",
+    "test/success_at_budget_curves_deepseek_cost_usd_two_conditions_aug_19_2028.png",
+    "test/success_at_budget_curves_deepseek_cost_usd_all_conditions_aug_19_2028.png",
+    "test/success_at_budget_curves_wall_clock_total_s.png",
+    "test/success_at_budget_curves_cost_usd.png",
+    "episodic-memory/2026-08-19_08-41-16/attempts/attempt-2/action-agent-output.md",
+    "episodic-memory/2026-08-19_08-41-16/attempts/attempt-1/action-agent-output.md",
+    "semantic-memory/gps-map-matching-and-probe-demand-reconstruction.md",
+    "episodic-memory/2026-08-18_map-matching/summary.md",
+    "episodic-memory/2026-08-18_map-matching/attempts/attempt-2/critic-agent-feedback.md",
+    "episodic-memory/2026-08-18_map-matching/attempts/attempt-2/action-agent-output.md",
+    "episodic-memory/2026-08-18_map-matching/attempts/attempt-1/critic-agent-feedback.md",
+    "episodic-memory/2026-08-18_map-matching/outputs/README.md",
+    "episodic-memory/2026-08-18_map-matching/outputs/RESULTS.md",
+    "episodic-memory/2026-08-18_map-matching/outputs/TUNING_TABLE.md",
+    "semantic-memory/station-based-shared-micromobility-in-sumo.md",
+    "episodic-memory/2026-08-18_09-16-23/summary.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/action-agent-output.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/critic-agent-feedback.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-2/critic-agent-feedback.md",
+    "episodic-memory/2026-08-18_09-16-23/outputs/tables/tw_mechanism.md",
+    "episodic-memory/2026-08-18_09-16-23/outputs/tables/primitive_gap_statement.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/primitive_gap_statement.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/tw_mechanism.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/nondeterminism.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/verdict_deliverable8.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/substitution_detail.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/separability.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/rebalancing.md",
+    "episodic-memory/2026-08-18_09-16-23/attempts/attempt-3/scripts/analysis/noise.md"
+  ]
+}

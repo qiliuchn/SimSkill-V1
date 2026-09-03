@@ -1,0 +1,9 @@
+station_id,grid_node,start_scooters,dock_capacity,mean_start_soc,low_income_origin
+S1,N00,7,12,0.24,true
+S2,N03,1,12,0.48,false
+S3,N10,6,10,0.22,true
+S4,N13,1,10,0.44,false
+S5,N20,6,10,0.27,true
+S6,N23,1,10,0.42,false
+S7,N30,5,10,0.21,true
+S8,N33,1,10,0.46,false

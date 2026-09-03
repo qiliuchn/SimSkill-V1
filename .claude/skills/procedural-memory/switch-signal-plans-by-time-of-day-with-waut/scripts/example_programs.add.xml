@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Three fixed-time signal programs for junction "center", each skewed toward
+  the dominant axis of its period. All share an 84s cycle (54+3+24+3) so WAUT
+  can switch between them cleanly.
+    Phase order: NS-green, NS-yellow, EW-green, EW-yellow
+    State layout (16 links): [N r,s,l,t][E r,s,l,t][S r,s,l,t][W r,s,l,t]
+      NS movements = indices 0-3 (N) and 8-11 (S)
+      EW movements = indices 4-7 (E) and 12-15 (W)
+
+  Program A (AM peak,  NS heavy):  NS green 54s / EW green 24s
+  Program B (midday,   balanced):  NS green 39s / EW green 39s
+  Program C (PM peak,  EW heavy):  NS green 24s / EW green 54s
+-->
+<additional>
+    <tlLogic id="center" type="static" programID="A" offset="0">
+        <phase duration="54" state="GGggrrrrGGggrrrr"/>
+        <phase duration="3"  state="yyyyrrrryyyyrrrr"/>
+        <phase duration="24" state="rrrrGGggrrrrGGgg"/>
+        <phase duration="3"  state="rrrryyyyrrrryyyy"/>
+    </tlLogic>
+
+    <tlLogic id="center" type="static" programID="B" offset="0">
+        <phase duration="39" state="GGggrrrrGGggrrrr"/>
+        <phase duration="3"  state="yyyyrrrryyyyrrrr"/>
+        <phase duration="39" state="rrrrGGggrrrrGGgg"/>
+        <phase duration="3"  state="rrrryyyyrrrryyyy"/>
+    </tlLogic>
+
+    <tlLogic id="center" type="static" programID="C" offset="0">
+        <phase duration="24" state="GGggrrrrGGggrrrr"/>
+        <phase duration="3"  state="yyyyrrrryyyyrrrr"/>
+        <phase duration="54" state="rrrrGGggrrrrGGgg"/>
+        <phase duration="3"  state="rrrryyyyrrrryyyy"/>
+    </tlLogic>
+</additional>

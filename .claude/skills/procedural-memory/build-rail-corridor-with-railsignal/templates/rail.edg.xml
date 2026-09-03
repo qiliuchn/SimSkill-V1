@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- All edges are rail-only, single lane, spreadType=center so each opposite
+     pair overlays exactly and netconvert recognises them as bidirectional. -->
+<edges>
+    <!-- Station A block  A <-> SA (300 m, off the through single track) -->
+    <edge id="A_SA" from="A"  to="SA" priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"/>
+    <edge id="SA_A" from="SA" to="A"  priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"/>
+
+    <!-- Single-track section SA <-> W (shared, bidirectional) -->
+    <edge id="SA_W" from="SA" to="W"  priority="1" numLanes="1" speed="44.44" spreadType="center" allow="rail"/>
+    <edge id="W_SA" from="W"  to="SA" priority="1" numLanes="1" speed="44.44" spreadType="center" allow="rail"/>
+
+    <!-- Passing siding, middle: MAIN track (straight, y=0) -->
+    <edge id="main_WE" from="W" to="E" priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"/>
+    <edge id="main_EW" from="E" to="W" priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"/>
+
+    <!-- Passing siding, middle: SIDING track (offset y=15) -->
+    <edge id="sid_WE" from="W" to="E" priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"
+          shape="1300.00,0.00 1340.00,15.00 1660.00,15.00 1700.00,0.00"/>
+    <edge id="sid_EW" from="E" to="W" priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"
+          shape="1700.00,0.00 1660.00,15.00 1340.00,15.00 1300.00,0.00"/>
+
+    <!-- Single-track section E <-> SB (shared, bidirectional) -->
+    <edge id="E_SB" from="E"  to="SB" priority="1" numLanes="1" speed="44.44" spreadType="center" allow="rail"/>
+    <edge id="SB_E" from="SB" to="E"  priority="1" numLanes="1" speed="44.44" spreadType="center" allow="rail"/>
+
+    <!-- Station B block  SB <-> B (300 m, off the through single track) -->
+    <edge id="SB_B" from="SB" to="B"  priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"/>
+    <edge id="B_SB" from="B"  to="SB" priority="1" numLanes="1" speed="27.78" spreadType="center" allow="rail"/>
+</edges>

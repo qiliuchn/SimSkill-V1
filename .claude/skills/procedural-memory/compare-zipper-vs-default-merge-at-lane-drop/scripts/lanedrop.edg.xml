@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 3 x 350 m two-lane approach segments (1050 m total 2-lane section),
+     then a single-lane 600 m bottleneck downstream of n_merge.
+     Approach split into 3 edges so edgeData can locate how far the
+     upstream queue extends. 27.78 m/s = 100 km/h everywhere. -->
+<edges>
+    <edge id="app1" from="n0"      to="n1"      numLanes="2" speed="27.78" priority="10"/>
+    <edge id="app2" from="n1"      to="n2"      numLanes="2" speed="27.78" priority="10"/>
+    <edge id="app3" from="n2"      to="n_merge" numLanes="2" speed="27.78" priority="10"/>
+    <edge id="bott" from="n_merge" to="n_end"   numLanes="1" speed="27.78" priority="10"/>
+</edges>

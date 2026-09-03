@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Two trains meeting head-on on a single-track corridor with a mid-point
+     passing siding.
+       train_AB : fast ICE3, A->B, runs straight through on the MAIN siding track
+       train_BA : slow Freight, B->A, takes the SIDING track to pass
+     Because station platforms sit on dedicated station blocks (behind signals
+     SA/SB), a dwelling train does NOT occupy the through single track. The fast
+     A->B train therefore advances into the siding and is held by rail signal E
+     at the east turnout while the slow B->A train comes down the shared single
+     track E<->SB; once it clears, train_AB proceeds. train_BA's longer origin
+     dwell staggers entry so the meet resolves at the siding. -->
+<routes>
+    <!-- Rail carFollowModel; trainType supplies realistic traction/resistance
+         and mass behaviour. Length/accel/decel/maxSpeed set explicitly. -->
+    <vType id="ice3"    vClass="rail" carFollowModel="Rail" trainType="ICE3"
+           length="200" accel="0.8" decel="0.9" maxSpeed="44.44"/>
+    <vType id="freight" vClass="rail" carFollowModel="Rail" trainType="Freight"
+           length="200" accel="0.4" decel="0.6" maxSpeed="22.22"/>
+
+    <!-- A -> B : main track straight through the siding -->
+    <vehicle id="train_AB" type="ice3" depart="0" departSpeed="0">
+        <route edges="A_SA SA_W main_WE E_SB SB_B"/>
+        <stop busStop="stA_dep" duration="30"/>   <!-- origin dwell, Station A -->
+        <stop busStop="stB_arr" duration="30"/>   <!-- destination dwell, Station B -->
+    </vehicle>
+
+    <!-- B -> A : siding track through the passing loop -->
+    <vehicle id="train_BA" type="freight" depart="0" departSpeed="0">
+        <route edges="B_SB SB_E sid_EW W_SA SA_A"/>
+        <stop busStop="stB_dep" duration="60"/>   <!-- origin dwell, Station B -->
+        <stop busStop="stA_arr" duration="30"/>   <!-- destination dwell, Station A -->
+    </vehicle>
+</routes>

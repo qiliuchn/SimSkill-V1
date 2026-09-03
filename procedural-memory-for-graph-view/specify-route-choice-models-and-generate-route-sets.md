@@ -1,0 +1,71 @@
+---
+name: specify-route-choice-models-and-generate-route-sets
+description: Use this skill when the user wants to verify what SUMO's route-choice models (gawron, logit) actually compute rather than assuming the documentation, test the path-overlap/IIA problem (does a route sharing most of its length with an alternative get over-assigned probability?), implement or validate an external route-choice model (Path-Size Logit, C-Logit) against SUMO's built-in ones, compare route-set generation methods (k-shortest-paths, link-penalty, duarouter alternatives, Monte-Carlo perturbation), diagnose duaIterate/logit non-convergence near equilibrium, or test whether an engineering conclusion (benefit of a project, a diversion, a new link) is sensitive to the route-choice assumption. Trigger on mentions of route choice model, IIA problem, path overlap, C-Logit, Path-Size Logit, PSL, route set generation, logit non-convergence, or route-choice sensitivity.
+related_skills:
+  - construct-and-verify-braess-paradox
+  - compute-dynamic-user-equilibrium
+  - convert-trips-to-routes
+  - assign-traffic-with-marouter
+  - create-grid-network
+  - quantify-sumo-run-to-run-variability
+related_skills_for_graph_view:
+  - "[[construct-and-verify-braess-paradox]]"
+  - "[[compute-dynamic-user-equilibrium]]"
+  - "[[convert-trips-to-routes]]"
+  - "[[assign-traffic-with-marouter]]"
+  - "[[create-grid-network]]"
+  - "[[quantify-sumo-run-to-run-variability]]"
+related_pages:
+  - "[[braess-paradox-in-sumo]]"
+  - "[[dynamic-user-equilibrium-and-wardrop]]"
+  - "[[duarouter]]"
+---
+
+# Specify Route-Choice Models and Generate Route Sets
+
+Verifies what SUMO's route-choice machinery actually computes from measured output rather than from documentation text, and treats the route *set* a choice model operates over as part of the model specification, not an afterthought. Every prior equilibrium/assignment finding in memory implicitly rests on Gawron with whatever route set `--max-alternatives` happened to produce — this skill is what's needed to state that assumption explicitly and know when it matters.
+
+## `--route-choice-method` only activates on an existing multi-route alternatives file
+
+A fresh `duarouter` call against plain trips — no prior `.rou.alt.xml` — collapses to a single route with `probability="1.00"` regardless of the `--route-choice-method`/`--max-alternatives` flags. The stochastic choice model only does anything once it's handed an *existing* multi-route alternatives file to redistribute probability over — which is exactly what `duaIterate.py` builds and feeds back in, iteration by iteration. Don't expect a one-shot `duarouter` call to produce a probabilistic route split; verify by reading back the `probability=` attributes on the output, not by assuming the flag did something.
+
+## Verify the formula, don't trust the label
+
+SUMO's `logit` route-choice method is genuine plain Multinomial Logit: P_i ∝ exp(−θ·c_i), with θ used directly on whatever cost units the routes carry — verified by fitting recovered probabilities against the closed form and confirming an exact match to several significant figures. `--logit.beta`/`--logit.gamma` add a genuine C-Logit commonality-factor correction, CF_i = β·ln(Σ_j (L_ij/√(L_i·L_j))^γ), added to cost before the softmax — verified structurally: setting β=0 zeroes the correction regardless of γ, setting γ=0 zeroes it regardless of β (the ratio terms collapse to a route-independent constant that cancels in the softmax), and the correction's magnitude peaks at low γ and decays toward zero as γ increases (matching the formula, since shared-length ratios below 1 shrink faster under a larger exponent). This confirms SUMO's logit *is* structurally a real C-Logit implementation — but see the overlap-testbed findings below for how well it actually performs, which is a separate question from whether the formula is "correct."
+
+**θ is not scale-invariant, and this is a real pitfall.** A 10× rescale of every route's cost at a fixed explicit θ produces a wildly different split (e.g. a moderate 49/33/18 split collapsing to a near-deterministic 98/2/0.005 split) — θ must be chosen relative to the actual cost units and magnitude in use, not treated as a universal constant. SUMO's default auto-θ only partially compensates: it responds to the cost *spread* but is also measurably sensitive to absolute cost *level* (a pure level shift at fixed spread still moved the fitted auto-θ several-fold in one verified test) — don't assume auto-θ makes the model scale-invariant.
+
+## Gawron is history-dependent; logit is memoryless — pick deliberately
+
+Verified directly: running Gawron from two very different starting probability distributions over the *same, unchanged* route costs, repeated over several iterations, leaves Gawron's split still close to wherever it started — it barely moves at all when costs are tied, a real path-dependence/lock-in risk for any Gawron-based equilibrium search that starts from a skewed initial route set. Logit, by contrast, is exactly memoryless: fed the same costs, it recomputes the same distribution from scratch every time regardless of where it started. Neither behavior is universally wrong, but conflating them (e.g. assuming Gawron "explores" while logit "remembers," or vice versa) will misdiagnose an equilibrium-search result.
+
+## Gawron cannot represent path overlap at all; logit's correction is real but imperfect
+
+Built and verified on a Daganzo-Sheffi "loop-hole" overlap testbed (one independent route, two routes sharing a fraction φ of their length, all three held at exactly equal total cost) against an independently-computed Monte-Carlo probit ground truth (sample link-additive perception noise, count route shares — never taking any SUMO output as the reference). **Gawron produces the exact 1/3:1/3:1/3 split at every tested φ, with zero response to overlap** — it only ever sees a route's scalar total cost, structurally incapable of representing the IIA correction real drivers make (avoiding double-counting a shared segment's uncertainty). Plain MNL (logit with β=0) shows the identical blindness. **Logit's C-Logit correction (β,γ>0) does respond in the correct direction and shape** as φ grows, and can be calibrated to closely match the probit ground truth's asymptotic behavior as φ→1 — but even calibrated, it leaves a real, bounded residual error (a few percentage points) at intermediate φ that isn't eliminated by further tuning. If a study's conclusion depends on getting the overlap correction right — anything with genuinely redundant/overlapping route alternatives — do not use Gawron, and treat SUMO's calibrated logit as an approximation with a known, non-zero residual, not an exact solution.
+
+## An externally-computed Path-Size Logit can beat SUMO's own calibrated model, and SUMO will honor it
+
+A standalone Path-Size Logit implementation (path-size factor from the same overlap-length ratios C-Logit uses, but a different closed form) with **no free-parameter tuning** matched the probit ground truth more closely than SUMO's own C-Logit did even after calibrating C-Logit's parameters — roughly half the residual error, verified across the same φ sweep. This is a practical, reusable option: compute route probabilities externally with your own model, write them into a `.rou.alt.xml`/`routeDistribution`, and hand that directly to `sumo`. **Verify SUMO actually samples according to your supplied probabilities from output** (`--vehroute-output`, counting realized route choices against Wilson confidence intervals) rather than trusting that the input file's probabilities were honored — this is a real, checkable claim, not an assumption.
+
+## The route set is part of the model — measure how much it matters, don't assume
+
+Different route-set generation methods (k-shortest-paths, link-penalty/elimination, `duarouter`'s own accumulated alternatives-file pool, Monte-Carlo weight perturbation) produce structurally different sets — verified to differ substantially in how much of the traffic actually used in a long, converged run they even cover (well under half for some methods, well over three-quarters for others, on the same network and OD pair). Before attributing an assignment difference to "the route-choice model," check whether it's actually driven by which routes were even in the candidate set. **When testing whether the route set matters (holding the choice model fixed and varying only the set), establish the CRN replication noise floor first** — at moderate sample sizes, seed-to-seed sampling noise in route shares can be large enough (several percentage points) to make a clean route-set-vs-noise separation impossible; report this honestly as inconclusive rather than forcing a directional claim the data can't support.
+
+## Diagnosing and fixing logit non-convergence in an iterative equilibrium search
+
+If `duaIterate.py --route-choice-method logit` (or bare `--logit`) oscillates near-all-or-nothing or disagrees with a Gawron-based run in the *direction* of an effect, the mechanism is almost always **auto-θ blowing up as the search approaches equilibrium**: auto-θ scales as roughly a constant divided by the spread of competing route costs (verified constant across a several-thousand-fold range of spreads), and Wardrop equilibrium is by definition the state where competing costs converge — so auto-θ mechanically explodes exactly when the search is closest to done, forcing pathological, near-deterministic reassignment every iteration. A naive fix of just picking one fixed θ instead doesn't work either — since logit is memoryless (above), a fixed θ with no other damping still trades the blow-up for a different failure mode (near-100% route churn every iteration, converging to the wrong split).
+
+**The working recipe is an explicit fixed θ combined with `duaIterate.py --weight-memory`** (which smooths edge weights across iterations, restoring the damping that logit structurally lacks and that Gawron's own pairwise update provides implicitly). Verified over dozens of real iterations: route-change fraction decays monotonically toward a small residual rather than oscillating, on both a simple network (clean convergence to a fixed point) and a more complex one with a genuine Braess-paradox-style route structure (convergent behavior restored, though converging *more slowly* than Gawron — verify convergence was actually reached within your iteration budget rather than assuming the recipe alone guarantees it in a fixed number of steps).
+
+## The route-choice regime can flip an engineering conclusion's sign, not just its magnitude
+
+Verified directly on a real "should we build this link" decision: an all-or-nothing assignment recommended building it (a clear, CRN-replicated positive benefit), while a properly converged Gawron dynamic user equilibrium on the identical network and demand recommended *against* building it (a real Braess-paradox-style harm) — the sign of the recommendation flipped completely between assignment regimes, not merely its size. Any project-benefit or intervention-benefit claim computed under a single route-choice assumption (especially all-or-nothing, which is the cheapest and most common default for a quick check) should be treated as provisional until checked against at least one genuinely converged, stochastic alternative.
+
+## Related
+
+- `construct-and-verify-braess-paradox`, `[[braess-paradox-in-sumo]]` — the exact scenario and open logit-non-convergence failure this skill diagnoses and provides a working (if imperfect) fix for.
+- `compute-dynamic-user-equilibrium`, `[[dynamic-user-equilibrium-and-wardrop]]` — DUE/Wardrop testing methodology this skill's route-choice-regime comparisons build on.
+- `convert-trips-to-routes`, `[[duarouter]]` — the underlying route-alternatives mechanics this skill's formula verification is built on.
+- `assign-traffic-with-marouter` — macroscopic assignment's own UE→SUE silent-fallback gotcha, a related route-choice-assumption pitfall at the macroscopic level.
+- `create-grid-network` — network generator reused for the route-set-generation comparison.
+- `quantify-sumo-run-to-run-variability` — CRN/noise-floor conventions used throughout, especially for the route-set-vs-model decomposition.

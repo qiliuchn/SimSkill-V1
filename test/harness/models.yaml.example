@@ -1,0 +1,132 @@
+# Backbone LLM definitions for test/experiments.md §4's "Backbone LLMs" grid.
+#
+# Two ways a model is selected, matching the two auth paths Claude Code itself supports:
+#   1. Native Anthropic models: pass `claude_model_flag` straight to `claude --model`.
+#   2. Anthropic-compatible third-party endpoints: leave `claude_model_flag` null and set
+#      `env` instead — these get merged into a per-worktree .claude/settings.json, exactly
+#      the pattern the project README documents for e.g. DeepSeek. TODO placeholders below
+#      must be filled in with real credentials/endpoints/model-ids before Phase 1+ runs; this
+#      file ships with them blank on purpose rather than guessing plausible-looking values —
+#      see test/experiments.md §7 "Pricing/tokenizer drift".
+#
+# `key` here is the id used everywhere else in the harness (--model on run_experiment.py,
+# and the corresponding key in price_table.yaml).
+
+# Claude Code’s precedence is:
+# 1. --model
+# 2. ANTHROPIC_MODEL
+# 3. The settings file’s top-level model field 
+#
+# Current native entries have both claude_model_flag and ANTHROPIC_MODEL, so primary-model selection is duplicated.
+# DeepSeek entries have claude_model_flag: null, proving that settings-only selection is supported.
+
+models:
+  claude-opus-5:
+    provider: anthropic
+    claude_model_flag: opus   # CLI alias resolves to the latest Opus release
+    env:
+      ANTHROPIC_MODEL: opus
+      ANTHROPIC_DEFAULT_SONNET_MODEL: opus
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: opus
+      CLAUDE_CODE_SUBAGENT_MODEL: opus
+    notes: "Flagship Claude model — native auth, no overrides needed."
+
+  claude-haiku-4-5:  # claude-haiku-4-5-20251001
+    provider: anthropic
+    claude_model_flag: 
+    env:
+      ANTHROPIC_MODEL: claude-haiku-4-5
+      ANTHROPIC_DEFAULT_OPUS_MODEL: claude-haiku-4-5
+      ANTHROPIC_DEFAULT_SONNET_MODEL: claude-haiku-4-5
+      CLAUDE_CODE_SUBAGENT_MODEL: claude-haiku-4-5
+    notes: "Smaller/cheaper Claude model — native auth, no overrides needed."
+
+  fable:
+    provider: anthropic
+    claude_model_flag: fable   # CLI alias resolves to the latest Opus release
+    env:
+      ANTHROPIC_MODEL: fable
+      ANTHROPIC_DEFAULT_SONNET_MODEL: fable
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: fable
+      CLAUDE_CODE_SUBAGENT_MODEL: fable
+    notes: "Flagship Claude model — native auth, no overrides needed."
+
+  deepseek-v4-pro:
+    provider: openai-compatible
+    claude_model_flag: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: "sk-xxxxxxxxxxxxxxxx"
+      ANTHROPIC_BASE_URL: "https://api.deepseek.com/anthropic"
+      ANTHROPIC_MODEL: deepseek-v4-pro[1m]
+      ANTHROPIC_DEFAULT_OPUS_MODEL: deepseek-v4-pro[1m]
+      ANTHROPIC_DEFAULT_SONNET_MODEL: deepseek-v4-pro[1m]
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: deepseek-v4-pro[1m]
+      CLAUDE_CODE_SUBAGENT_MODEL: deepseek-v4-pro[1m]
+      CLAUDE_CODE_EFFORT_LEVEL: "max"
+    notes: "https://api-docs.deepseek.com/zh-cn/quick_start/agent_integrations/claude_code/"
+
+  deepseek-v4-flash:
+    provider: openai-compatible
+    claude_model_flag: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: "sk-xxxxxxxxxxxxxxxx"
+      ANTHROPIC_BASE_URL: "https://api.deepseek.com/anthropic"
+      ANTHROPIC_MODEL: "deepseek-v4-flash"
+      ANTHROPIC_DEFAULT_OPUS_MODEL: "deepseek-v4-flash"
+      ANTHROPIC_DEFAULT_SONNET_MODEL: "deepseek-v4-flash"
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: "deepseek-v4-flash"
+      CLAUDE_CODE_SUBAGENT_MODEL: "deepseek-v4-flash"
+      CLAUDE_CODE_EFFORT_LEVEL: "max"
+    notes: "https://api-docs.deepseek.com/zh-cn/quick_start/agent_integrations/claude_code/"
+
+  qwen3.7-max:
+    provider: openai-compatible
+    claude_model_flag: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: "sk-xxxxxxxxxxxxxxxx"
+      ANTHROPIC_BASE_URL: "https://dashscope.aliyuncs.com/apps/anthropic"
+      ANTHROPIC_MODEL: "qwen3.7-max"
+      ANTHROPIC_DEFAULT_OPUS_MODEL: "qwen3.7-max"
+      ANTHROPIC_DEFAULT_SONNET_MODEL: "qwen3.7-max"
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: "qwen3.7-max"
+      CLAUDE_CODE_SUBAGENT_MODEL: "qwen3.7-max"
+    notes: null
+
+  glm-5.2:
+    provider: openai-compatible
+    claude_model_flag: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: "sk-xxxxxxxxxxxxxxxx"
+      ANTHROPIC_BASE_URL: "https://dashscope.aliyuncs.com/apps/anthropic"
+      ANTHROPIC_MODEL: "glm-5.2"
+      ANTHROPIC_DEFAULT_OPUS_MODEL: "glm-5.2"
+      ANTHROPIC_DEFAULT_SONNET_MODEL: "glm-5.2"
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: "glm-5.2"
+      CLAUDE_CODE_SUBAGENT_MODEL: "glm-5.2"
+    notes: null
+
+  kimi-k3:
+    provider: openai-compatible
+    claude_model_flag: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: "sk-xxxxxxxxxxxxxxxx"
+      ANTHROPIC_BASE_URL: "https://dashscope.aliyuncs.com/apps/anthropic"
+      ANTHROPIC_MODEL: "kimi-k3"
+      ANTHROPIC_DEFAULT_OPUS_MODEL: "kimi-k3"
+      ANTHROPIC_DEFAULT_SONNET_MODEL: "kimi-k3"
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: "kimi-k3"
+      CLAUDE_CODE_SUBAGENT_MODEL: "kimi-k3"
+    notes: null
+
+  MiniMax-M2.5:
+    provider: openai-compatible
+    claude_model_flag: null
+    env:
+      ANTHROPIC_AUTH_TOKEN: "sk-xxxxxxxxxxxxxxxx"
+      ANTHROPIC_BASE_URL: "https://dashscope.aliyuncs.com/apps/anthropic"
+      ANTHROPIC_MODEL: "MiniMax-M2.5"
+      ANTHROPIC_DEFAULT_OPUS_MODEL: "MiniMax-M2.5"
+      ANTHROPIC_DEFAULT_SONNET_MODEL: "MiniMax-M2.5"
+      ANTHROPIC_DEFAULT_HAIKU_MODEL: "MiniMax-M2.5"
+      CLAUDE_CODE_SUBAGENT_MODEL: "MiniMax-M2.5"
+    notes: null

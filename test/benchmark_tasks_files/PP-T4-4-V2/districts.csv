@@ -1,0 +1,5 @@
+district_id,grid_cells,population,low_income_share,carless_share,jobs,base_accessible_jobs_30min
+D1,N00;N01;N10;N11,1800,0.42,0.31,600,1320
+D2,N02;N03;N12;N13,1500,0.18,0.12,1400,1680
+D3,N20;N21;N30;N31,2100,0.51,0.36,500,1080
+D4,N22;N23;N32;N33,1700,0.24,0.16,1900,1750

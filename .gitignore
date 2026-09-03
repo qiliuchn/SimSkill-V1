@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE, editor, and other temporary files
+vscode/
+.vscode/
+.cache/
+.venv/
+
+# MacOS
+*.DS_Store
+
+# Environment
+.env
+.claude/settings.local.json
+test/harness/models.yaml
+
+# test results
+test/results/*
+!test/results/.gitkeep
+
+# folders to ignore
+deprecated/
+episodic-memory/*
+!episodic-memory/.gitkeep
+# episodic memory example
+!episodic-memory/2026-07-21_18-35-42/

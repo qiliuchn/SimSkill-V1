@@ -1,0 +1,13 @@
+receptor_id,x_m,y_m,height_m,population_weight,setting
+R01,-45,18,1.8,12,sidewalk
+R02,-30,12,1.8,18,bus_stop
+R03,-15,20,3.0,35,residential
+R04,0,25,1.8,22,crossing
+R05,18,22,3.0,42,residential
+R06,35,14,1.8,16,sidewalk
+R07,45,-18,1.8,10,sidewalk
+R08,28,-16,3.0,30,residential
+R09,10,-24,1.8,24,school_gate
+R10,-10,-26,1.8,20,crossing
+R11,-27,-18,3.0,38,residential
+R12,-42,-12,1.8,14,sidewalk

@@ -1,0 +1,16 @@
+Cost accounting: repriced 80/80 run(s) from raw whole-tree modelUsage using /Users/liuqi/Desktop/simskill1/test/harness/price_table.yaml (price_table_date=2026-08-17, pricing_basis=peak).
+
+=== 80 run(s) loaded from /Users/liuqi/Desktop/simskill1/test/experiment_tasks.jsonl ===
+
+ condition           model  n  n_verified_success  n_verified_failure  n_unverified  n_costed  median_cost_usd  total_cost_usd  median_wall_clock_total_s  median_attempts  disagreements  success_rate
+  full-ver deepseek-v4-pro 40                  27                  13             0        40         3.925023      202.843774                  4622.8095              1.0             11      0.675000
+vanilla-cc deepseek-v4-pro 40                  19                  20             1        40         2.922069      157.409610                  4795.9075              1.0             20      0.487179
+
+=== §5 pre-registered primary comparisons ===
+
+  full-ver vs vanilla-cc  (model=deepseek-v4-pro):  success_rate  0.68 vs 0.49  |  median_cost_usd  3.93 vs 2.92  |  median_wall_clock_total_s  4622.81 vs 4795.91
+  full-ver vs proc-mem-ver  (model=deepseek-v4-pro):  no results for proc-mem-ver
+  full-ver vs sem-mem-ver  (model=deepseek-v4-pro):  no results for sem-mem-ver
+  full-ver vs infer-frame-only  (model=deepseek-v4-pro):  no results for infer-frame-only
+
+Plot saved to /Users/liuqi/Desktop/simskill1/test/success_at_budget_curves_cost_usd.png

@@ -1,0 +1,1723 @@
+# SimSkill efficacy benchmark V2 — fixed, held-out hard-task suite.
+#
+# This suite is an experimental instrument. It must not be used for memory ingestion or
+# curriculum generation. Any post-freeze edit must bump suite_meta.version and record the
+# change in version_history.
+#
+# Schema per task:
+#   id:                 unique across benchmark versions; V2 ids end in -V2
+#   category:           one of the 10 practice/research domains listed below
+#   tier:               3 (multi-step composition) or 4 (novel core capability)
+#   sumo_run_budget:    evaluator metadata: the size of the measurement design the task text
+#                       prescribes (screens, factorial cells, seeds, stress and validation
+#                       runs), verified to be at most 20. It bounds the problem, not the
+#                       solver: development and debugging simulations are unrestricted and
+#                       uncounted, and solution wall-clock time is scored separately, so
+#                       wasteful simulation is self-penalizing
+#   task:               the complete prompt given to the action agent
+#   input_files:         optional raw, tool-agnostic data under
+#                        test/benchmark_tasks_files/<task-id>/
+#   related_skills:      evaluator-only relevance labels; never task dependencies or callable
+#                        libraries, and never exposed as instructions inside task text
+#   related_knowledge:   semantic-memory pages expected to support a Tier 3 solution
+#
+# Tier rules:
+#   Tier 3 requires several coupled modeling, control, validation, and analysis steps. No
+#   Tier 3 task can be solved by replaying one procedural-memory skill unchanged.
+#   Tier 4 has a decisive facility, inference method, policy objective, or research method
+#   that is absent from the frozen procedural and semantic memory. Its related-memory lists
+#   are intentionally empty even when generic SUMO mechanics remain useful.
+# Every task is standalone: a named Simulation of Urban MObility (SUMO) executable or
+# SUMO-distributed script is identified as
+# such, while every other controller, inference method, policy, or analysis must be implemented
+# by the solver from the specification. A task may not assume procedural-memory scripts, assets,
+# helper modules, or prior artifacts exist. Each task prescribes its measurement design —
+# which scenarios, controllers, screens, and seeds to simulate — sized so no design exceeds 20
+# independently simulated scenario/controller/seed runs. A separately simulated copy counts as
+# one design run even if automation could bundle copies into one process; preprocessing that
+# does not invoke sumo or sumo-gui and offline analysis are not design runs. The design size
+# bounds the problem to solve, not the solver's process: debugging and development simulations
+# are unrestricted and uncounted, and because total solution time is a scored performance
+# index, solvers should work as quickly as possible.
+#
+# Categories: network-design; demand-inference; signal-control; freeway-operations;
+# multimodal-transit; safety-human-factors; environment-energy; freight-curb-operations;
+# planning-policy-equity; simulation-methods.
+#
+# Naming convention:
+#   <category>-<tier>-<task_number_in_category>-V2
+# Task numbers increase sequentially from 1 to 4 within each category, independent of tier.
+# Example: NG-T3-1-V2, NG-T3-2-V2, NG-T4-3-V2, NG-T4-4-V2.
+
+
+suite_meta:
+  version: "2.7.0"
+  frozen: true
+  frozen_at: "2026-08-12"
+  memory_snapshot_at_freeze:
+    procedural_skill_count: 146
+    semantic_page_count: 147
+  task_count: 40
+  tier_counts:
+    3: 20
+    4: 20
+  input_backed_task_count: 10
+  max_sumo_runs_per_task: 20
+  max_random_seeds_per_design_cell: 5
+  notes: >-
+    V2 contains only hard tasks. Tier 3 measures compositional reuse; Tier 4 measures
+    first-principles generalization beyond the memory snapshot. Prompts specify geometry,
+    demand, treatments, replications, outcomes, and validity checks so independent solvers
+    address the same problem. Task prompts are standalone and never treat procedural-memory
+    material as a library. Each prompt prescribes an explicit measurement design of no more
+    than 20 independently simulated scenario/controller/seed runs; task text states the design
+    itself rather than a run budget, and solver development or debugging simulation is
+    unrestricted because solution time is scored separately.
+  version_history:
+    - version: "0.1.0"
+      date: "2026-08-04"
+      change: "Initial freeze inherited from the first hardening pass."
+    - version: "0.3.0"
+      date: "2026-08-10"
+      change: >-
+        Strengthened the original Tier 3 and Tier 4 tasks after pilot ceiling effects.
+    - version: "1.0.0"
+      date: "2026-08-10"
+      change: >-
+        Added V2-suffixed task ids and refreshed the recorded memory snapshot.
+    - version: "2.0.0"
+      date: "2026-08-12"
+      change: >-
+        Removed all Tier 1 and Tier 2 tasks; rebuilt the suite as 20 Tier 3 and 20 Tier 4
+        tasks; expanded to 10 practice/research domains; made Tier 4 novelty strict against
+        the updated memory; and added raw supporting data for 10 tasks.
+    - version: "2.0.1"
+      date: "2026-08-12"
+      change: >-
+        Normalized every id to <category>-<tier>-<task_number>-V2 with task numbers 1-4
+        increasing sequentially within each category; renamed matching input directories.
+    - version: "2.1.0"
+      date: "2026-08-12"
+      change: >-
+        Audited all input-backed tasks and corrected data-design defects: meaningful parallel
+        route alternatives, explicit observation periods, usable episodic policy logs,
+        imbalanced scooter demand, separate collision/injury transfer tables, receptor
+        backgrounds, precise freight topology, and implementable multimodal project inputs.
+    - version: "2.2.0"
+      date: "2026-08-12"
+      change: >-
+        Added an inline data dictionary and row-level interpretation to every input-backed
+        task; defined holdout, uncertainty, privacy, and identifier semantics; and removed
+        remaining geometry, demand, service-window, group, and experimental-design ambiguity
+        across the full 40-task suite. Supporting input values were revalidated unchanged.
+    - version: "2.3.0"
+      date: "2026-08-12"
+      change: >-
+        Made every prompt independent of procedural-memory implementations; identified native
+        SUMO executables and distributed tools explicitly and specified all custom algorithms
+        as solver work. Replaced exhaustive experiments with bounded paired, fractional,
+        sequential, or surrogate-assisted designs using one to five seeds and no more than 20
+        independently simulated scenario/controller copies per task.
+    - version: "2.3.1"
+      date: "2026-08-12"
+      change: >-
+        Defined domain-specific abbreviations, model and device names, directional codes, and
+        compact technical notation at their first appearance within each standalone task.
+    - version: "2.4.0"
+      date: "2026-08-13"
+      change: >-
+        Post-review fixes to five tasks. FC-T3-2-V2: tours made non-wrapping (starts cycle
+        D1-D3) and depot return replaced by an eastern freeway exit by 10:00, resolving the
+        westbound-travel impossibility on the one-way freeway. SC-T4-4-V2: comparator set
+        corrected to three defined controllers (lexicographic, max-pressure, and a fully
+        specified Webster fixed-time baseline); run budget 18 to 15. MT-T3-1-V2: specified
+        arterial lanes and speed, signal placement at the six stop locations, and uniform
+        150 veh/h side-street demand. MT-T3-2-V2: enumerated the three charging
+        configurations (fringe only, downtown only, both termini). EN-T4-4-V2: defined the
+        route as a 12 km round trip (6 km each way, 72 km/day per bus) and added a complete
+        corridor, signal, stop, and two-schedule background-demand specification.
+    - version: "2.5.0"
+      date: "2026-08-13"
+      change: >-
+        Second post-review batch, eight tasks. SC-T4-3-V2: disclosed that the controller log
+        comes from the operator's calibrated discrete queue model rather than the SUMO
+        replica, and reframed the replica comparison as a transfer check separating
+        estimator error from environment mismatch. NG-T3-1-V2: run budget raised from 2 to
+        4 (2 final probe executions plus at most 2 debugging reruns). EN-T4-4-V2: removed
+        the redundant charger-plug-by-window simulation factorial (overnight charging cannot
+        alter daytime traffic); now 3 seeds per traffic schedule for battery buses plus one
+        diesel run per schedule (budget 20 to 8), all charger cells evaluated offline.
+        DG-T4-3-V2: replaced free-form OD inference with two prescribed low-dimensional
+        structures (doubly constrained gravity with a shared departure profile; separable
+        fixed-share matrix with interval totals) fitted separately and compared on
+        calibration fit and holdout coverage. FW-T4-4-V2: pulse vehicle now deterministically
+        selected (center-lane vehicle nearest km 2.0 at t=2400 s); uncontrolled baseline and
+        all 0% penetration cells collapsed into one shared run (budget 15 to 9). FC-T3-1-V2:
+        specified two 40 km/h lanes per direction on every grid link. SM-T4-3-V2: objective
+        and breakdown constraint defined as equal-weight averages over the six demand
+        scenarios. SF-T4-3-V2: extended injury_risk_curves.csv vehicle_occupant rows from
+        60 to 100 km/h so vehicle-vehicle closing speeds stay in range.
+    - version: "2.6.0"
+      date: "2026-08-13"
+      change: >-
+        Third post-review batch, five clarifications. NG-T3-2-V2: reliability defined as the
+        standard deviation of person delay across completed trips within each run.
+        DG-T3-1-V2: task text now names the downstream detector on edge D that the count
+        files already contain (data unchanged). MT-T4-4-V2: simulation window fixed at
+        07:00-11:30 so the latest jittered request can complete. MT-T3-1-V2: GTFS
+        stop_times.txt retimed from 180 s to 90 s between successive stops (roughly 20 km/h
+        commercial speed) so schedule adherence measures performance rather than holding
+        slack; stops, trips, and hourly departure times unchanged. FW-T3-1-V2: each scenario
+        now runs until all vehicles arrive with a hard end at t=14400 s, and vehicles
+        unfinished at the hard end are reported as explicit clearance failures.
+    - version: "2.7.0"
+      date: "2026-08-13"
+      change: >-
+        Redefined run-count semantics suite-wide: the 20-run ceiling bounds the size of each
+        task's prescribed measurement design, not the solver's process. Debugging and
+        development simulations are unrestricted; total solution wall-clock time is the
+        scored deterrent against wasteful simulation. Removed every 'Run budget' sentence
+        from task text, since each design is already fully prescribed inline, while
+        preserving unique design and offline-analysis clauses those sentences carried
+        (DG-T3-1 one run per fitted demand, DG-T4-4 per-representative seed, SC-T4-4
+        controller freeze, offline re-analysis notes). Deleted debugging- and tuning-run
+        prohibitions. Restored sumo_run_budget metadata to pure design counts by dropping
+        diagnostic-rerun slack: NG-T3-1 4 to 2, NG-T4-4 10 to 8, DG-T3-1 12 to 10, DG-T3-2 4
+        to 3, SC-T3-1 14 to 13, FW-T3-2 14 to 13, FC-T3-1 13 to 12, FC-T4-4 15 to 14,
+        PP-T3-1 16 to 15, PP-T3-2 20 to 19. Header schema comment and suite notes updated to
+        the new semantics.
+
+
+tasks:
+  # ---------------------------------------------------------------------------
+  # Network design
+  # ---------------------------------------------------------------------------
+  - id: NG-T3-1-V2
+    category: network-design
+    tier: 3
+    sumo_run_budget: 2
+    task: >-
+      Build a skewed four-leg signalized intersection from explicit node, edge, and
+      connection files rather than a stock generator. Each arm is 400 m long at 50 km/h;
+      outward bearings counter-clockwise from east are east (E)=0, north (N)=78, west (W)=183,
+      and south (S)=266 degrees. Upstream inbound/outbound lane counts are N=1/2, E=2/3,
+      S=3/2, and W=2/1. Flare the
+      north inbound to two stop-line lanes with a 90 m left bay; the east inbound to four
+      lanes with a 120 m left bay and 80 m right bay; and the south inbound to four lanes
+      with a 70 m right bay. Stop-line assignments are N=[left, through+right],
+      E=[left, through, through, right], S=[left, through, through, right], and
+      W=[left+through, through+right]. Serve all 12 non-U-turn movements, give each left a
+      protected interval, and use 3 s yellow plus 2 s all-red. Supply the lane-level
+      movement table, signal-link map, and an automated test that compiles without warnings,
+      routes one probe through every legal movement, rejects every U-turn, detects unintended
+      lane permissions, and fails on any teleport or missing signal link.
+      Put all legal probes in one simulation and all deliberately illegal probes in a second.
+      Use one fixed random seed for both executions.
+
+  - id: NG-T3-2-V2
+    category: network-design
+    tier: 3
+    sumo_run_budget: 18
+    task: >-
+      Build geometrically comparable conventional-diamond and diverging-diamond
+      interchanges where a three-lane-per-direction freeway at 110 km/h crosses a
+      two-lane-per-direction arterial at 50 km/h. Use four 300 m ramps, 220 m between ramp
+      terminals, 150 m left-turn storage, and sidewalks with 120 ped/h across every terminal
+      crossing. Simulate 90 minutes: freeway through demand is 4200 veh/h per direction,
+      arterial through demand 1400 veh/h per direction, each off-ramp 700 veh/h split 55% left
+      and 45% right at its terminal, and each on-ramp 650 veh/h supplied in the same 55/45
+      shares from the two arterial directions; multiply all movements by 1.2 during minutes
+      30-60. Build explicit lane connections and prove grade separation. Derive two feasible
+      cycle/split/offset candidates per design analytically with identical pedestrian and 3 s
+      yellow/1 s all-red constraints, then screen the four candidates with one common seed.
+      Select one timing per design without further simulation tuning, using person delay with
+      pedestrian service and spillback as declared tie-breakers. Add a sensitivity cell closing
+      one receiving freeway lane during minutes 40-55. For the selected timings, use three
+      matched seeds in each design-by-closure cell. Compare completed demand, person delay,
+      ramp spillback, reliability (measured as the standard deviation of person delay across
+      completed trips within each run),
+      carbon dioxide (CO2), and exposure-normalized time to collision (TTC) and
+      post-encroachment time (PET). Decompose geometry and timing effects with a
+      cross-application of the feasible timing logic, and do not rank a design if it loses
+      demand at the boundary or leaves unfinished trips outside the accounting horizon.
+      Use one additional common-seed base-demand run for each feasible cross-application.
+
+  - id: NG-T4-3-V2
+    category: network-design
+    tier: 4
+    sumo_run_budget: 16
+    task: >-
+      Create and evaluate a full continuous-flow intersection with displaced left turns on
+      both major-street approaches.
+      The major street has three through lanes per direction at 60 km/h, the minor street
+      two lanes per direction at 45 km/h, and all external arms are 600 m. Put each major
+      crossover 140 m upstream of the central junction; provide a 110 m two-lane displaced
+      left storage segment, a 70 m downstream merge, and no at-grade path that lets a
+      displaced vehicle re-enter opposing traffic. Hourly approach demands are eastbound
+      (EB)=1700, westbound (WB)=1500, northbound (NB)=750, and southbound (SB)=650 veh/h with
+      left/through/right shares of 22/68/10% on the
+      major street and 18/67/15% on the minor street. Coordinate the two crossover signals
+      and central signal with 3 s yellow and 1 s all-red, then compare against a conventional
+      protected-left intersection using the same footprint and demand. Validate every
+      internal movement and conflict point with probes and a machine-readable conflict
+      matrix. Insert one uniquely tagged probe for every legal movement during a
+      pre-measurement validation window in every main run, so probe checks consume no separate
+      execution. Use four matched seeds in each of the four design-by-demand cells. Report
+      throughput, delay, stops, crossover spillback, wrong-lane trapping, and conflicts from
+      SUMO's native Surrogate Safety Measure (SSM) device; stress test +15% demand and state when the
+      unconventional design ceases to operate safely.
+
+  - id: NG-T4-4-V2
+    category: network-design
+    tier: 4
+    sumo_run_budget: 8
+    task: >-
+      Build a single-point urban interchange from plain SUMO network files. A six-lane
+      freeway at 100 km/h passes over a four-lane arterial at 55 km/h without a shared node;
+      four one-lane ramps meet the arterial at one central signal under the bridge. Use
+      450 m freeway approaches, 350 m arterial approaches, 280 m ramps, 120 m dual-left
+      storage from each off-ramp, and a bridge clearance represented by z-coordinates.
+      Freeway through demand is 3900 veh/h per direction, arterial demand 1250 veh/h per
+      direction with left/through/right shares 15/75/10%, each off-ramp carries 520 veh/h split
+      65% left and 35% right, and each on-ramp receives 520 veh/h split 65% from the arterial
+      left-turn approach and 35% from its right-turn approach. Design a single conflict-free controller
+      that serves both opposing off-ramp lefts concurrently where geometry permits, protects
+      arterial lefts, and provides crossings on both arterial arms. Compare it with a
+      two-terminal conventional diamond having the same ramp lengths and demand. Prove from
+      compiled topology and foe relationships that the freeway is grade separated and every
+      simultaneous movement is nonconflicting. Generate 120 ped/h on each of the two arterial
+      crossings in both designs, with 18 s minimum service. Across four matched seeds report
+      internal-junction blocking, queue storage exceedance, delay, throughput, pedestrian
+      delay, and time to collision (TTC) and post-encroachment time (PET) from SUMO's native
+      Surrogate Safety Measure (SSM) device. Include a deliberately conflicting
+      controller that the static validator must reject before simulation.
+
+  # ---------------------------------------------------------------------------
+  # Demand inference and synthesis
+  # ---------------------------------------------------------------------------
+  - id: DG-T3-1-V2
+    category: demand-inference
+    tier: 3
+    sumo_run_budget: 10
+    task: >-
+      Reconstruct demand on a one-way five-station corridor with a two-lane 50 km/h mainline
+      (edges M1-M5) and a parallel one-lane 35 km/h frontage road (F1-F5), each segment 500 m.
+      A common upstream source can enter either facility; two-way crossover connectors are
+      available between stations 1-2 and 3-4, destination exits branch from both facilities
+      after stations 1-4, and M5/F5 merge into one downstream destination. Install one
+      detector on every M and F edge, every exit edge, and the common downstream edge D, and
+      use the 15-minute observations in
+      test/benchmark_tasks_files/DG-T3-1-V2/reconstruction_counts.csv. Exit edges XM1-XM4
+      leave the mainline after stations 1-4, XF1-XF4 leave the frontage road, and edge D is
+      the common downstream edge. In both count files, one row is one detector observation
+      for the 15-minute interval beginning at `interval_start`: `detector_id` is the stable
+      detector label, `edge_id` is the edge on which it must be placed, `role` is a descriptive
+      facility class, `count_vehicles_15min` is the number of vehicles crossing that detector
+      in the interval, and `measurement_sd_vehicles` is the one-standard-deviation field-count
+      error in vehicles for that row, not a flow rate. Treat these errors as independent
+      zero-truncated normal errors when resampling unless a different defensible likelihood is
+      stated. Use three fixed resampling seeds and one common traffic seed across fitted-demand
+      comparisons. Use the installed SUMO `dfrouter` executable for an initial reconstruction, then
+      SUMO's distributed `tools/routeSampler.py` script with shortest-only, k-shortest, and randomized
+      candidate route universes so crossover and facility choices genuinely differ. Keep
+      test/benchmark_tasks_files/DG-T3-1-V2/validation_counts.csv untouched until final
+      validation; it has the same schema and represents an independent holdout measurement of
+      the same four time intervals. Create three resampled count realizations and cross them
+      with the three route universes, giving nine fitted demand files. Report inferred exit
+      and facility shares with intervals, flow-conservation
+      error, route-share entropy, and a per-detector traffic-count goodness-of-fit measure, the
+      GEH statistic (named for Geoffrey E. Havers), on calibration and holdout data. For GEH,
+      multiply both the simulated and observed 15-minute counts by four before applying
+      the standard hourly-flow formula. Accept a final demand only if flow is conserved within
+      2% and at least 80% of holdout detector-interval rows have GEH below 5; otherwise demonstrate
+      non-identifiability with two materially different route-flow solutions having similar
+      calibration fit. Deliver reproducible conversion, route-universe, fitting, and holdout
+      scripts rather than only a fitted route file.
+      `dfrouter` and `routeSampler.py` are native/distributed SUMO tools, not assumed benchmark
+      helper libraries; discover their installed command-line options and write all conversion,
+      route-set generation, orchestration, and analysis code yourself. Simulate the initial
+      dfrouter reconstruction and each of the nine fitted demand files once with the common
+      traffic seed, and compare each simulation's outputs with both calibration and holdout
+      observations.
+    input_files:
+      - test/benchmark_tasks_files/DG-T3-1-V2/reconstruction_counts.csv
+      - test/benchmark_tasks_files/DG-T3-1-V2/validation_counts.csv
+
+  - id: DG-T3-2-V2
+    category: demand-inference
+    tier: 3
+    sumo_run_budget: 3
+    task: >-
+      Build internally consistent 06:30-10:00 demand on a 4x4 grid with 200 m blocks. Name
+      nodes Nrc with row 0 north and column 0 west. Place 150 households at each of N00, N01,
+      N10, and N11; put school parking on eastbound edges N11->N12 and N21->N22; distribute
+      workplace destinations uniformly among N03, N13, N23, and N33; and put the delivery
+      depot at N30. Assign half of school-chain households to each school. Give 35% of households a
+      home-school-work chain with school arrival 07:20-07:50, 8-12 minute drop-off dwell, and
+      work arrival by 08:45; the remainder make home-work tours with departure times uniform
+      from 07:00-09:00. Model one worker/traveler per household. Draw school dwell uniformly
+      from 8-12 minutes using common draws across demand-generation alternatives. Carless
+      households are 18%, one-car households 52%, and two-car households 30%; never assign
+      simultaneous cars beyond household ownership. Add 20 vans with four distinct customer
+      stops drawn without replacement from N02, N12, N22, N32, N03, N13, N23, and N33,
+      independently uniform 4-8 minute service at each with common draws, and depot return by
+      10:00. School parking capacities are 35
+      each and the four job lots hold 75 cars each. Add a 250-space overflow lot at N32;
+      drivers rejected from a school or job lot must reroute there and walk to the activity,
+      while carless households walk for all legs. A full overflow lot is an explicitly
+      reported unserved parking failure, not vehicle disappearance. Write the population and
+      plan generator from these stated margins; do not assume a population-synthesis or
+      activity-generation helper library exists. If the installed SUMO distribution exposes a
+      relevant demand-generation executable, identify exactly what it generates and still
+      write the unsupported linked tours explicitly. Validate demographic margins, chain and
+      vehicle continuity, time windows, stops, parking, routing, and person/vehicle mass
+      balance; compare requested and realized 15-minute departures and district
+      origin-destination (OD) totals.
+      Use three random seeds for household attributes, departures, dwell, and freight stops,
+      with one SUMO execution per seed.
+
+  - id: DG-T4-3-V2
+    category: demand-inference
+    tier: 4
+    sumo_run_budget: 15
+    task: >-
+      Estimate a joint time-dependent origin-destination (OD) distribution and departure profile with quantified
+      posterior uncertainty.
+      Build a 3x3 grid with 250 m blocks, two lanes per link at 50 km/h, and six boundary
+      traffic analysis zones (TAZs)
+      Z1-Z6 clockwise from the northwest. Use 15-minute screenline observations from
+      test/benchmark_tasks_files/DG-T4-3-V2/screenline_counts.csv and sparse Bluetooth travel
+      times from test/benchmark_tasks_files/DG-T4-3-V2/bluetooth_travel_times.csv for 07:00-09:00.
+      Name grid nodes Nrc with row 0 north and column 0 west. Attach Z1 north of N00, Z2 north
+      of N02, Z3 east of N12, Z4 south of N22, Z5 south of N20, and Z6 west of N10.
+      Screenline A is the three eastbound links from column 0 to 1, B the three westbound links
+      from column 2 to 1, and C the three southbound links from row 0 to 1. In
+      `screenline_counts.csv`, one row is one screenline observation for the 15-minute interval
+      beginning at `interval_start`; `count_vehicles_15min` is the aggregate vehicles crossing
+      its three directed links, and `count_sd_vehicles` is the one-standard-deviation count
+      error in vehicles. In `bluetooth_travel_times.csv`, one row summarizes matched devices
+      departing during the stated interval: `od_pair` is a directed pair written
+      origin-destination, `sample_size` is the number of matched devices, `median_seconds` is
+      their median travel time, `p90_seconds` is their 90th-percentile travel time, and
+      `measurement_sd_seconds` is
+      the one-standard-deviation measurement error of the reported median. Use non-holdout
+      medians in the likelihood and use p90 as a posterior-predictive diagnostic unless an
+      explicit uncertainty model for p90 is supplied. In both files, `holdout=true` means the
+      entire row is unavailable for fitting, hyperparameter choice, and stopping. The 240
+      interval-level OD flows are deliberately underdetermined by 24 screenline counts and
+      sparse travel times, so do not attempt free-form cell-by-cell estimation. Instead infer
+      the nonnegative OD flows for all 30 ordered zone pairs in each of the eight 15-minute
+      intervals through two standard low-dimensional demand structures fitted separately:
+      (i) a doubly constrained gravity model with impedance exp(-beta*t_ij) built from
+      simulated free-flow travel times, zone-level production and attraction size parameters,
+      and a shared piecewise-linear departure profile over the eight intervals; and (ii) a
+      separable model multiplying one fixed spatial share matrix over the 30 pairs, taken
+      from an uncongested gravity seed, by interval-specific total-demand parameters. For
+      each structure add a smoothness prior linking adjacent intervals, state the likelihood
+      explicitly, and run a simulation-in-the-loop posterior method such as approximate
+      Bayesian computation with sequential Monte Carlo (ABC-SMC) or likelihood-free Markov
+      chain Monte Carlo (MCMC) on its parameter vector. Report which structure fits the
+      calibration data best, whether that ranking survives holdout coverage, and the OD
+      conclusions on which the two structures disagree. Compare posterior
+      predictive results against deterministic least-squares origin-destination matrix
+      estimation (ODME) using identical route sets. Report credible intervals, parameter
+      correlations, posterior predictive traffic-count goodness-of-fit measures using the GEH
+      statistic (named for Geoffrey E. Havers) and travel-time
+      coverage, effective sample size, and at least two non-identifiable OD contrasts. Reject
+      convergence based only on optimizer stability: require diagnostics across three chains
+      or independent populations and verify that 90% predictive intervals cover at least 80%
+      of holdout observations.
+      Implement the likelihood-free inference and deterministic comparator in task code; no
+      task-specific OD-estimation library is assumed. Use 12 space-filling OD/departure vectors
+      spanning both structures' ranges to train one shared surrogate from one SUMO run each.
+      Run three inference chains per structure entirely against that cached surrogate, with
+      one fixed traffic seed for all training runs and three independent inference seeds per
+      structure. Then spend one SUMO run on each structure's posterior representative and
+      one on the least-squares solution. Evaluate holdout checks
+      from the outputs of the final three runs.
+    input_files:
+      - test/benchmark_tasks_files/DG-T4-3-V2/screenline_counts.csv
+      - test/benchmark_tasks_files/DG-T4-3-V2/bluetooth_travel_times.csv
+
+  - id: DG-T4-4-V2
+    category: demand-inference
+    tier: 4
+    sumo_run_budget: 15
+    task: >-
+      Synthesize an ensemble of privacy-preserving morning origin-destination (OD) matrices rather than treating
+      differentially private releases as exact counts. Use the eight-zone productions and
+      attractions in test/benchmark_tasks_files/DG-T4-4-V2/noisy_marginals.csv and the noisy
+      screenline releases in test/benchmark_tasks_files/DG-T4-4-V2/dp_screenlines.csv. In
+      `noisy_marginals.csv`, each row is one zone: `production_release_2h` and
+      `attraction_release_2h` are separate differentially private releases of its 07:00-09:00
+      origin and destination totals; `laplace_scale_vehicles` is the Laplace scale b applied
+      independently to each released marginal; `epsilon` is the privacy budget for each such
+      release; and `structural_zero_destinations` is the semicolon-separated list of
+      destinations forbidden for that origin, including the listed intrazonal pair. In
+      `dp_screenlines.csv`, one row is one release for the 30-minute interval beginning at
+      `interval_start`; `dp_count_release_30min` is the differentially private noisy aggregate
+      count,
+      `laplace_scale_vehicles` and `epsilon` describe that release, and `edges_crossed` lists
+      its semicolon-separated directed edges, where A-B means A to B. A negative released count
+      is valid privacy noise, not a negative true flow. Do not attempt to recover or claim the
+      undisclosed true counts. Build a 4x4, 200 m grid with zones Z1-Z8 on the fringe and infer
+      an ensemble of 200 feasible nonnegative integer OD cubes, each containing four 30-minute
+      matrices for 07:00-09:00. The noisy marginals are two-hour totals; the screenline rows
+      are 30-minute releases, so the four matrices must sum to the reconciled marginals. Name nodes Nrc with row 0
+      north and column 0 west; attach Z1 north of N00, Z2 north of N03, Z3 east of N03, Z4 east
+      of N33, Z5 south of N33, Z6 south of N30, Z7 west of N30, and Z8 west of N00. The
+      north_south release aggregates the four southbound links N10->N20 through N13->N23;
+      the east_west release aggregates the four eastbound links N01->N02 through N31->N32.
+      The local_access release is the low-volume eastbound edge N00->N01 and deliberately
+      includes a possible negative differentially private release.
+      The matrices must honor structural-zero pairs, propagate release uncertainty, and
+      balance productions/attractions without
+      silently clipping negative releases. Generate all 200 cubes offline, then select five
+      stratified representatives per reconciliation method for simulation. Compare three
+      reconciliation methods—naive clipping plus iterative proportional fitting (IPF),
+      constrained likelihood, and a posterior sampler—on feasibility, distortion of each
+      release, screenline predictive coverage, travel-time distribution, and congestion-hotspot
+      stability. Report which conclusions are identifiable under privacy noise and which are
+      not; fail the task if any published artifact exposes a row-level synthetic traveler or
+      asserts accuracy against unavailable ground truth.
+      Implement the three reconciliation procedures in task code rather than assuming a
+      privacy-demand helper exists. Use one fixed traffic seed per
+      representative; all ensemble-wide uncertainty summaries not requiring traffic dynamics
+      must be computed offline from all 200 cubes.
+    input_files:
+      - test/benchmark_tasks_files/DG-T4-4-V2/noisy_marginals.csv
+      - test/benchmark_tasks_files/DG-T4-4-V2/dp_screenlines.csv
+
+  # ---------------------------------------------------------------------------
+  # Signal control
+  # ---------------------------------------------------------------------------
+  - id: SC-T3-1-V2
+    category: signal-control
+    tier: 3
+    sumo_run_budget: 13
+    task: >-
+      Design time-of-day coordination for a two-way four-signal arterial with spacings of
+      270, 430, and 310 m, a 50 km/h limit, one exclusive left lane and two through lanes per
+      arterial approach, and one lane per side street. Simulate 07:00-09:00. From 07:00-08:00
+      arterial demands are 900 veh/h eastbound and 450 westbound; they reverse from
+      08:00-09:00. Each side-street approach carries 300 veh/h and every approach has 15%
+      left turns, 10% right turns, and 75% through movements; every crossing has 120 ped/h.
+      Measure saturation flows, derive
+      splits, and choose a 70-120 s common cycle
+      while preserving 18 s pedestrian service, 3 s yellow, and 1 s all-red per phase. Build
+      separate directional offset plans, perform time-of-day signal-program switching at 08:00
+      with SUMO's native WAUT mechanism,
+      and analytically calculate both green bands despite unequal spacing. Compare the hand
+      plan, the plan produced by SUMO's distributed `tools/tlsCoordinator.py` script, and an
+      uncoordinated baseline. Invoke `tlsCoordinator.py` without its `--evaluate` option so it
+      does not launch an uncounted SUMO process. Use one shared saturation-flow pilot, then four matched seeds for
+      each of the three plans. Report directional bandwidth, delay,
+      stops, split failures, spillback, and the 10-minute plan-switch transient; verify actual
+      program changes and reconcile analytical bands with trajectory diagrams.
+      WAUT and `tlsCoordinator.py` are identified SUMO features, not benchmark helper modules;
+      write the timing derivation, orchestration, validation, and analysis code.
+
+  - id: SC-T3-2-V2
+    category: signal-control
+    tier: 3
+    sumo_run_budget: 15
+    task: >-
+      Implement one Traffic Control Interface (TraCI) priority arbiter for two signals 450 m apart with two arterial lanes
+      per direction, one side-street lane, and a 50 km/h limit. Arterial and side-street
+      demands are 700 and 350 veh/h per direction; connected-car penetration is 50%; buses
+      carrying 30 passengers run every 6 minutes in both arterial directions and become
+      priority-eligible above 60 s lateness. All motor approaches
+      have left/through/right shares 15/70/15%, and pedestrians arrive at 100 ped/h at each
+      crossing with a 1.2 m/s design walking speed. Give eligible cars
+      green-light optimal speed advisory (GLOSA) advice when they are within 400 m: predict the
+      next green under the arbiter's
+      current event queue and recommend a constant speed in 30-50 km/h that reaches the stop
+      line during that green, otherwise give no advice. Give buses at most 10 s green extension
+      or 5 s early green, and ambulances
+      highest priority westbound at t=1200 s and eastbound at t=2400 s. Preserve 8 s minimum
+      green, 3 s yellow, 1 s all-red, and active pedestrian clearances. Recompute or cancel
+      GLOSA whenever priority changes the forecast and recover coordination with no phase
+      adjustment above 10 s per cycle. Compare baseline, GLOSA-only, transit signal priority
+      (TSP)-only,
+      preemption-only, and combined operation over three matched seeds. The GLOSA, transit
+      priority, preemption arbitration, and recovery logic must be implemented in this task's
+      TraCI program; they are not assumed libraries. An event-log validator
+      must prove priority order and every invariant. Report car stops and carbon dioxide (CO2), bus lateness,
+      ambulance travel time, side-street delay, and post-preemption recovery. Simulate 60
+      minutes after a 10-minute warm-up; interpret ambulance times relative to the start of the
+      measurement period.
+      Use controller logs from those executions for every invariant check.
+
+  - id: SC-T4-3-V2
+    category: signal-control
+    tier: 4
+    sumo_run_budget: 8
+    task: >-
+      Perform offline counterfactual evaluation of a proposed signal policy without deploying
+      it during data collection. The logged behavior-policy transitions are in
+      test/benchmark_tasks_files/SC-T4-3-V2/controller_log.csv for a four-leg intersection with
+      two lanes per approach, 400 m arms, and 10 s decision intervals. The file contains 120
+      independent 12-minute evaluation episodes after a 15-minute stochastic warm-up. One row
+      is one behavior-policy transition: `episode` identifies the independent run, `step` is
+      its zero-based decision index, q_n/q_e/q_s/q_w are the north/east/south/west
+      whole-vehicle stop-line queues at the start of the interval, and `ped_max_wait` is the
+      longest active pedestrian wait in
+      seconds. `action` is the selected action 0-3; `propensity` is the probability with which
+      the behavior policy selected that action and must equal the corresponding `p_action0`,
+      `p_action1`, `p_action2`, or `p_action3` value; those four columns give its complete
+      action distribution.
+      `reward_negative_person_seconds_10s` is the negative person-seconds accumulated during
+      the following 10 s, so a less-negative reward is better. `next_q_n`, `next_q_e`,
+      `next_q_s`, `next_q_w`, and `next_ped_max_wait` are the resulting next state, and
+      `done=true` marks the final
+      transition. Actions 0-3 request north-south, east-west, protected-left, or pedestrian
+      service for the next 10 s; a lower-level controller preserves yellow and all-red safety.
+      The log was generated by the operator's calibrated discrete queue model of this
+      intersection, not by the SUMO replica specified below, so the logged environment and
+      the replica may genuinely differ.
+      Before reading episode returns, use this fixed candidate: if pedestrian wait is at least
+      40 s choose action 3; otherwise choose action 0 when q_n+q_s exceeds q_e+q_w by at least
+      4, action 1 when the reverse difference is at least 4, and action 2 otherwise. Make it
+      stochastic by assigning probability 0.7 to that action and 0.1 to each other action.
+      Estimate the mean undiscounted 12-minute episode return—the sum of the 72 logged
+      rewards—with self-normalized importance sampling, a
+      doubly robust estimator, and fitted action-value (Q) evaluation, using whole episodes—not transitions—
+      for bootstrap intervals. Diagnose overlap and truncate weights only under a predeclared
+      rule. Then build a SUMO replica with hourly north/east/south/west (N/E/S/W) demands
+      850/700/650/500 veh/h, 12%
+      left turns, and 180 ped/h per crossing solely to obtain a blinded on-policy validation
+      estimate across five seeds for the fixed candidate. Compare each offline estimate and
+      its 95% interval with that validation as a transfer check, not a coverage test: the
+      offline estimates target the logged environment, so separate estimator error from
+      environment mismatch, and attribute a systematic offset shared by all three estimators
+      to log-replica mismatch rather than estimator failure. Report effective sample size and
+      failure under a deliberately low-overlap
+      policy that assigns probability 0.97 to action 2 and 0.01 to each other action, and never
+      use validation returns to tune either policy. Implement the three offline estimators
+      from their stated equations or general statistical primitives; no counterfactual-signal
+      evaluation helper is assumed. Use three additional on-policy seeds for the low-overlap
+      policy solely to illustrate estimator failure.
+    input_files:
+      - test/benchmark_tasks_files/SC-T4-3-V2/controller_log.csv
+
+  - id: SC-T4-4-V2
+    category: signal-control
+    tier: 4
+    sumo_run_budget: 15
+    task: >-
+      Design a lexicographic fairness-constrained controller for a four-leg urban intersection
+      with 350 m arms. Major approaches have two through lanes plus left pockets and carry
+      900 veh/h each; minor approaches have one lane and carry 320 veh/h each; left turns are
+      12%. A bus carrying 35 passengers arrives every 8 minutes in each direction on the
+      east-west street, pedestrians arrive at
+      240 ped/h on the north and west crossings and 80 ped/h elsewhere, and 10% of pedestrians
+      have walking speed 0.8 m/s. Every 5 s the controller must first guarantee no pedestrian
+      waits over 90 s and no bus lateness over 180 s, then minimize the maximum normalized
+      delay across eight user groups, and only then minimize total delay. Use 3 s yellow,
+      1 s all-red, 10 s vehicle minimum green, and sufficient slow-pedestrian clearance.
+      The eight groups are eastbound, westbound, northbound, and southbound non-bus vehicle
+      occupants; east-west bus passengers; north-crossing pedestrians; west-crossing
+      pedestrians; and pedestrians on the south and east crossings combined. Normalize each
+      group's cumulative mean delay by 60 s for a non-bus vehicle group, 120 s for bus
+      passengers, and 90 s for a pedestrian group; these fixed scales are used inside the
+      controller and for reporting.
+      Implement the lexicographic optimizer, the max-pressure comparator, and a fixed-time
+      baseline in task-owned controller code. Derive the fixed-time baseline once from
+      Webster's method using a saturation flow of 1800 veh/h per lane, the stated demands, a
+      protected major-street left phase, the stated clearance intervals, and the same
+      pedestrian minimums, rounded to whole seconds and frozen before any comparison run. At
+      base demand, compare all three controllers over three matched seeds. At +20% demand,
+      compare only the fairness controller and the max-pressure comparator over the same
+      three seeds, with a 15-minute warm-up and 60-minute measurement
+      period. Report constraint violations, group delay
+      distributions, worst-group regret, person throughput, and efficiency cost. Demonstrate
+      infeasibility explicitly when demands make all guarantees impossible instead of hiding
+      it through teleportation or unserved calls.
+      Freeze all three controllers before the comparison runs.
+
+  # ---------------------------------------------------------------------------
+  # Freeway operations
+  # ---------------------------------------------------------------------------
+  - id: FW-T3-1-V2
+    category: freeway-operations
+    tier: 3
+    sumo_run_budget: 16
+    task: >-
+      Simulate evacuation from a 4x4 grid with 200 m blocks, naming nodes Nrc with row 0 north
+      and column 0 west. Put 150 vehicles at each quadrant origin N00, N03, N30, and N33. All
+      vehicles must reach an eastbound two-lane 100 km/h freeway through a one-lane, 35-vehicle
+      on-ramp leaving N13; the freeway destination is 4 km downstream. Release 50%, 30%, and
+      20% of each origin in consecutive 10-minute waves. At t=900 s a crash at freeway km 2.5
+      closes the right lane for 20 minutes. Simulate each scenario until every vehicle has
+      arrived, with a hard end at t=14400 s; report any vehicle still unfinished at the hard
+      end as an explicit clearance failure rather than truncating it silently. Implement the
+      Asservissement LINéaire d'Entrée
+      Autoroutière (ALINEA) feedback ramp-metering law at the gateway, updating every
+      60 s as r(k)=clip[r(k-1)+70*(20-o),240,900] veh/h, where o is measured merge occupancy
+      in percentage points and r(0)=900 veh/h. For variable speed limits (VSL), use 100 km/h below 18% occupancy,
+      80 km/h at 18-25%, and 60 km/h above 25%, requiring two consecutive 60 s observations
+      before a change; apply it to the 2 km upstream of the crash. Implement incident-aware
+      grid rerouting in task-owned Traffic Control Interface (TraCI) code: every 60 s,
+      recompute each not-yet-at-ramp
+      vehicle's path to N13 from current measured link travel times, accepting a new route only
+      when it is at least 30 s faster to prevent churn. Run the complete 2^3 factorial over two
+      matched seeds so main effects and interactions are estimable. Enforce finite ramp storage of 35 vehicles and
+      prevent metering from hiding queues outside the study area. Report total and
+      per-quadrant clearance curves, last-10% clearance tail, ramp and neighborhood queues,
+      breakdown duration, reroute churn, and teleports. Verify all 600 vehicles in every
+      scenario and reject a policy that lowers total clearance time by worsening any
+      quadrant's median clearance more than 20% unless the equity tradeoff is explicitly
+      reported.
+      The ALINEA, VSL, and rerouting controllers must be written for this task and are not
+      assumed helper modules.
+
+  - id: FW-T3-2-V2
+    category: freeway-operations
+    tier: 3
+    sumo_run_budget: 13
+    task: >-
+      Model a 6 km three-lane mountain freeway comprising 2 km level, 2 km at +4%, and 2 km
+      at -3%, with a 100 km/h dry limit. Fleet shares are 60% gasoline cars, 20% battery
+      electric vehicles (EVs),
+      and 20% heavy diesel trucks. Demand rises from 1200 to 1900 veh/h/lane at t=1800 s;
+      heavy rain starts at t=2700 s in a 90-minute run. Represent grade-dependent truck/EV
+      performance. During heavy rain multiply desired speed and maximum acceleration by 0.85,
+      comfortable deceleration by 0.80, time headway by 1.25, and add 0.5 m to minimum gap for
+      every class. Implement an occupancy-based variable speed limit (VSL) using 100 km/h below 15% occupancy,
+      80 km/h at 15-22%, and 60 km/h above 22%; on recovery require occupancy to fall two
+      percentage points below the applicable threshold. Require two-minute persistence and
+      at most one 20 km/h reduction per
+      minute. Compare dry unmanaged, rain unmanaged, and rain+VSL across three matched seeds.
+      Report breakdown probability, throughput, reliability, carbon dioxide (CO2) and nitrogen
+      oxides (NOx) per completed vehicle, EV watt-hours per kilometer (Wh/km) and state of
+      charge (SOC) change, truck grade speed loss, and speed variance. Use ablations to
+      separate grade, weather, demand, and control; conserve entering demand and show that
+      benefits do not arise from censored, unfinished, or teleported trips.
+      Implement the weather parameter changes and VSL state machine directly in scenario and
+      Traffic Control Interface (TraCI)
+      files. Use four additional one-seed ablations: flat geometry, no demand increase, dry
+      parameters under the rain schedule, and rain with VSL disabled.
+
+  - id: FW-T4-3-V2
+    category: freeway-operations
+    tier: 4
+    sumo_run_budget: 16
+    task: >-
+      Model a moving work zone rather than a static closure. On an 8 km three-lane freeway at
+      100 km/h, a maintenance convoy enters lane 3 at km 1 at t=1200 s, travels at 20 km/h to
+      km 7, pauses for 120 s at km 4, and exits; a shadow truck follows 60 m behind. Mainline
+      demand is 4200 veh/h with 15% heavy trucks and rises to 5100 veh/h from t=1800-3000 s.
+      Implement a rolling taper whose lane-3 closure begins 600 m upstream of the convoy and
+      advances in no more than 200 m increments every 30 s. Place lane-area (E2) queue detectors every
+      500 m from km 0.5 to 6.5 and warning signs at km 0.5, 2.0, 3.5, and 5.0; a sign may warn
+      only when it is upstream of the current queue tail and the predicted tail reaches the
+      sign in 30-120 s. Implement convoy motion, taper advancement, queue prediction, and sign
+      states in task-owned Traffic Control Interface (TraCI) code. Compare no warning, static advance warning, and moving
+      queue-responsive warning over four matched seeds. Validate that no
+      vehicle is trapped inside a newly closed segment, the taper never jumps past a vehicle,
+      and workers remain separated from live traffic. Report convoy completion, throughput,
+      maximum queue, shockwave speed, hard braking, lane changes within 300 m of the convoy,
+      secondary-conflict rate, and warning false alarms; stress test a five-minute detector
+      outage beginning at t=2100 s.
+      Apply the outage only to the moving queue-responsive policy over the same four seeds.
+
+  - id: FW-T4-4-V2
+    category: freeway-operations
+    tier: 4
+    sumo_run_budget: 9
+    task: >-
+      Develop cooperative merge control with an explicit string-stability requirement at a
+      three-to-two lane drop. The freeway is 5 km, 100 km/h, with the drop at km 3.5; demand
+      is 4600 veh/h for 20 minutes, 5600 veh/h for 30 minutes, then 4600 veh/h for 20 minutes;
+      10% are trucks. Sweep cooperative-vehicle penetration over 0, 25, 50, 75, and 100%.
+      Controlled vehicles may form gaps and exchange desired merge slots, but human vehicles
+      retain normal behavior and no commanded acceleration may exceed +1.5 or -2.5 m/s2.
+      Define string stability as non-amplification of speed perturbation energy over successive
+      controlled followers: for each vehicle use its mean speed during the 60 s before the
+      pulse as its equilibrium reference, integrate squared deviation from that reference until
+      the pulse dissipates, and require every
+      controlled follower's energy ratio to its controlled predecessor to be at most 1. Test
+      it by selecting, at t=2400 s, the vehicle in the center lane nearest km 2.0 (taking the
+      upstream vehicle on a tie) and commanding it to reduce speed by 5 m/s, hold the reduced
+      speed for 4 s, and then resume normal driving; measure amplification along the vehicles
+      following it.
+      Implement the two slot-allocation controllers in task-owned code. Equipped vehicles
+      behave exactly like human-driven vehicles whenever no controller is active, so the
+      uncontrolled zipper-merge baseline and every 0% penetration cell are the same scenario:
+      simulate it once with the common seed and reuse it. Compare earliest-arrival slotting
+      and fairness-weighted slotting at 25, 50, 75, and 100% penetration against that shared
+      baseline, using one common seed per cell. Report discharge, travel time, merge failures,
+      approach fairness, perturbation amplification, minimum time headway, hard braking, and
+      fuel. Reject a controller that raises capacity by violating comfort, collision checks,
+      or string stability.
+      Compute the pre-pulse reference and pulsed response from each cell's single cached
+      trajectory.
+
+  # ---------------------------------------------------------------------------
+  # Multimodal and transit
+  # ---------------------------------------------------------------------------
+  - id: MT-T3-1-V2
+    category: multimodal-transit
+    tier: 3
+    sumo_run_budget: 12
+    task: >-
+      Import the General Transit Feed Specification (GTFS) files in
+      test/benchmark_tasks_files/MT-T3-1-V2/gtfs/ without editing it,
+      using a weekday service date in 2026 and local times in the agency's America/Chicago
+      timezone. Interpret the GTFS columns as follows. In `agency.txt`, `agency_id` is the
+      operator key, `agency_name` and `agency_url` are metadata, and `agency_timezone` governs
+      all service times. In `calendar.txt`, `service_id` is referenced by trips; `monday`,
+      `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, and `sunday` are 0/1 operating
+      flags; the supplied `service_id=WD` denotes weekday service; and
+      `start_date`/`end_date` are inclusive year-month-day (`YYYYMMDD`) bounds.
+      In `routes.txt`, `route_id` is referenced by trips, `agency_id` identifies the operator,
+      `route_short_name`/`route_long_name` are labels, and `route_type=3` means bus. In
+      `trips.txt`, `route_id` and `service_id` are foreign keys, `trip_id` identifies one
+      scheduled eastbound run, and `trip_headsign` is its passenger-facing destination. In
+      `stops.txt`, `stop_id` is the stop key, `stop_name` is its label, and `stop_lat`/`stop_lon`
+      are World Geodetic System 1984 (WGS84) coordinates. In `stop_times.txt`, `trip_id` and
+      `stop_id` are foreign keys, `arrival_time`/`departure_time` are local
+      hour:minute:second (`HH:MM:SS`) values, and `stop_sequence` is the increasing
+      visit order. Preserve the hourly trips exactly. Add separately identified overlay trips
+      departing S1 at 07:05, 07:15, ..., 08:55 on the same S1-S6 sequence so they do not
+      duplicate the hourly departures at 07:00 and 08:00. Map the feed to a 3 km six-signal
+      arterial with 500 m between successive stops; background traffic is 500 veh/h per
+      direction from 07:00-08:00 and 900 veh/h from 08:00-09:00. The arterial has two lanes
+      per direction at 50 km/h. Place one signalized intersection at each of the six stop
+      locations, so successive signals are also 500 m apart; near-side and far-side placement
+      at S3 are defined relative to that stop's signal. Each signal has a one-lane side
+      street per approach carrying a uniform 150 veh/h with left/through/right shares
+      15/70/15%. Vehicles hold 60 passengers.
+      Passenger arrivals are Poisson at 60 passengers/h at S1, S2, S4, and S5, 180/h at S3,
+      and zero at terminal S6. For each boarding passenger, choose uniformly among downstream
+      stops as the destination using common random draws across treatments. Dwell is 5 s for
+      doors plus 2.0 s per boarding and 1.0 s per alighting, based on realized passengers.
+      At S3 compare near-side and far-side stops under no control, transit
+      priority, and priority plus forward-headway holding capped at 60 s. Limit priority to
+      10 s extension or 5 s early green and never skip the side-street phase twice in a row.
+      Use SUMO's distributed `tools/import/gtfs/gtfs2pt.py` and related installed GTFS import
+      scripts if they fit the constructed network; they are SUMO tools, not benchmark helpers.
+      Write the overlay-service generator, passenger loading, priority, and holding control in
+      task-owned code. Use two matched traffic and passenger seeds in each of the six
+      stop-location-by-control cells. Report schedule adherence, passenger-weighted
+      wait, dwell and intersection delay, headway regularity, bunching, side-street delay, and
+      the stop-placement/control interaction. Validate GTFS stop order and times, every
+      boarding/alighting, and that gains are not caused by skipped stops or lost passengers.
+    input_files:
+      - test/benchmark_tasks_files/MT-T3-1-V2/gtfs/
+
+  - id: MT-T3-2-V2
+    category: multimodal-transit
+    tier: 3
+    sumo_run_budget: 19
+    task: >-
+      Build a 5 km west-to-east residential-to-downtown arterial with two 60 km/h lanes per
+      direction, signals and bus stops every 1 km, and 800 veh/h per direction of background
+      traffic. Generate 1200 west-end travelers with requested departures uniform from
+      07:00-09:00 and an east-end downtown destination. They may drive throughout and pay $8
+      downtown parking, or drive 500 m to a free fringe park-and-ride (P&R) at the west terminal and
+      transfer to a 10-minute battery-electric bus. Use $18/person-hour for all in-vehicle,
+      walk, wait, search, and crowding time in generalized cost. Add a 10-minute penalty for
+      denied boarding and value bus time at 1.25 times uncrowded time above 80% seated capacity.
+      At each iteration use a binary logit P(P&R)=1/[1+exp(0.5*(C_P&R-C_drive))], where costs
+      are dollars, and update the modal shares by method of successive averages. Test lot
+      capacities 50, 100,
+      and 200; full-lot users must observe
+      failure and choose a legal alternative. Model three 80-kilowatt-hour (kWh), 45-passenger
+      buses using 1.2 kWh/km nominally, passenger-dependent dwell, and 150-kilowatt (kW)
+      opportunity chargers under three charging configurations: one charger at the fringe
+      terminal only, one at the downtown terminal only, and one at each of the two termini. Start the three buses at evenly spaced
+      points in the cycle and retain the same initial positions across alternatives. Implement
+      the mode-choice update, parking response, passenger capacity, charging, and vehicle
+      scheduling in task-owned code. Run the all-drive baseline once. Then screen all nine
+      lot-capacity-by-charging cells with one common seed and initial P&R share 0.50. Retain
+      the lowest-generalized-cost charging cell at each lot capacity and give each of those
+      three finalists at most three further successive-average SUMO iterations. Stop a
+      finalist early when its car/P&R split changes by less than one percentage point; otherwise
+      report non-convergence at the iteration cap. Report screening results for all nine and
+      converged results only for the three finalists, including mode split, person-time
+      distribution, accessibility by
+      departure quartile, overflow, pass-ups, bus state of charge (SOC), charger queues, car
+      vehicle-kilometers traveled (VKT), and carbon dioxide (CO2).
+      Reject designs that strand a bus or serve fewer travelers and identify whether parking,
+      bus capacity, or charging binds.
+
+  - id: MT-T4-3-V2
+    category: multimodal-transit
+    tier: 4
+    sumo_run_budget: 20
+    task: >-
+      Design pulse-timetable control for a mobility hub where a rail line, two bus routes, and
+      a street-running tram exchange passengers during 06:00-10:00. Scheduled rail arrivals
+      are at :00, :20, and :40 each hour; the first scheduled departures for bus routes B1 and
+      B2 are 06:02
+      and the first tram departure is 06:04, after which their stated headways apply. Rail
+      arrivals have independent normally distributed schedule deviations with mean zero and
+      standard deviation 3 minutes; buses B1 and B2 run
+      every 10 minutes from opposite
+      directions; the tram runs every 8 minutes. At each rail arrival, 90 passengers transfer
+      40% to B1, 30% to B2, 20% to tram, and 10% walk. Each B1, B2, and tram departure also
+      carries 25 non-transfer passengers already aboard at the hub; these through passengers
+      incur any hold but do not alight there.
+      From the hub, B1 and B2 each traverse a 6 km mixed-traffic corridor with six 1 km-spaced
+      stops at 40 km/h amid 600 veh/h background flow; the tram traverses a 4.8 km reserved
+      alignment with six 800 m-spaced stops at 30 km/h. All three return to the hub, so a hold
+      propagates into the next scheduled trip.
+      Minimum transfer walks are 2, 3, and 4 minutes respectively and capacities are
+      B1=55, B2=45, tram=110. Implement a real-time connection-protection policy choosing
+      holds up to 180 s while accounting for on-board delay, downstream headway propagation,
+      pass-ups, and the next departure. Compare no hold, fixed 90 s hold, myopic
+      passenger-minimizing hold, and a rolling-horizon policy across five matched synthetic
+      days generated by five random seeds. Implement both decision policies and downstream state propagation in task-owned
+      code. Across the five days there are 60 scheduled rail arrivals; choose six in advance
+      with a common random draw and add exactly +12 minutes to those arrivals, giving 10%
+      disrupted arrivals while preserving paired days. Report
+      missed-connection probability, passenger-weighted generalized time, downstream
+      bunching, pass-ups, and worst-decile traveler delay, and prove the policy does not
+      cascade indefinitely or sacrifice through passengers to protect a small transfer group.
+
+  - id: MT-T4-4-V2
+    category: multimodal-transit
+    tier: 4
+    sumo_run_budget: 18
+    task: >-
+      Model shared e-scooter availability, rebalancing, and geofencing on a 4x4 grid with
+      200 m blocks using the requests and starting inventory in
+      test/benchmark_tasks_files/MT-T4-4-V2/trip_requests.csv and
+      test/benchmark_tasks_files/MT-T4-4-V2/station_inventory.csv. Name nodes Nrc with row 0
+      north and column 0 west. In `station_inventory.csv`, one row is one station:
+      `station_id` maps it to `grid_node`, `start_scooters` is its inventory at 07:00,
+      `dock_capacity` is the maximum simultaneous parked scooters, `mean_start_soc` is the
+      deterministic mean starting state of charge (SOC), expressed as a battery fraction and
+      assigned to every scooter at that station, and
+      `low_income_origin` labels the surrounding station area for the geographic-equity
+      result. In `trip_requests.csv`, one row is one potential rental: `request_id` is stable,
+      `depart_time` is the requested local departure time, `origin_station` and
+      `destination_station` reference station identifiers (IDs), and `income_group` is the requester's group
+      and does not change the station
+      label. Put protected scooter lanes on all east-west links in rows 1
+      and 2; the links N11<->N12 and N21<->N22 are geofenced pedestrian-priority blocks where
+      the geofence overrides the protected-lane speed. Scooters travel at 18 km/h in the other
+      protected lanes, 12 km/h on shared low-speed streets, and 6 km/h in those two geofenced
+      blocks; sidewalk riding is forbidden. Battery capacity is 0.5 kilowatt-hours (kWh),
+      consumption 18 watt-hours per kilometer (Wh/km), and rentals require at least 15% SOC.
+      Compare no rebalancing,
+      a truck moving at most 12 scooters every 30 minutes, and incentive-based user
+      rebalancing. Assign every starting scooter its station's stated mean SOC. A requester may
+      walk at 5 km/h up to 400 m to another origin station; a rider reaching a full destination
+      may divert to the nearest dock within 400 m, otherwise record failed docking. For user
+      rebalancing offer $1 per 200 m of destination deviation, capped at $4, with acceptance
+      probability equal to incentive/4. Preserve every retained request and record it as
+      served or unmet rather than creating a replacement. For each of four base perturbations,
+      independently jitter each file row's request time with a triangular distribution having
+      minimum/mode/maximum [-5,0,+5] minutes and realize whether that potential requester
+      travels with probability 0.90, using the same jitter and Bernoulli draw across policies.
+      Simulate 07:00-11:30 in every run so the latest jittered request, near 11:03, can
+      complete.
+      A non-traveler is excluded from both served and unmet denominators; in the rain case use
+      travel probability 0.45, exactly half the base willingness. Report served share,
+      wait/walk to scooter,
+      empty/full station events, truck vehicle-kilometers traveled (VKT) and carbon dioxide (CO2),
+      incentive cost, sidewalk conflicts, and access by low- versus high-income origin. Test a
+      rain case that halves scooter willingness and recommend a policy only if its availability
+      gain is not purchased by greater total motorized VKT or inequitable denial.
+      Implement truck and incentive rebalancing decisions in task-owned code. Use four base
+      perturbation seeds and two additional common seeds for the rain case. Simulate the no-rebalancing
+      case as well, since it supplies paired outcomes.
+    input_files:
+      - test/benchmark_tasks_files/MT-T4-4-V2/trip_requests.csv
+      - test/benchmark_tasks_files/MT-T4-4-V2/station_inventory.csv
+
+  # ---------------------------------------------------------------------------
+  # Safety and human factors
+  # ---------------------------------------------------------------------------
+  - id: SF-T3-1-V2
+    category: safety-human-factors
+    tier: 3
+    sumo_run_budget: 20
+    task: >-
+      Select the shortest acceptable eastbound left-turn bay at a four-leg signalized
+      intersection with 350 m arms, two major-street through lanes, and one minor-street lane.
+      Test 0, 50, 90, and 130 m. For the middle 30 minutes of a 60-minute run, eastbound demand
+      is 900 veh/h through plus 260 left; otherwise it is 600 plus 120. Westbound demand is
+      1000 veh/h with 15% left and 10% right turns; each minor approach is 350 veh/h with
+      left/through/right shares 20/60/20%, and 12% of motor vehicles are trucks. Add an
+      east crossing with 250 ped/h and an east-west protected bike track with 100 bicycles/h.
+      Across five matched seeds measure spillback duration, through blockage, delay, and
+      rear-end time to collision (TTC), left-turn post-encroachment time (PET), and
+      bicycle/right-turn conflicts from SUMO's native Surrogate Safety Measure (SSM) device
+      using exposure-consistent
+      denominators. Choose the shortest bay with peak spillback below 5% of time and no safety
+      metric over 10% worse than the no-bay case. Validate lane use and storage physically and
+      report a Pareto tradeoff if no candidate meets both criteria.
+      Write the geometry generator, output checks, and selection analysis for this task; no bay
+      design or safety-analysis helper is assumed.
+
+  - id: SF-T3-2-V2
+    category: safety-human-factors
+    tier: 3
+    sumo_run_budget: 19
+    task: >-
+      Evaluate a retrofit at a 70-degree skewed intersection carrying 900 veh/h per major
+      direction and 350 per minor direction, with 15% right turns, 12% trucks, 300 ped/h, and
+      180 bicycles/h on a protected major-street track in a 60-minute run. A near-side bus
+      stop and curbside
+      delivery vehicle occupy the final 35 m before the eastbound stop line. Compare existing
+      right turn on red (RTOR), no RTOR plus a 7 s leading pedestrian/bicycle interval, and a setback
+      protected crossing with a separately signaled right turn. Calibrate only the baseline to
+      observed yielding of 45% among 200 pedestrian encounters and 30% among 150 bicycle
+      encounters; motor-vehicle
+      left/through/right shares are 10/75/15%. Use two one-seed baseline calibration candidates
+      and select the one closest to both observed yielding targets without viewing treatment
+      outcomes. Then use two matched seeds for the three treatments,
+      report exposure-normalized pedestrian/bicycle time to collision (TTC) and
+      post-encroachment time (PET), hard braking, user delay, bus
+      delay, and vehicle capacity. Add a negative control with the obstruction removed, verify
+      no conflicting greens, propagate calibrated-yield uncertainty, and recommend a treatment
+      only if its safety conclusion survives both parameter and seed uncertainty.
+      Run one obstruction-removed negative-control seed per treatment. For yield uncertainty,
+      evaluate the selected treatment and baseline at the lower and upper Wilson 95% bounds
+      of each observed yield rate using one common seed per bound. Simulate baseline and the
+      selected treatment separately in each of those four bound scenarios. Build all treatments and
+      output analysis in task-owned code; TTC/PET comes from SUMO's native Surrogate Safety
+      Measure (SSM) device.
+
+  - id: SF-T4-3-V2
+    category: safety-human-factors
+    tier: 4
+    sumo_run_budget: 15
+    task: >-
+      Evaluate intersection treatments with probabilistic injury severity, not only conflict
+      counts. Use the conditional speed/angle injury-risk table in
+      test/benchmark_tasks_files/SF-T4-3-V2/injury_risk_curves.csv and the separate
+      conflict-to-collision transfer table in
+      test/benchmark_tasks_files/SF-T4-3-V2/conflict_to_collision.csv. In
+      `conflict_to_collision.csv`, each row maps one `road_user_pair` and `surrogate_metric`
+      (time to collision (TTC) or post-encroachment time (PET)) interval
+      [`threshold_min_seconds`, `threshold_max_seconds`) to conditional
+      probabilities `p_collision_low`, `p_collision_base`, and `p_collision_high`. In
+      `injury_risk_curves.csv`, each row gives conditional injury probabilities for the stated
+      `road_user` and `impact_type`, angle interval [`angle_min_deg`, `angle_max_deg`) in
+      degrees, and `impact_speed_kmh` is impact speed in kilometers per hour. Here, Maximum
+      Abbreviated Injury Scale level 2 or
+      greater (MAIS2+) is the injury threshold. The probability fields are
+      `p_mais2_given_collision_low`, `p_mais2_given_collision_base`, and
+      `p_mais2_given_collision_high`. Use the pedestrian or bicycle curve
+      for a vulnerable-user conflict and the vehicle_occupant curve for each of the two
+      vehicles in a vehicle-vehicle conflict. Determine impact type from the supplied angle
+      bins. Use the motor vehicle's speed at the minimum reported by SUMO's native Surrogate
+      Safety Measure (SSM) device for a vulnerable-user impact and
+      the relative closing-speed magnitude for a vehicle-vehicle impact; linearly interpolate
+      probability only between the supplied speed rows within the selected bin. Build a
+      four-leg intersection with two 50 km/h major lanes, one 40 km/h minor lane, 950/900 veh/h
+      major demand, 350/300 veh/h minor demand, and left/through/right shares 12/73/15% on
+      every motor approach. Put 220 ped/h on each crossing and 140 bicycles/h in each direction
+      on a major-street protected track. Compare a conventional
+      protected-left plan, a raised 30 km/h intersection table, and a protected layout with
+      5 m setback crossings and separately controlled rights. Across five matched seeds extract
+      conflict speed, angle, road-user pair, and estimated impact speed; expose out-of-range
+      cases rather than extrapolating. Treat angle-bin lower bounds as inclusive and upper
+      bounds as exclusive except 180 degrees. First map TTC/PET to P(collision | conflict),
+      then multiply it by P(MAIS2+ | collision); sum the two occupant expectations for a
+      vehicle-vehicle conflict. Combine, rather
+      than conflate, collision probability and conditional injury probability to estimate a
+      scenario-conditional MAIS2+ burden per million entrants with bootstrap intervals;
+      decompose conflict frequency, collision transfer, and injury severity, and compare the
+      ranking with TTC<1.5 s and PET<2 s rankings. Perform all nine combinations of
+      low/base/high choices from the two tables. Do not claim crash prediction validity; label
+      results as transfer-model
+      estimates, state the assumptions, and reject a treatment whose apparent benefit comes from
+      unserved vulnerable users.
+      SUMO's native SSM device supplies encounter trajectories only;
+      implement every collision
+      and injury transfer calculation in task-owned analysis code. The nine risk-table
+      combinations are offline re-analyses of the same 15 outputs.
+    input_files:
+      - test/benchmark_tasks_files/SF-T4-3-V2/injury_risk_curves.csv
+      - test/benchmark_tasks_files/SF-T4-3-V2/conflict_to_collision.csv
+
+  - id: SF-T4-4-V2
+    category: safety-human-factors
+    tier: 4
+    sumo_run_budget: 15
+    task: >-
+      Model a 400 m east-west school frontage with one 30 km/h lane per direction, sidewalks,
+      a central marked crossing, and 20 legal curb spaces. Put one parallel residential street
+      100 m north and one 100 m south, each with one 30 km/h lane per direction; 100 m connectors
+      at both frontage ends make each signed detour 600 m from end to end versus 400 m on the
+      frontage. From 07:30-08:15, through demand is 420 veh/h
+      per direction, 180 children arrive, 60% by car and 40% walking, with one arriving car per
+      driving child and equal arrivals from the east and west. Car drop-offs dwell
+      20-90 s. When legal curb spaces are full, 35% of drivers double-park unless prevented;
+      children have walking speeds uniformly 0.8-1.4 m/s and accept gaps differently when
+      escorted. Half of walking children are escorted. Calibrate lognormal critical-gap
+      distributions with coefficient of variation 0.20 to observed baseline median accepted
+      gaps of 5.0 s unescorted and 6.5 s escorted; retain those distributions in every
+      treatment. Compare existing operation, a staffed crossing with no parking enforcement,
+      camera-enforced no-double-parking, and a timed school street closed to through traffic
+      from 07:40-08:05 with signed detours. Calibrate baseline double-parking and gap acceptance
+      to the stated rates, not treatment outcomes. Across three matched seeds report child vehicle
+      exposure, accepted-gap distribution, hard braking, sight obstruction time, drop-off and
+      through delay, detour traffic on two parallel residential streets, and unserved arrivals.
+      Test 10% noncompliance with the closure and require every child/person/vehicle chain to
+      balance before drawing a safety conclusion.
+      Implement the curb behavior, crossing assistance, enforcement, and closure compliance in
+      task-owned code. Re-run only the school-street treatment with 10% noncompliance over the
+      same three seeds. Calibration uses the stated
+      probabilities directly and requires no simulation.
+
+  # ---------------------------------------------------------------------------
+  # Environment and energy
+  # ---------------------------------------------------------------------------
+  - id: EN-T3-1-V2
+    category: environment-energy
+    tier: 3
+    sumo_run_budget: 20
+    task: >-
+      On a 4x4 grid with 200 m blocks, use four inbound boundary connectors on each side. A
+      stated fringe demand level is the total for one side, divided equally among its four
+      connectors; set it to 900 veh/h per side and send each entering vehicle uniformly to one
+      of the other three sides. Model 60%
+      gasoline cars, 20% diesel cars, 10% diesel light commercial vehicles, and 10% diesel
+      trucks, using Handbook Emission Factors for Road Transport version 4 (HBEFA4) Euro 6
+      light-duty and Euro VI (stage-six) heavy-duty emission classes available
+      in the installed SUMO version; record the exact class strings and do not substitute one
+      generic passenger class for the fleet. SUMO natively reports emissions and accepts route
+      or edge-effort inputs, but it does not provide the complete emissions-routing policy used
+      here. Implement it explicitly: give each origin-destination (OD) pair at least three
+      meaningfully distinct candidate
+      routes and quantify overlap. At each departure, assign an equipped vehicle to the
+      candidate with the lowest predicted carbon dioxide (CO2). For each edge and emission
+      class, predict CO2 as its previous-60-second mean per-vehicle Traffic Control Interface
+      (TraCI) CO2 rate multiplied by its previous-60-second
+      mean travel time; collect both quantities from vehicles that actually traversed the edge.
+      If that edge/class cell has no observation, use the current networkwide mean for the class;
+      during the first 60 s use the free-flow-shortest route. Unequipped vehicles choose the
+      candidate with minimum previous-interval travel time, again using free flow initially.
+      Do not reroute an already departed vehicle. Sweep equipped penetration through 0, 25, 50,
+      and 100% using identical departures
+      and five matched seeds. Report CO2,
+      nitrogen oxides (NOx), fuel, vehicle-kilometers traveled (VKT), time, and emissions per
+      completed trip by class and origin zone. Test
+      whether high penetration displaces congestion/emissions onto nominally clean routes;
+      compare equipped private benefit with network totals and plot travel-time/CO2 Pareto
+      fronts. Account for unfinished and teleported vehicles and reject any saving explained
+      by fewer completions, unequal boundaries, or route-set differences.
+      Write route-set construction, policy, orchestration, and analysis code for the task; no
+      eco-routing helper is assumed. Make all parameter choices
+      offline from this specification rather than from pilot simulations.
+
+  - id: EN-T3-2-V2
+    category: environment-energy
+    tier: 3
+    sumo_run_budget: 12
+    task: >-
+      Retime a dense urban signalized intersection for both mobility and receptor exposure.
+      The major street has two lanes per direction at 50 km/h and 1000 veh/h each way; the
+      minor street has one lane at 40 km/h and 400 veh/h each way; 8% are diesel trucks and
+      every motor approach has left/through/right shares 12/73/15%. Use 180 pedestrians/h on
+      each crossing. Simulate a 15-minute warm-up followed by a 60-minute
+      measurement period. Put the intersection center at (0,0), with x east,
+      y north, the major street east-west, and the minor street north-south. Receptor
+      population weights are relative exposure weights, not census counts. Use coordinates in
+      test/benchmark_tasks_files/EN-T3-2-V2/receptors.csv and six meteorological cases in
+      test/benchmark_tasks_files/EN-T3-2-V2/meteorology.csv. In `receptors.csv`, one row is one
+      evaluation point: `receptor_id` is its label; `x_m`/`y_m` are meters from the intersection
+      center in the coordinate system just defined; `height_m` is sampling height;
+      `population_weight` is a dimensionless relative weight used in the weighted-exposure
+      average; and `setting` is a descriptive land-use label, not another weight. In
+      `meteorology.csv`, one row is one dispersion case: `case_id` is its label;
+      `wind_from_deg` is the bearing from
+      which wind arrives, clockwise from north; `wind_speed_mps` is wind speed in meters per
+      second, while `mixing_height_m` and Pasquill `stability_class` parameterize dispersion;
+      `background_nox_ug_m3` is the
+      ambient nitrogen-oxides (NOx) concentration in micrograms per cubic meter to add to the
+      modeled increment; and `case_weight` is the case
+      probability. The six case weights sum to 1 and are used for expected exposure and
+      regret; also report the worst case. Compare the existing 100 s two-phase plan
+      (54 s major green, 3 s yellow, 1 s all-red, 38 s minor green, 3 s yellow, and 1 s
+      all-red), a delay-minimizing plan, and a multi-objective
+      plan chosen from at least 40 timing candidates with 3 s yellow, 1 s all-red, and 18 s
+      pedestrian minimum. Rank the 40 candidates first with a deterministic queue-and-emission
+      proxy that does not invoke SUMO; choose five Pareto-spanning candidates and add the
+      existing plan for a six-run, common-seed simulation screen. From those outputs select a
+      delay-minimizing plan and a population-weighted-exposure plan, then run the three reported
+      plans on two additional matched seeds. Create 25 m emission segments and run a
+      verified line-source dispersion calculation for every wind case, and report delay,
+      throughput, carbon dioxide (CO2) and NOx, maximum one-hour total NOx receptor concentration (modeled increment
+      plus the case-specific background in the meteorology file), population-weighted
+      exposure, and plan regret across winds. Cross-check emissions totals and show how using
+      whole-edge emissions changes the hotspot and chosen timing.
+      SUMO supplies native emissions output only. Implement candidate generation, the
+      line-source dispersion calculation, receptor aggregation, and regret analysis in
+      task-owned code. All six meteorological cases are
+      offline analyses of each cached output.
+    input_files:
+      - test/benchmark_tasks_files/EN-T3-2-V2/receptors.csv
+      - test/benchmark_tasks_files/EN-T3-2-V2/meteorology.csv
+
+  - id: EN-T4-3-V2
+    category: environment-energy
+    tier: 4
+    sumo_run_budget: 12
+    task: >-
+      Add a transparent external non-exhaust particulate matter (PM) model—brake wear, tire
+      wear, and road-dust
+      resuspension—to a 5 km arterial simulation, because tailpipe-only outputs cannot answer
+      the question. The corridor has five signals at 1 km spacing, two lanes per direction,
+      60 km/h limit, and 1100 veh/h per direction. Each of the ten side-street approaches has
+      300 veh/h; every motor approach uses left/through/right shares 10/80/10%. The fixed-time
+      baseline has a 90 s cycle, 52 s arterial green, 3 s yellow, 1 s all-red, 30 s side-street
+      green, 3 s yellow, and 1 s all-red. Fleet shares are 40% gasoline cars, 30%
+      battery electric vehicles (EVs), 20% light vans, and 10% heavy trucks. Use reference
+      masses 1500, 1800,
+      2400, and 12000 kg respectively. Regenerative braking supplies 70% of EV braking energy
+      when deceleration is below 0.25 times gravitational acceleration (g) and zero above that
+      threshold. Compare fixed-time,
+      coordinated, and stop-minimizing eco-control over four matched seeds. Implement the
+      coordinated timing and stop-minimizing controller in task-owned code and freeze them
+      before these comparison runs. Model particulate matter no larger than 10 micrometers in
+      aerodynamic diameter (PM10) tire wear
+      as 10 milligrams per vehicle-kilometer (mg/veh-km)*(mass/1500)^1.2, road-dust resuspension as
+      20 mg/veh-km*(mass/1500)^0.5, and brake wear as 20 mg per megajoule (MJ) of
+      friction-braking energy.
+      Use these as base factors and multiply all three by 0.5 and 2.0 for the low and high
+      cases. Report tailpipe PM10, each non-exhaust component,
+      total PM per vehicle-km, stop/braking distributions, and class contributions. Verify
+      energy and distance accounting from trajectories, separate these external factor
+      assumptions from SUMO outputs, and
+      determine whether a control ranking reverses when non-exhaust PM is included.
+      The low/base/high wear factors are offline recalculations of the same trajectories.
+
+  - id: EN-T4-4-V2
+    category: environment-energy
+    tier: 4
+    sumo_run_budget: 8
+    task: >-
+      Compare life-cycle greenhouse-gas consequences of electrifying a 40-bus fleet on a
+      route with a 12 km round trip (6 km each way) rather than reporting only simulated
+      tailpipe emissions. Buses make six round trips per bus per day, for 72 km of daily
+      service driving per bus, carry 55 passengers, and operate 330 days/year for 12 years.
+      Treat the bus chassis as common to both technologies and outside the comparison boundary;
+      include direct diesel combustion, grid generation for charging, and original and
+      replacement battery manufacture. Diesel
+      buses consume 0.42 liters per kilometer (L/km); battery buses use a traffic-dependent
+      SUMO energy model with 420-kilowatt-hour (kWh) packs, 300-kilowatt (kW) depot chargers,
+      92% charging efficiency, and pack replacement when
+      usable capacity falls below 80%. Compare 4, 6, and 8 charger plugs. Charging may be
+      scheduled in three two-hour depot windows, 21:00-23:00, 23:00-01:00, and 01:00-03:00,
+      with marginal grid intensities of 650, 380, and 120 grams of carbon-dioxide equivalent
+      per kilowatt-hour (gCO2e/kWh), respectively. Use battery manufacture at 75 kilograms of
+      carbon-dioxide equivalent per kilowatt-hour (kgCO2e/kWh), diesel at 2.68 kilograms of
+      carbon-dioxide equivalent per liter (kgCO2e/L), and annual grid decarbonization of 4%.
+      Model usable-capacity
+      loss as 1% per year of pack age plus 2% per 1000 equivalent full cycles; a replacement
+      resets both terms. Represent the route as a 6 km arterial with two lanes per direction
+      at 50 km/h and five signalized intersections at km 1 through km 5, each crossed by a
+      one-lane side street and running a fixed 90 s two-phase plan of 41 s arterial green,
+      3 s yellow, 1 s all-red, 41 s side-street green, 3 s yellow, and 1 s all-red. Buses
+      serve six stops per direction at 1 km spacing with a fixed 25 s dwell and lay over at
+      the termini for the remainder of the scheduled cycle. Simulate a base traffic schedule
+      with a 60-minute scheduled cycle time, 600 veh/h per direction of arterial background
+      demand, and 250 veh/h per side-street approach, and a congested schedule with a
+      75-minute scheduled cycle time, 1000 veh/h per direction, and 450 veh/h per side-street
+      approach; each SUMO execution simulates two consecutive scheduled cycles with all 40
+      buses in service. Take each battery bus's traffic-dependent energy per round trip from
+      these simulations and model charger contention in the offline depot-charging
+      calculation. Report undiscounted
+      life-cycle emissions and a sensitivity result that discounts annual future emissions at
+      3% solely for comparability with appraisal practice; label that convention clearly.
+      Report break-even year, replacements, missed service, and
+      sensitivity to grid, degradation, and embedded-carbon assumptions. Reject a schedule
+      that achieves low carbon by failing trips, and state when electrification is worse than
+      diesel under the supplied bounds.
+      Implement charger dispatch, degradation, replacement, and life-cycle accounting in
+      task-owned code. Because depot charging occurs in the 21:00-03:00 windows while service
+      is daytime, charger-plug counts and window choices cannot alter the traffic simulation;
+      do not re-simulate them. Run battery buses with three matched seeds per traffic schedule
+      and diesel buses once per schedule, then evaluate all 3 charger-plug counts x 3
+      single-window charging choices offline for each schedule using the per-round-trip
+      energy distributions from the cached battery runs. The charger-contention, 12-year, and
+      sensitivity calculations are offline.
+
+  # ---------------------------------------------------------------------------
+  # Freight, curb, and parking operations
+  # ---------------------------------------------------------------------------
+  - id: FC-T3-1-V2
+    category: freight-curb-operations
+    tier: 3
+    sumo_run_budget: 12
+    task: >-
+      Build 07:00-10:00 delivery tours from
+      test/benchmark_tasks_files/FC-T3-1-V2/delivery_orders.csv on a 5-row by 4-column grid with
+      180 m blocks. Name nodes N01-N20 in row-major order from northwest to southeast and place
+      the depot at southwest node N17. In `delivery_orders.csv`, one row is one indivisible
+      order: `order_id` is its label, `destination_node` is the customer grid node, `parcels`
+      is the capacity consumed, window_start/window_end are the inclusive earliest and latest
+      legal service-start times, and `service_minutes` is nominal curbside handling time before
+      the seed-specific multiplier. In `curb_inventory.csv`, one row is one legal loading area:
+      `curb_id` is its label, `adjacent_node` is its access node, `spaces` is simultaneous-stop
+      capacity, legal_start/legal_end form a half-open availability interval,
+      `max_dwell_minutes` is a hard limit, and `walk_distance_m` is a fixed off-network access
+      distance added to the grid walk. Treat each order as indivisible and each van as making
+      one depot-to-depot tour. Use eight vans of capacity 120
+      parcels, 40 km/h links, and background demand of 500 veh/h entering from each east/west
+      boundary edge and 350 veh/h from each north/south boundary edge, distributed uniformly
+      to the opposite and adjacent sides. Orders must respect
+      time windows, service durations, vehicle capacity, and depot return by 10:00. Every
+      grid link has two 40 km/h lanes per direction. Compare
+      legal-only loading at the nearest open curb followed by walking; double-parking at the
+      destination after a two-minute unsuccessful legal-space search; and overflow rerouting
+      to the next-nearest open legal curb followed by walking. Define walking distance as 180 m
+      times the Manhattan number of grid links from curb node to destination, plus the curb
+      row's `walk_distance_m` access offset.
+      In each of four matched seeds, multiply every listed service time by an independent
+      triangular [0.8,1.0,1.2] variate shared across policies. Validate every parcel exactly once, curb capacity, stop access, and tour
+      continuity. Report on-time deliveries, vehicle and courier time, search/cruising,
+      double-park blockage, through delay, queue spillback, vehicle-kilometers traveled (VKT),
+      carbon dioxide (CO2), and exposure-normalized
+      lane-change conflicts; identify whether curb capacity or routing causes failures.
+      Write order packing, tour construction, legal-curb search, double-parking behavior, and
+      validations in task-owned code; no freight-tour or curb-management helper is assumed.
+      Use SUMO's native Surrogate Safety Measure (SSM) output for conflicts.
+    input_files:
+      - test/benchmark_tasks_files/FC-T3-1-V2/delivery_orders.csv
+      - test/benchmark_tasks_files/FC-T3-1-V2/curb_inventory.csv
+
+  - id: FC-T3-2-V2
+    category: freight-curb-operations
+    tier: 3
+    sumo_run_budget: 16
+    task: >-
+      Model a 5 km eastbound three-lane freight freeway at 100 km/h with a shoulder that may
+      operate as a lane. Put six off-freeway delivery loops D1-D6 at km 0.5, 1.3, 2.1, 2.9,
+      3.7, and 4.5; each is a 2 km, 40 km/h local loop that leaves and rejoins at the same
+      interchange. The depot is immediately upstream. Twenty freight vehicles each visit four
+      distinct consecutive districts without wrapping past D6: vehicle i starts at
+      D[((i-1) mod 3)+1] and visits D[((i-1) mod 3)+1+j] for j=0,1,2,3, so every tour
+      proceeds strictly eastbound. Use a common uniform [5,10] minute service draw per stop across policies. The
+      four service-start windows are 07:30-08:15, 08:00-09:00, 08:30-09:30, and 09:00-09:50,
+      in visit order, and every vehicle must complete its final service and exit the freeway
+      at its eastern end by 10:00; the return leg to the depot lies outside the modeled
+      network and is not simulated. Simulate 07:00-10:00; eastbound
+      background demand rises from 1200
+      to 1900 veh/h/lane at 07:45, rain starts 08:00, and a stopped vehicle at km 3.2 blocks
+      the shoulder from 08:20-08:30. In rain, multiply desired speed and acceleration by 0.85,
+      comfortable deceleration by 0.80, and time headway by 1.25. Measure occupancy with 500 m
+      lane-area (E2) detector stations. Open the
+      shoulder only after occupancy exceeds 25% for two minutes,
+      close after it stays below 18% for five, provide 60 s clearance, and never open during
+      obstruction. Implement the shoulder state machine and freight rerouting directly in
+      the Traffic Control Interface (TraCI); every five minutes reroute a freight vehicle only
+      if current travel time to its
+      next stop improves by at least 60 s. Cross shoulder control and incident-aware freight
+      rerouting in a 2x2 matched-seed design with four seeds. Verify lane-permission transitions, zero vehicles on
+      the shoulder before closure, every tour stop, and full demand. Report tour completion,
+      missed windows, general/freight delay, shoulder exposure, lane-change conflicts,
+      carbon dioxide (CO2), nitrogen oxides (NOx), and recovery; determine whether benefits
+      survive weather, obstruction, and
+      transition costs.
+      No controller or weather helper module is assumed.
+
+  - id: FC-T4-3-V2
+    category: freight-curb-operations
+    tier: 4
+    sumo_run_budget: 15
+    task: >-
+      Implement receding-horizon allocation of a 120 m curb split into six 20 m spaces serving
+      deliveries, ride-hail pickups, accessible passenger loading, and general parking from
+      16:00-19:00. Generate each class as an independent Poisson arrival process at 24, 36, 6,
+      and 18 requests/hour respectively. Draw dwell independently from a lognormal distribution
+      with class means 12, 3, 8, and 35 minutes and coefficient of variation 0.5, using common
+      request streams and dwell draws across policies. Adjacent one-way traffic has two lanes
+      at 50 km/h carrying 1300 veh/h, and illegal waiting blocks one lane. Every five
+      minutes choose each space's use for the next 15 minutes; conversion takes one minute and
+      cannot evict an active user. Compare a fixed allocation of two delivery, two ride-hail,
+      one accessible, and one general-parking space; a reservation-first rule that preserves
+      one accessible and one general space and assigns the other four to the classes of the
+      next four booked requests; and a stochastic controller. Use 1.2 occupants per adjacent
+      traffic vehicle, one person per delivery/general-parking request, and two per
+      ride-hail/accessible request. The stochastic controller first guarantees accessible
+      service within 10 minutes whenever feasible, then minimizes expected person-minutes plus
+      penalties of 60 person-minutes per rejected request, 30 per double-park event, and 5 per
+      space conversion. Use three random seeds to create matched base-demand days and report served and
+      rejected requests by class, curb occupancy, double-parking, traffic delay, ride-hail
+      deadheading, delivery lateness, accessible-service violations, and allocation churn.
+      Test 25% arrival underforecast and a special event doubling ride-hail demand; expose
+      infeasible guarantees rather than reallocating occupied space illegally.
+      Implement request generation and all allocation policies in task-owned code. Use one
+      additional common day per policy for each stress: in the underforecast stress the
+      stochastic controller receives forecasts equal to 75% of actual rates, and in the event
+      stress actual and forecast ride-hail rates both double.
+
+  - id: FC-T4-4-V2
+    category: freight-curb-operations
+    tier: 4
+    sumo_run_budget: 14
+    task: >-
+      Evaluate a cargo-bike microhub replacing van tours in a 4x4 downtown grid with 150 m
+      blocks and one mixed-traffic lane per direction at 30 km/h. Name nodes Nrc with row 0
+      north and column 0 west, put the fringe depot at N30 and the microhub at N11, and add
+      protected bicycle lanes in both directions on rows 1 and 2. Create two 20-parcel batches
+      at each of customer nodes N00, N01, N02, N03, N10, N12, N13, N20, N22, N23, N32, and
+      N33: one batch has a 10:00 deadline and the other a 13:00 deadline, for 480 parcels total.
+      Release the 10:00 batches uniformly from 07:00-09:00 and the 13:00 batches uniformly from
+      09:00-11:00, using common draws across policies; each batch is one 2-5 minute service
+      stop. Compare all-van service by eight 120-parcel
+      vans against a microhub using three line-haul vans plus 12 cargo bikes carrying 20 parcels;
+      transshipment takes 45 s per parcel, bike service 2-5 minutes per stop, and the hub can
+      hold 200 parcels. Bikes may use protected lanes but not sidewalks and have a 25 km range.
+      Background motor demand totals 450 veh/h per side, divided equally among that side's four
+      entry links and destined uniformly to another side; bicycle demand is 120 bicycles/h in
+      each direction on each protected row. Construct dispatch waves offline with a
+      capacity/time-window vehicle-routing heuristic using free-flow link times, then freeze
+      them before simulation; no dispatch optimizer is assumed. Require all deliveries by
+      13:00, then stress test 20% late inbound parcels and one
+      blocked bike link for 30 minutes. Implement lateness by adding 60 minutes to the release
+      times of a random 20% of batches and block N11<->N12 from 09:30-10:00, using common draws
+      across policies. Use four matched seeds at base and three matched seeds for the combined
+      late-parcel-plus-blocked-link stress. Report delivery reliability,
+      courier workload, van/bike vehicle-kilometers traveled (VKT), hub queue and overflow,
+      traffic delay, carbon dioxide (CO2), conflicts per
+      km, and curb occupancy. Include walking-distance and neighborhood exposure maps and do
+      not credit parcels left at the hub as delivered.
+      Implement transshipment, dispatch, parcel custody, and exposure mapping in task-owned
+      code.
+
+  # ---------------------------------------------------------------------------
+  # Planning, policy, and equity
+  # ---------------------------------------------------------------------------
+  - id: PP-T3-1-V2
+    category: planning-policy-equity
+    tier: 3
+    sumo_run_budget: 15
+    task: >-
+      Select a retrofit for the middle junction of a three-intersection suburban corridor with
+      500 m spacing, two major lanes per direction at 60 km/h, and one minor lane at 40 km/h.
+      Compare retimed conventional control, restricted crossing U-turn (RCUT) crossovers at
+      180 m, RCUT crossovers at 300 m,
+      and a two-lane roundabout. Each major approach carries 1000 veh/h at the middle junction:
+      280 turn left, 100 turn right, and 620 go through. Each minor approach carries 450 veh/h
+      with left/through/right shares 20/60/20%, and every crossing carries 120 ped/h. Generate
+      identical origin-destination (OD) route sets including U-turn distance. Use SUMO's native rerouting device
+      with 120 s adaptation intervals and the same settings in every alternative so route
+      choice responds within each execution; do not call a pre-existing equilibrium helper.
+      Over three matched seeds report person delay, 95th-percentile time, adjacent spillback,
+      pedestrian delay,
+      carbon dioxide (CO2), and exposure-normalized conflicts. Use capital costs $1.0 million,
+      $5.5 million, $6.5 million, and $8.0 million with a $7.0 million budget; conduct
+      transparent benefit-cost analysis (BCA)
+      and Pareto analysis without silently monetizing safety. For BCA use 20 years, 250
+      weekdays/year, a 4% discount rate, $18/person-hour, $100/metric tonne CO2, and annual
+      operations and maintenance (O&M) equal to 2% of capital cost; keep
+      conflicts and pedestrian outcomes outside the monetized total. Validate unconventional
+      movements and full demand. Test +20% demand only for the three budget-feasible designs,
+      with one common seed per design,
+      and recommend only a budget-feasible design whose advantage survives assignment,
+      adjacent signals, safety, and stress.
+      Build all unconventional geometry, route sets, BCA, Pareto analysis, and Surrogate Safety
+      Measure (SSM) processing
+      in task-owned code; SUMO's routing and SSM devices supply simulator primitives only.
+
+  - id: PP-T3-2-V2
+    category: planning-policy-equity
+    tier: 3
+    sumo_run_budget: 19
+    task: >-
+      Choose a multimodal project portfolio on a 5x5 grid under a $12 million budget. Name nodes Nrc
+      with row 0 north and column 0 west; every existing link is 300 m with one 50 km/h lane
+      per direction. A river lies between columns 1 and 2, so only north bridge N01<->N02 and
+      south bridge N41<->N42 cross it. Define the northwest zone as WN=N00, southwest as
+      WS=N40, northeast as EN=N04, southeast as ES=N44, and center as C=N22. The complete
+      07:00-09:00 car origin-destination (OD) list is WN-EN 1000, WN-ES 500, WS-EN 500,
+      WS-ES 900,
+      EN-WN 200, ES-WS 200, WN-C 150, and WS-C 150 trips. The transit-passenger list for those
+      pairs in the same order is 250, 100, 100, 250, 50, 50, 50, and 50. Run 10-minute bus
+      routes on rows 0 and 4 and column 2, with timed transfers at N02 and N42. Put 400, 350,
+      and 250 jobs at EN, C, and ES. Low-income shares at WN/WS/EN/ES/C are
+      45/55/15/15/30%; carless shares are 25/40/10/15/30%.
+      Candidate projects are indivisible: P1 ($5 million) adds one 50 km/h general lane each
+      direction on the north bridge; P2 ($7 million) adds a one-lane-per-direction 70 km/h,
+      no-access bypass N04<->N44; P3 ($3 million) makes row 2 N20->N24 eastbound-only and row 3
+      N34->N30 westbound-only; P4 ($4 million) adds a direct 50 km/h bus-only link N00<->N40;
+      and P5 ($2 million)
+      gives raised 30 km/h crossings with pedestrian priority at N11, N13, N31, and N33.
+      Enumerate every feasible portfolio offline. Select 14 portfolios using a D-optimal
+      (determinant-maximizing) binary
+      design that includes no-build and all five single-project portfolios; simulate each once
+      with a common seed and SUMO's native 120 s rerouting device. Fit a regularized surrogate
+      with project main effects and pairwise interactions, then predict the feasible frontier.
+      Simulate three predicted Pareto finalists once each under the combined +25% all-mode
+      demand and north-bridge closure stress, and add a second base seed for no-build and the
+      recommended portfolio. Compute person time, reliability, carbon dioxide (CO2), and jobs
+      reachable within
+      30 minutes by each group's available modes. Compare the surrogate-estimated frontier with
+      isolated benefit-cost-ratio (BCR) and worst volume-to-capacity-ratio (v/c) greedy rules,
+      quantify project interactions, and require no
+      low-income or carless group to lose more than 5% accessibility unless infeasibility is
+      explicitly reported. Monetize time at $18/person-hour and CO2 at $100/tonne; report
+      safety and distributional outcomes separately. The combined stress closes the north
+      bridge from minutes 45-75. Verify that transit-only and pedestrian projects are not
+      valued through vehicle delay alone, cross-validate the surrogate on the three stress
+      finalists, and never call the predicted frontier a fully simulated frontier.
+      Implement portfolio generation, surrogate fitting, accessibility, and appraisal in
+      task-owned code.
+
+  - id: PP-T4-3-V2
+    category: planning-policy-equity
+    tier: 4
+    sumo_run_budget: 20
+    task: >-
+      Estimate long-run induced demand and relocation after adding a 2 km, two-lane bypass to
+      a four-zone town, rather than holding land use and trip totals fixed. Represent the town
+      as a 3x3 grid with 500 m blocks, one 50 km/h lane per direction, signalized interior
+      junctions, zones 1-4 at the northwest (NW), northeast (NE), southwest (SW), and southeast
+      (SE) fringe, and the central business district (CBD) at the center. Connect
+      both southern zone centroids to the south-center node; the proposed 70 km/h bypass links
+      that node to the east-center node and has no intermediate access. Base households by
+      zone are [1200,900,700,600], jobs [400,1100,800,500], peak car trips 4200, and observed
+      free-flow zone-to-center times [22,18,27,31] minutes. Add nonnegative centroid-connector
+      access times so each simulated grid path plus connector time reproduces its listed
+      zone-to-center value; hold those access times fixed in every year and alternative.
+      Construct the base directed origin-destination (OD) matrix with a
+      doubly constrained gravity model whose productions are proportional to households,
+      attractions are proportional to jobs, and impedance is exp(-0.08*t_ij): for different
+      zones set t_ij to the sum of their two listed center times, and for an intrazonal cell use
+      half that zone's listed time. Include intrazonal trips and scale all cells to exactly 4200
+      trips. The bypass costs $18 million and initially saves
+      eight minutes for zones 3-4. Simulate 10 annual iterations: trip frequency elasticity to
+      generalized time is -0.35; 4% of households and 6% of jobs may relocate each year using
+      a logit response with time coefficient -0.08/min and fixed zone capacities of
+      [1500,1200,1200,900] households and [700,1400,1200,900] jobs. Each year rebalance trips,
+      use SUMO's native rerouting device within one annual execution, update accessibility from
+      completed trips, and apply one damped
+      relocation update with damping 0.5. Run all 10 years, but also record the first year after
+      which both travel times and locations change below 1% for two successive annual updates.
+      Compare no-build and bypass with one fixed traffic seed per annual state. Report
+      generated vehicle-kilometers traveled (VKT), congestion rebound, accessibility,
+      relocations, carbon dioxide (CO2), and whether the
+      initial benefit persists; test elasticities -0.15 and -0.55 and distinguish modeled
+      behavioral assumptions from simulated traffic outcomes.
+      Implement gravity balancing, elasticity, relocation, damping, capacity enforcement, and
+      annual state transfer in task-owned code. Evaluate elasticities -0.15 and
+      -0.55 only as first-order offline trip-total sensitivities using the cached annual
+      generalized times, and label them unsimulated.
+
+  - id: PP-T4-4-V2
+    category: planning-policy-equity
+    tier: 4
+    sumo_run_budget: 20
+    task: >-
+      Select a robust, equity-constrained project portfolio using
+      test/benchmark_tasks_files/PP-T4-4-V2/candidate_projects.csv,
+      test/benchmark_tasks_files/PP-T4-4-V2/future_scenarios.csv,
+      test/benchmark_tasks_files/PP-T4-4-V2/districts.csv, and the base origin-destination (OD)
+      table test/benchmark_tasks_files/PP-T4-4-V2/base_od.csv. Interpret semicolons in every file as
+      separators within one field. In `candidate_projects.csv`, one row is one indivisible
+      candidate: `project_id` is its key, `description` is its label, `cost_million` and
+      `annual_om_million` are capital and annual operations-and-maintenance (O&M) amounts in
+      millions of dollars, respectively; `affected_elements` identifies the exact
+      directed links/nodes/corridors, `implementation` is the authoritative physical
+      and operating change, and `exclusive_with` lists any mutually exclusive project
+      identifier (ID) (a
+      blank means none). In the `implementation` field, transit signal priority is abbreviated
+      as TSP.
+      In `future_scenarios.csv`, each row is one mutually exclusive 2040
+      future: `future_id` is its key; `probability` is its nominal probability;
+      `car_demand_multiplier`, `transit_demand_multiplier`, `freight_multiplier`, and
+      `active_mode_multiplier` scale only their named base demands, with the last applied to
+      both bicycle and pedestrian columns. `incident_elements` and
+      `incident_action` define the disruption, `incident_start_minute` is minutes after 07:00,
+      and `incident_duration_minutes` is its duration; blank incident times
+      occur only when elements/action are `none`. `carbon_price_per_tonne` is dollars per
+      metric tonne of carbon dioxide (CO2). In `districts.csv`, `district_id` is the district key;
+      `grid_cells` contains its four
+      node-centroid locations; population shares `low_income_share` and `carless_share` are
+      fractions of `population`; `jobs` are destinations; and
+      `base_accessible_jobs_30min` is the fixed external no-build denominator for its percentage
+      accessibility change. Assume low-income and carless status are independent within a
+      district because no joint margin is supplied, and disclose that assumption. In
+      `base_od.csv`, one row is a directed `origin_district`-`destination_district` total for
+      the complete 07:00-09:00 period. `car_trips_0700_0900`,
+      `freight_trips_0700_0900`, `bicycle_trips_0700_0900`, and
+      `pedestrian_trips_0700_0900` count trips; `transit_passengers_0700_0900` counts people;
+      and absent intradistrict rows mean intradistrict demand is outside scope. Use occupancies
+      1.2 persons per car, 1 driver per freight vehicle, and 1 person per active-mode trip.
+      Build a 4x4 grid with 250 m
+      blocks, name nodes Nrc with row 0 north and column 0 west, use two 50 km/h lanes per
+      direction, and apply a 90 s two-phase plan at N11, N12, N21, and N22: 41 s north-south
+      green, 3 s yellow, 1 s all-red, 41 s east-west green, 3 s yellow, and 1 s all-red, with
+      concurrent 18 s pedestrian service. Distribute each
+      district OD uniformly across its listed origin and destination cells, and distribute
+      each district's job total uniformly across its cells for accessibility. Use every mode
+      column in base_od.csv. Use 5 km/h walking and 15 km/h bicycling, with zero wait; buses
+      travel at link speed, dwell 20 s at every node, and incur half-headway initial wait. Run
+      two 10-minute-headway bus lines on row 1
+      (N10-N13) and column 2 (N02-N32); the base table contains exactly 400 transit passengers.
+      Implement each candidate exactly on its listed elements, including annual O&M, mode
+      permissions, and mutual exclusions. Apply car, transit, freight, and active-mode future
+      multipliers only to their corresponding base-OD columns; apply each incident's stated
+      action to its listed elements at its stated minute for its stated duration.
+      Enumerate every portfolio within the $15 million budget and all six futures offline. Select 16
+      portfolio-future pairs with a maximin design that includes no-build in every future and
+      covers every project at least twice; simulate each pair once with one fixed seed. Reserve
+      four additional predeclared pairs as simulator validation and do not use them for fitting.
+      Fit a regularized surrogate for person-hours, emissions, and district accessibility, then
+      evaluate every portfolio-future combination through the surrogate. The decision criterion
+      is minimax regret in annual
+      person-hours relative to each future's perfect-information portfolio, subject to no
+      district's population-weighted accessibility falling more than 3% below its supplied
+      `base_accessible_jobs_30min` no-build value in
+      more than one future. Car-owning residents may use their fastest available mode while
+      carless residents may use transit, bicycle, or walking but not car; weight those results
+      by the supplied district shares. Compare minimax regret, expected net benefit using supplied future
+      probabilities, annualizing 250 weekdays and using $18 per person-hour, 20 project years,
+      a 4% discount rate, and each future's stated carbon price. Also find a distributionally
+      robust solution when probabilities may move by ±0.10 while summing to one. Report the
+      regret table, binding equity constraints, project
+      interactions, probability sensitivity, and value of perfect information. Validate costs,
+      mutually exclusive projects, demand completion, and accessibility denominators. Also
+      report the simulated no-build accessibility discrepancy from each supplied denominator
+      and treat a discrepancy above 10% as a model-validation failure unless reconciled. If no
+      portfolio satisfies the equity rule, compute and disclose the smallest relaxation rather
+      than dropping a district or future.
+      Implement design selection, portfolio construction, surrogate fitting, robust optimization,
+      equity checks, and appraisal in task-owned code; no portfolio or equity-analysis library
+      is assumed. Report surrogate prediction intervals and distinguish simulated from predicted
+      table cells. Probability sensitivity and robust optimization
+      are offline analyses of cached outputs.
+    input_files:
+      - test/benchmark_tasks_files/PP-T4-4-V2/candidate_projects.csv
+      - test/benchmark_tasks_files/PP-T4-4-V2/future_scenarios.csv
+      - test/benchmark_tasks_files/PP-T4-4-V2/districts.csv
+      - test/benchmark_tasks_files/PP-T4-4-V2/base_od.csv
+
+  # ---------------------------------------------------------------------------
+  # Simulation methods and validation
+  # ---------------------------------------------------------------------------
+  - id: SM-T3-1-V2
+    category: simulation-methods
+    tier: 3
+    sumo_run_budget: 20
+    task: >-
+      Jointly calibrate the Krauss car-following model and SUMO's Lane-Changing 2013 (LC2013)
+      model on a 6 km three-lane
+      freeway with a one-lane on-ramp at km 2 and lane drop at km 4. Estimate desired time
+      headway `tau` in [0.7,1.6] s, minimum gap `minGap` in [1.5,3.0] m, driver-imperfection
+      parameter `sigma` in [0.1,0.8], lane-changing assertiveness `lcAssertive` in [0.5,2.0],
+      and lane-changing cooperation `lcCooperative` in [0.2,1.0].
+      In each calibration tuple, the first two values are imposed upstream mainline and ramp
+      demands; the remaining three are observed downstream discharge, space-mean speed over
+      km 3-4, and maximum ramp queue during a 60-minute measurement after 15-minute warm-up.
+      The tuples (mainline veh/h, ramp veh/h, downstream veh/h, speed km/h,
+      ramp queue veh) are (3600,300,3800,96,0), (5400,900,5100,54,28), and
+      (4200,500,4500,83,5); reserve (4800,700,4850,68,16) as holdout. Use a predeclared
+      multi-objective loss and four Latin-hypercube parameter vectors. Simulate each vector
+      once under each of the three calibration regimes, giving 12 runs. Fit a sparse response
+      surface, choose two adaptive refinement vectors, and likewise simulate each under all
+      three calibration regimes, giving six more runs without exposing the holdout. Choose one
+      final vector and one deliberately overfit vector using calibration results only, then
+      simulate each once on the holdout. Report Pareto tradeoffs, leave-one-vector-out
+      sensitivity, surrogate interactions and uncertainty, and equifinality. Validate on the holdout,
+      lane-change location, and breakdown occurrence; compare with a deliberately overfit
+      one-regime model and do not claim unique recovery without evidence.
+      Implement design generation, loss calculation, sensitivity, refinement, and uncertainty
+      analysis in task-owned code; no calibration or optimization helper is assumed. Treat the
+      sparse one-seed design as a limitation and do not claim precise stochastic uncertainty.
+
+  - id: SM-T3-2-V2
+    category: simulation-methods
+    tier: 3
+    sumo_run_budget: 18
+    task: >-
+      Run a sequential paired-seed experiment comparing fixed-time and max-pressure control on
+      a congested 4x4 grid with 200 m blocks. Use four inbound connectors per side; each fringe
+      demand level—800, 1000, or 1200 veh/h—is the total entering one side, divided equally
+      among its connectors, with destinations uniform among the other three sides. Use a 90 s
+      fixed plan at all four interior signals with 41 s north-south green, 3 s yellow, 1 s
+      all-red, 41 s east-west green, 3 s yellow, and 1 s all-red. The max-pressure controller
+      uses the same phases and clearances, 10 s minimum green, and 5 s decisions. Use
+      15 minutes warm-up and 60 minutes measurement. Implement max-pressure directly from
+      incoming queue times saturation flow minus outgoing queue times saturation flow for each
+      legal phase; no controller helper is assumed. Start with one common seed per demand
+      and add one seed per demand up to three until the 95% bootstrap interval for paired mean-time
+      difference is narrower than 5% of the fixed-time mean or the cap is reached. Predeclare
+      mean time primary; use 95th percentile, throughput, and teleport/gridlock incidence as
+      secondary outcomes and correct the three demand-level primary tests. Report paired and
+      deliberately unpaired estimates, probability of superiority, power for a 7% benefit,
+      stopping history, and sensitivity to unfinished trips. Treat gridlocked runs as censored
+      or use a justified penalty and show both. Deliver tidy run data and one script recreating
+      all intervals and figures.
+      Form the deliberately unpaired estimate by permuting the same cached outcomes, and
+      estimate power for a 7% benefit by bootstrap simulation of those observations, not extra
+      SUMO runs.
+
+  - id: SM-T4-3-V2
+    category: simulation-methods
+    tier: 4
+    sumo_run_budget: 20
+    task: >-
+      Build a multi-fidelity estimator that uses cheap mesoscopic runs to reduce the number of
+      microscopic evaluations needed for a freeway-control design. The 10 km, three-lane
+      one-direction corridor has identical one-lane on-ramps at km 3 and 7. Decision variables
+      are a common ramp-meter rate 300-900 veh/h, a common variable speed limit (VSL) of
+      60-100 km/h applied from km 2-8,
+      and activation occupancy 15-30% measured over the downstream 500 m of each merge. When
+      either merge exceeds the threshold, apply both settings until both occupancies remain
+      three percentage points below it for two minutes. Evaluate demands 4200, 5000, and
+      5600 veh/h crossed with total ramp demands 400 and 700 veh/h, split equally between the
+      two ramps, for six demand scenarios. Define breakdown as at least 1 km of mainline below
+      50 km/h for five consecutive minutes. Use SUMO's native mesoscopic mode for exactly 12
+      space-filling scenario-design points. Select four of those points sequentially for
+      paired microscopic evaluation, using predictive uncertainty and feasibility boundary
+      coverage. Fit a discrepancy-aware surrogate for microscopic person-hours and breakdown
+      probability and return a design minimizing person-hours averaged with equal weight over
+      the six demand scenarios, subject to the equal-weight average breakdown probability
+      across those scenarios staying below 10%. Compare against
+      a micro-only surrogate fitted to the same four microscopic points and a naive surrogate
+      that treats meso as unbiased. Use four untouched microscopic validations: two seeds at
+      the selected design, one at the micro-only choice, and one at the naive choice. Report calibration,
+      uncertainty coverage, regret versus the best observed feasible design, evaluation cost,
+      and cases where meso ranks designs incorrectly; do not spend validation runs during
+      adaptive selection.
+      Implement sampling, discrepancy modeling, acquisition, and comparator models in task-owned
+      code; mesoscopic simulation is a native SUMO mode, not a task-specific library.
+
+  - id: SM-T4-4-V2
+    category: simulation-methods
+    tier: 4
+    sumo_run_budget: 20
+    task: >-
+      Adversarially stress-test an arterial controller and minimize any discovered
+      counterexample. Build three signals 350 m apart with two arterial and one side-street
+      lane per approach and simulate three consecutive 15-minute demand bins after a 10-minute
+      warm-up. Buses travel eastbound every 10 minutes, pedestrians arrive at 150 ped/h on
+      every crossing, and the comparison fixed plan is a 90 s two-phase plan with equal
+      effective greens. The target is independent max-pressure control at each junction using
+      80 m lane-area (E2) detector queues, a 5 s decision interval, 10 s minimum green,
+      3 s yellow, and 1 s all-red;
+      pedestrian calls add a virtual pressure of four vehicles per 5 s of waiting, with no
+      hard maximum. Ties retain the current phase. A biased detector feeds the biased value
+      directly to this controller. The adversary's six demand variables are the arterial
+      per-direction rate and the per-side-street-approach rate in each of the three 15-minute
+      bins; each rate is applied at all three junctions and is bounded 200-1400 veh/h. It also
+      chooses one arterial and one side-street left-turn share in 5-30% (the remainder goes
+      through), an eastbound bus offset in 0-600 s, one E2 detector and multiplicative bias in
+      -40% to +40%, and optionally one lane, blockage start, and 5-15 minute duration. Run the
+      target controller on six space-filling adversarial scenarios. Fit a surrogate to rank
+      them, then run the fixed-time comparator separately on the three most severe scenarios
+      using common demand and random draws. Seek a scenario causing pedestrian wait above 120 s,
+      queue spillback across an upstream
+      junction for over 60 s, or person delay 25% worse than fixed-time, while penalizing total
+      perturbation from nominal demand 700/300 veh/h and no fault. Re-run the most severe
+      candidate with two new seeds under both target and fixed control, then test at most two
+      simplified candidates under both controllers to delta-debug demand intervals, movements,
+      and fault duration to a locally
+      minimal reproducible failure. Report search coverage, failure probability, minimal
+      counterexample and causal ablations. Implement a repaired controller and run it once on
+      the minimized failure; compare it with the cached original. Finally, test original and
+      repaired control separately on one predeclared held-out random scenario. Keep the
+      adversary from reading future random events
+      or modifying safety clearances.
+      Implement max-pressure, adversarial design, surrogate search, minimization, and repair in
+      task-owned code; no stress-testing or controller helper is assumed.

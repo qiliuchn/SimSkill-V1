@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Shared nodes for DDI and conventional diamond.
+     Arterial z=6 (over); freeway z=0 (under). No node at the (0,0) crossing point:
+     the freeway is grade-separated and only ever meets the arterial via ramp edges. -->
+<nodes>
+    <!-- Arterial ramp terminals (signalized), 110 m apart -->
+    <node id="W" x="-55" y="0" z="6.0" type="traffic_light"/>
+    <node id="E" x="55"  y="0" z="6.0" type="traffic_light"/>
+    <!-- Arterial outer approach/exit nodes (EB south side, WB north side = normal driving) -->
+    <node id="WA_s" x="-450" y="-6.0" z="6.0" type="priority"/>   <!-- EB source (west) -->
+    <node id="WA_n" x="-450" y="6.0"  z="6.0" type="priority"/>   <!-- WB sink   (west) -->
+    <node id="EA_s" x="450"  y="-6.0" z="6.0" type="priority"/>   <!-- EB sink   (east) -->
+    <node id="EA_n" x="450"  y="6.0"  z="6.0" type="priority"/>   <!-- WB source (east) -->
+    <!-- Freeway mainline (z=0), centerline x=0, passing UNDER the arterial -->
+    <node id="FN" x="0" y="500"  z="0.0" type="priority"/>
+    <node id="Fn" x="0" y="130"  z="0.0" type="priority"/>          <!-- north junction (SB off diverge / NB on merge) -->
+    <node id="Fn2" x="0" y="250" z="0.0" type="priority"/>          <!-- NB on-ramp accel-lane drop -->
+    <node id="Fs" x="0" y="-130" z="0.0" type="priority"/>          <!-- south junction (SB on merge / NB off diverge) -->
+    <node id="Fs2" x="0" y="-250" z="0.0" type="priority"/>         <!-- SB on-ramp accel-lane drop -->
+    <node id="FS" x="0" y="-500" z="0.0" type="priority"/>
+</nodes>

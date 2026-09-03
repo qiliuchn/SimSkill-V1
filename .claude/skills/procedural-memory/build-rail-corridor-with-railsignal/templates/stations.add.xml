@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Station platforms on the dedicated 300 m station-block edges (busStop works
+     for rail vClass). Each station has a platform on the edge each train uses. -->
+<additional>
+    <!-- Station A (nodes A..SA) -->
+    <busStop id="stA_dep" lane="A_SA_0" startPos="30" endPos="260" name="Station A (A-&gt;B platform)"/>
+    <busStop id="stA_arr" lane="SA_A_0" startPos="30" endPos="260" name="Station A (B-&gt;A platform)"/>
+    <!-- Station B (nodes SB..B) -->
+    <busStop id="stB_dep" lane="B_SB_0" startPos="30" endPos="260" name="Station B (B-&gt;A platform)"/>
+    <busStop id="stB_arr" lane="SB_B_0" startPos="30" endPos="260" name="Station B (A-&gt;B platform)"/>
+</additional>

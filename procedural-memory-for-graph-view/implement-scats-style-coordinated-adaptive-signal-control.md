@@ -1,0 +1,92 @@
+---
+name: implement-scats-style-coordinated-adaptive-signal-control
+description: Use this skill when the user wants to implement closed-loop, cycle-based coordinated adaptive signal control in SUMO (the SCATS/SCOOT/InSync class — distinct from acyclic max-pressure and from local-only actuated control), evaluate whether online adaptation actually beats a well-tuned fixed-time coordinated plan, measure the cost of transitioning between signal timing plans (dwell/add-only/subtract-only/spread-N methods), estimate degree of saturation from detector data and validate its bias, or test an adaptive controller's robustness to detector failure and oversaturation runaway. Trigger on mentions of SCATS, SCOOT, InSync, coordinated adaptive signal control, split/cycle/offset adaptation, degree of saturation estimation, signal plan transition cost, or adaptive-vs-fixed-time signal comparison.
+related_skills:
+  - implement-maxpressure-traci-controller
+  - measure-saturation-flow-and-validate-webster-method
+  - switch-signal-plans-by-time-of-day-with-waut
+  - build-atspm-pipeline-and-retime-arterial
+  - design-arterial-signal-progression-and-verify-bandwidth
+  - control-signals-with-actuated-tls
+  - implement-nema-dual-ring-controller
+  - quantify-sumo-run-to-run-variability
+related_skills_for_graph_view:
+  - "[[implement-maxpressure-traci-controller]]"
+  - "[[measure-saturation-flow-and-validate-webster-method]]"
+  - "[[switch-signal-plans-by-time-of-day-with-waut]]"
+  - "[[build-atspm-pipeline-and-retime-arterial]]"
+  - "[[design-arterial-signal-progression-and-verify-bandwidth]]"
+  - "[[control-signals-with-actuated-tls]]"
+  - "[[implement-nema-dual-ring-controller]]"
+  - "[[quantify-sumo-run-to-run-variability]]"
+related_pages:
+  - "[[webster-method]]"
+  - "[[waut-time-of-day-signal-plan-switching]]"
+  - "[[automated-traffic-signal-performance-measures]]"
+  - "[[arterial-signal-progression-resonance-bandwidth-and-delay]]"
+  - "[[max-pressure-signal-control]]"
+---
+
+# Implement SCATS-Style Coordinated Adaptive Signal Control
+
+Builds a three-layer (split/cycle/offset) closed-loop coordinated adaptive signal controller via TraCI — the SCATS/SCOOT/InSync class, distinct from every other adaptive control skill in memory: `implement-maxpressure-traci-controller` is acyclic (no common cycle, no coordination), `control-signals-with-actuated-tls`/`implement-nema-dual-ring-controller` adapt only locally within a fixed background plan, and `switch-signal-plans-by-time-of-day-with-waut` switches between pre-computed plans on a schedule rather than adapting continuously from measurement. **The headline finding from the verified build: this class of controller does not automatically beat well-tuned fixed-time coordination — in one full, honestly-measured implementation it was measurably worse, for a specific, diagnosed reason (detector-based demand under-estimation, not transition churn).** Don't assume "adaptive" implies "better"; measure it.
+
+## Three-layer controller architecture
+
+- **Split** (per-cycle, per-junction): equisaturation — reallocate green share toward `DoS_movement / Σ DoS_movements` so every critical movement runs at the same degree of saturation.
+- **Cycle** (per-cycle, region-wide via a common-cycle constraint): drive the corridor's *critical* intersection's degree of saturation toward a target (e.g. 0.90), asymmetric slew (faster to lengthen under load than to shorten, e.g. `+5/-2.5 s per tick`), bounded `[C_min, C_max]`.
+- **Offset** (per-cycle, per-junction, subordinate to cycle): measured mean advance-detector arrival time-in-cycle, slew-limited, applied as a **one-shot correction to the non-coordinated (cross-street) stage only** — never perturb the coordinated through movement's green directly, or you re-introduce the exact transition cost the offset layer exists to avoid.
+
+**Enforce the common-cycle constraint explicitly and verify it from logs**, not just from the controller's intent: log every junction's realized cycle length every cycle and confirm all junctions in the coordinated group converge to the identical value (a one-cycle propagation-lag stagger between junctions adopting a new value is expected and fine; persistent divergence is a bug).
+
+**Rate-limit every layer, not just cycle length.** An unrate-limited split-adaptation layer driven by noisy single-cycle detector counts (10-20 vehicles/window is a small, noisy sample) will oscillate wildly — verified: an unlimited equisaturation split swung one movement's green share from ~70% to ~20% in a single tick from counting noise alone, and reported spurious degree-of-saturation values above 2.0 the next cycle. Add a slew limit to the split layer exactly as you would to cycle length.
+
+## Detector-based degree of saturation: measure the bias, don't assume accuracy
+
+`DoS ≈ (advance-detector vehicle entries over one full local cycle) / cycle_length × 3600`, compared against capacity `= (green/cycle) × measured_saturation_flow × lanes` — reuse `measure-saturation-flow-and-validate-webster-method`'s green-duration-regression method to get real saturation flow rather than assuming a textbook value.
+
+**Count true entries, not presence.** `traci.inductionloop.getLastStepVehicleNumber` reports how many vehicles are *currently over* the loop each step — summing it across steps counts a slow-moving or queued vehicle many times. Use a vehicle-ID-set diff (new IDs seen this step vs last step) to count genuine entries. A naive presence-sum implementation produced physically-impossible apparent flows (thousands of veh/h/lane above capacity) before this was caught.
+
+**Validate against ground truth, not just for plausibility.** Compare the detector-based DoS estimate against the actual generating demand rate (if you control the demand generator, this is a genuine closed-form ground truth, stronger than comparing against another simulated quantity). Verified finding: **bias grows monotonically more negative as true DoS rises** — near capacity and beyond, the estimator systematically *under*-counts, because queue spillback increasingly delays vehicles' arrival at the advance loop past the cycle boundary they should have been attributed to. Below moderate saturation, error is dominated by Poisson counting variance rather than bias. **This is the single most consequential finding for anyone building this class of controller**: a cycle-length-adaptation layer that trusts a detector-based DoS estimate will systematically *under*-react exactly when the corridor most needs it to react, because its own signal of distress degrades as distress increases.
+
+**Detector setback interacts with this non-monotonically — don't assume "closer is worse."** A deliberately-too-close (short-setback) advance detector was *not* uniformly worse than a correctly-placed one; at the highest observed saturation it was actually *less* biased, because a shorter setback gives queue spillback less distance in which to intercept and "smear" arrivals across the cycle boundary before they're counted. Verify detector placement's effect on estimator bias empirically rather than by rule of thumb.
+
+## Transition mechanics: measure the actual cost of changing a running plan
+
+Standard methods for changing a coordinated signal's cycle length/offset while traffic is still flowing — implement and measure at least these:
+- **Dwell/hold**: hold the current plan for N cycles, then jump directly to the new plan.
+- **Add-only**: only ever lengthen phases (never shorten) each cycle until the target is reached — safe against under-serving a movement mid-transition, but slow for a decrease.
+- **Subtract-only**: the converse — only ever shorten. **Structurally the wrong tool for an increase**: verified, applying it to a target *longer* than the current plan simply never transitions (the controller has no legal move), which reads as artificially "safe" numbers if you don't notice the transition never happened. Always check that the intended plan was actually reached, not just that delay didn't spike.
+- **Spread-N**: distribute the total change in small increments across N cycles.
+
+**Measure transition cost directly, not just steady-state before/after:** excess delay during the transition window versus an immediate-jump ceiling, points of %arrival-on-green lost (reuse `build-atspm-pipeline-and-retime-arterial`'s AoG definition), and cycles elapsed before coordination metrics re-stabilize. Verified pattern: dwell reaches the target fastest but pays the largest one-time AoG loss; gentler methods (add-only, spread-N) take measurably longer to reestablish and did not clearly reduce *total* excess delay versus dwell in the tested configuration — there is no free lunch among these methods, only a different distribution of the same cost.
+
+**Test whether an update-interval "sweet spot" actually exists — don't assume one does.** The intuitive hypothesis is that adapting too frequently causes permanent transition churn while adapting too rarely leaves a stale plan, implying an interior optimum. Verified counter-finding in one implementation: performance degraded *monotonically* as the update interval widened from every cycle to every 20 cycles, with no interior optimum in the tested range — because well-designed per-cycle slew limits already bound any single update's disruption, so update *frequency* was not the controller's dominant cost. When this is true, it's informative: it means a controller's overall shortfall relative to fixed-time is being driven by something else (in the verified case, detector-based demand bias, not transition churn) — sweep the update interval explicitly to find out which explanation actually applies to your controller, rather than assuming transition cost is always the bottleneck.
+
+## Comparison arms and the four claims worth testing explicitly
+
+Compare against, at minimum: offline fixed-time optimized for average demand (reuse `measure-saturation-flow-and-validate-webster-method`'s Webster plan — but check its cycle floor isn't accidentally clamped to your adaptive controller's own operating floor, which silently produces an artificially long, not-actually-optimal "fixed" baseline), time-of-day plan switching (`switch-signal-plans-by-time-of-day-with-waut`), uncoordinated actuated (`control-signals-with-actuated-tls`), coordinated-actuated (actuated splits inside a fixed background cycle/offset), the new adaptive controller, and max-pressure (`implement-maxpressure-traci-controller`) as an acyclic adaptive reference — all under Common Random Numbers (`quantify-sumo-run-to-run-variability`) so every arm sees byte-identical demand per seed.
+
+Four claims worth testing rather than assuming, verified findings from one implementation given as a concrete (not universal) reference point:
+1. **Under stationary, well-forecast demand, adaptive does not automatically beat fixed-time** — verified not significant in one implementation (a real, useful negative result, not a failure to find an effect).
+2. **Adaptive's advantage does not automatically grow as demand becomes less predictable** — verified to move the *wrong* direction in one implementation (the disadvantage widened, not narrowed). Don't assume unpredictability is where adaptive control "earns its keep" without checking; it depends entirely on whether the controller's underlying detector-based estimation degrades faster than fixed-time's blindness does.
+3. **Coordinated-actuated tends to capture most of adaptive's theoretical benefit at far lower complexity** — verified in the stronger form (coordinated-actuated outright beat the adaptive controller) when the adaptive controller's own detector-bias problem wasn't solved.
+4. **Max-pressure trades progression for throughput/delay** — verified: significantly more stops per vehicle alongside significantly lower mean delay, the clean signature of a responsive-but-uncoordinated controller.
+
+**Statistical honesty on small-n comparisons**: if you can't run the full ≥5 CRN seeds a rigorous comparison needs, say so explicitly and check whether your directional claims' confidence-interval half-width exceeds the effect size you're claiming — a p<0.10 result at n=3 seeds is a plausible direction, not a settled finding, and should be reported as such rather than stated as flatly as a well-replicated result.
+
+## Failure and robustness testing
+
+- **Detector failure (stuck-on / stuck-off)**: implement a plausibility check (e.g. flag an advance detector whose reported flow is inconsistent with downstream stop-bar counts or with a sane physical range) and verify its detection rate and false-positive rate directly from fault-injected vs. fault-free runs, not just design intent. A low false-positive rate on the no-fault control run is as important to verify as a high detection rate on the faulted run.
+- **Sustained oversaturation runaway**: without protection, a cycle-length-adaptation rule chasing a degree-of-saturation target that's pinned at or above 1.0 (because demand exceeds capacity, not because the plan is wrong) will run its cycle length up to its hard cap and stay there — verify this is real and measurable, not just theoretically possible. Then verify a cap's actual benefit **honestly, at the magnitude it actually delivers** — a hard cycle cap can produce only a modest (not dramatic) delay reduction versus running unbounded, because an oversaturated corridor's fundamental problem is a capacity deficit no amount of cycle-length tuning fixes; don't overstate a failsafe's recovery to make the story cleaner than the data shows.
+
+## Related
+
+- `implement-maxpressure-traci-controller` — the TraCI control-loop plumbing pattern (phase-to-movement mapping, min-green, yellow/all-red clearance) this skill's controller core is built on; also the acyclic adaptive reference arm.
+- `measure-saturation-flow-and-validate-webster-method`, `[[webster-method]]` — measured saturation flow input for both the DoS estimator and the fixed-time comparison arm.
+- `switch-signal-plans-by-time-of-day-with-waut`, `[[waut-time-of-day-signal-plan-switching]]` — the scheduled-switching precedent this skill's transition-cost work directly extends (WAUT never measured what a switch costs; this skill does).
+- `build-atspm-pipeline-and-retime-arterial`, `[[automated-traffic-signal-performance-measures]]` — percent-arrival-on-green / Purdue Coordination Diagram machinery reused for transition-cost and progression measurement.
+- `design-arterial-signal-progression-and-verify-bandwidth`, `[[arterial-signal-progression-resonance-bandwidth-and-delay]]` — offset convention and the bandwidth-vs-delay distinction underlying the offset-adaptation layer.
+- `control-signals-with-actuated-tls`, `implement-nema-dual-ring-controller` — the local-only-adaptation comparison arms (uncoordinated actuated, coordinated-actuated).
+- `quantify-sumo-run-to-run-variability` — CRN/replication conventions for the multi-arm comparison.
+- [[max-pressure-signal-control]] — the acyclic-adaptive-vs-actuated precedent this skill's claim (iv) extends to a coordinated-cyclic setting.

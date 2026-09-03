@@ -1,0 +1,76 @@
+# Realizes test/experiments.md §4 Experiment #1's condition table inside a disposable
+# git worktree, before `claude -p` is invoked. Each flag maps to one action `memory_ops.py`
+# takes on the worktree's checkout — see that module for exactly what each flag does.
+#
+#   empty_procedural_memory  — remove every subdirectory under .claude/skills/procedural-memory/
+#                              (the directory itself is kept, per experiments.md's
+#                              "temporarily empty (not delete)")
+#   empty_semantic_memory    — remove every semantic-memory/*.md page except index.md, and
+#                              rewrite index.md to keep its frontmatter/section structure but
+#                              with no page rows (so memory-retrieve finds nothing to retrieve)
+#   strip_claude_md          — delete CLAUDE.md from the worktree root
+#   strip_system_skills      — delete .claude/skills/system/ (infer, learn, memory-retrieve, ...)
+#   strip_agents             — delete .claude/agents/ (curriculum-agent, action-agent, critic-agent)
+#   safe_mode                — also pass Claude Code's own --safe-mode flag at invocation time,
+#                              as a belt-and-suspenders guarantee independent of the file-level
+#                              stripping above (see run_experiment.py)
+
+conditions:
+  full-ver:
+    description: SimSkill as shipped — full procedural + semantic memory, full framework.
+    empty_procedural_memory: false
+    empty_semantic_memory: false
+    strip_claude_md: false
+    strip_system_skills: false
+    strip_agents: false
+    safe_mode: false
+
+  proc-mem-ver:
+    description: Procedural memory only — isolates the value of skills alone.
+    empty_procedural_memory: false
+    empty_semantic_memory: true
+    strip_claude_md: false
+    strip_system_skills: false
+    strip_agents: false
+    safe_mode: false
+
+  sem-mem-ver:
+    description: Semantic memory only — isolates the value of knowledge alone.
+    empty_procedural_memory: true
+    empty_semantic_memory: false
+    strip_claude_md: false
+    strip_system_skills: false
+    strip_agents: false
+    safe_mode: false
+
+  infer-frame-only:
+    description: >-
+      SimSkill's own scaffolding (system skills, sub-agent loop, critic) with zero
+      accumulated content — isolates the architecture from the content.
+    empty_procedural_memory: true
+    empty_semantic_memory: true
+    strip_claude_md: false
+    strip_system_skills: false
+    strip_agents: false
+    safe_mode: false
+
+  vanilla-cc:
+    description: >-
+      Plain Claude Code: no CLAUDE.md, no system skills, no sub-agents, just the task
+      prompt. The real "no SimSkill at all" baseline.
+    empty_procedural_memory: true
+    empty_semantic_memory: true
+    strip_claude_md: true
+    strip_system_skills: true
+    strip_agents: true
+    safe_mode: true
+
+  verification:
+    description: >-
+      Verification purpose: only strip CLAUDE.md; note that skills and subagents are still present since they may be used by the solution!
+    empty_procedural_memory: false
+    empty_semantic_memory: false
+    strip_claude_md: true
+    strip_system_skills: false
+    strip_agents: false
+    safe_mode: false

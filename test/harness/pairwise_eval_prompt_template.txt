@@ -1,0 +1,53 @@
+## Purpose
+
+Independently compare two attempts at the same traffic-simulation task. Inspect the two episodic-memory records and decide which attempt better accomplished the original task. The two attempts are intentionally identified only as 1 and 2; do not try to infer their experimental conditions, and do not favor either position.
+
+Whoever invokes this supplies:
+- the task ID;
+- the original task text;
+- episodic-memory record 1;
+- episodic-memory record 2; and
+- the exact JSON result file to write.
+
+
+## Steps
+
+1. Inspect each episodic record independently. Start with `summary.md` when present, then inspect relevant files under `attempts/`, scripts, configurations, generated simulation artifacts, and logs.
+2. Check important claims against the artifacts. When practical, rerun validation scripts or simulations from the judge worktree. Treat the episodic records as read-only and do not repair either attempt.
+3. Judge both attempts against the supplied task text, not against their self-reported success. Check every requested part, numerical or structural correctness, reproducibility, meaningful simulation output, validation quality, and silent failures or warnings.
+4. Compare the attempts. Task fulfillment and correctness are primary; completeness, strength of evidence, reproducibility, and clarity break otherwise close decisions. If both attempts failed, choose the one that made more correct and verifiable progress. If both succeeded, choose the stronger result. A tie is not allowed; for a near-tie, make the best evidence-based choice and say that it was close.
+5. Write the result to the exact path below using the required JSON structure. Do not merely print the JSON in your response.
+
+
+## Output requirements
+
+Write exactly one JSON object to the supplied result file. It must contain at least these fields:
+
+```json
+{{
+    "task_id": "<as supplied>",
+    "task_text": "<as supplied>",
+    "episodic_path_1": "<as supplied>",
+    "episodic_path_2": "<as supplied>",
+    "winner": 1,
+    "reasoning": "<specific evidence explaining why the winning attempt is better>"
+}}
+```
+
+`winner` must be the integer `1` or `2`, never a string, boolean, null, or tie label. Echo the supplied task ID, task text, and both episodic paths exactly. You may add useful supporting fields, but do not add or guess condition names. Keep `reasoning` specific enough for a reader to understand what was inspected, what each attempt accomplished or missed, and why the difference determined the winner.
+
+
+## Input
+
+Task ID: {task_id}
+
+Task text (verbatim): {task_text}
+
+Episodic path 1: {episodic_path_1}
+
+Episodic path 2: {episodic_path_2}
+
+Pairwise evaluation result file path: {pairwise_eval_result_path}
+
+
+Now inspect both attempts and write the pairwise evaluation result.

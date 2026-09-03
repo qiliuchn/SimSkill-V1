@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<connections>
+    <!-- ================= West terminal (signalized) ================= -->
+    <connection from="aw_w" to="w_e"/>                <!-- EB arterial through -> internal link -->
+    <connection from="aw_w" to="sb_on"/>             <!-- EB arterial -> SB on-ramp (arterial-to-onramp) -->
+    <connection from="e_w"  to="w_aw"/>              <!-- WB arterial through (internal -> west) -->
+    <connection from="e_w"  to="sb_on"/>             <!-- WB arterial -> SB on-ramp (arterial-to-onramp LEFT) -->
+    <connection from="sb_off" to="w_aw"/>            <!-- SB off-ramp -> WB arterial (ramp-to-arterial) -->
+    <connection from="sb_off" to="w_e"/>             <!-- SB off-ramp -> EB internal (ramp-to-arterial LEFT) -->
+
+    <!-- ================= East terminal (signalized) ================= -->
+    <connection from="ae_e" to="e_w"/>               <!-- WB arterial through -> internal link -->
+    <connection from="ae_e" to="nb_on"/>             <!-- WB arterial -> NB on-ramp (arterial-to-onramp) -->
+    <connection from="w_e"  to="e_ae"/>              <!-- EB arterial through (internal -> east) -->
+    <connection from="w_e"  to="nb_on"/>             <!-- EB arterial -> NB on-ramp (arterial-to-onramp LEFT) -->
+    <connection from="nb_off" to="e_ae"/>            <!-- NB off-ramp -> EB arterial (ramp-to-arterial) -->
+    <connection from="nb_off" to="e_w"/>             <!-- NB off-ramp -> WB internal (ramp-to-arterial LEFT) -->
+
+    <!-- ================= Freeway south junction ff_s (priority, NOT a signal) ================= -->
+    <connection from="nb1" to="nb2"/>                <!-- NB mainline through -->
+    <connection from="nb1" to="nb_off"/>             <!-- NB diverge to off-ramp -->
+    <connection from="sb2" to="sb3"/>                <!-- SB mainline through -->
+    <connection from="sb_on" to="sb3"/>              <!-- SB on-ramp merge -->
+
+    <!-- ================= Freeway north junction ff_n (priority, NOT a signal) ================= -->
+    <connection from="nb2" to="nb3"/>                <!-- NB mainline through -->
+    <connection from="nb_on" to="nb3"/>              <!-- NB on-ramp merge -->
+    <connection from="sb1" to="sb2"/>                <!-- SB mainline through -->
+    <connection from="sb1" to="sb_off"/>             <!-- SB diverge to off-ramp -->
+</connections>

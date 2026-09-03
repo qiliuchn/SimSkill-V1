@@ -1,0 +1,87 @@
+---
+name: evaluate-corridor-access-management-and-median-treatments
+description: Use this skill when the user wants to evaluate corridor-scale access management in SUMO — the mobility-vs-access tradeoff of driveway/curb-cut density along a suburban arterial, compare median treatments (undivided, two-way left-turn lane / TWLTL, raised median with U-turn crossovers), or represent a TWLTL when SUMO has no native primitive for one. Covers three candidate TWLTL encodings and why only a discretized per-driveway-pocket design compiles and behaves correctly (an open continuous coincident-edge span physically overlaps vehicles that --collision-output cannot see), a density sweep methodology that holds total corridor demand fixed while varying only how many driveways it's spread over, through-vs-access decomposition (why a pooled mean hides the tradeoff), SSM conflict-rate-vs-density and a driveway-consolidation remedy. Trigger on mentions of access management, driveway density, curb cuts, TWLTL, two-way left-turn lane, median treatment, raised median, corridor access spacing, or driveway consolidation.
+related_skills:
+  - control-one-lane-two-way-alternating-flow-through-a-work-zone
+  - design-restricted-crossing-uturn-and-michigan-left-intersections
+  - design-left-turn-storage-bay-length
+  - analyze-intersection-safety-with-ssm
+  - build-atspm-pipeline-and-retime-arterial
+  - conduct-driveway-signal-warrant-traffic-impact-analysis
+  - quantify-sumo-run-to-run-variability
+related_skills_for_graph_view:
+  - "[[control-one-lane-two-way-alternating-flow-through-a-work-zone]]"
+  - "[[design-restricted-crossing-uturn-and-michigan-left-intersections]]"
+  - "[[design-left-turn-storage-bay-length]]"
+  - "[[analyze-intersection-safety-with-ssm]]"
+  - "[[build-atspm-pipeline-and-retime-arterial]]"
+  - "[[conduct-driveway-signal-warrant-traffic-impact-analysis]]"
+  - "[[quantify-sumo-run-to-run-variability]]"
+related_pages:
+  - "[[one-lane-two-way-alternating-flow-and-shared-lane-representation]]"
+  - "[[rcut-and-michigan-left-alternative-intersection-design]]"
+  - "[[left-turn-storage-bay-length-design]]"
+  - "[[surrogate-safety-measures]]"
+  - "[[mutcd-signal-warrants-and-the-demand-vs-served-volume-trap]]"
+---
+
+# Evaluate Corridor Access Management and Median Treatments
+
+Determines, from measured SUMO output rather than FHWA/NCHRP guidance assertion, how driveway density and median treatment jointly trade mobility against access on a suburban arterial. Sits alongside `conduct-driveway-signal-warrant-traffic-impact-analysis` (single driveway) and `design-restricted-crossing-uturn-and-michigan-left-intersections` (single junction) as the corridor-scale generalization of both, plus the first skill in memory to represent a continuous two-way left-turn lane.
+
+## The TWLTL representation problem: only a discretized pocket design works
+
+SUMO has no native primitive for a continuous two-way left-turn lane — a median lane entered midblock from both directions as a shared left-turn refuge. Three candidate encodings, verified:
+
+1. **Continuous coincident opposite-direction one-lane median edges** (one edge per direction, `spreadType="center"`, `netconvert --geometry.avoid-overlap false` so they overlay exactly) spanning the whole block. **Compiles** (with warnings), but is **structurally unsafe**: this is an *open edge*, not a junction, so nothing arbitrates access to it. Verified via FCD (never trust `--collision-output` for this — see `[[one-lane-two-way-alternating-flow-and-shared-lane-representation]]`, reconfirmed here in a new configuration): true center-to-center separation between opposing users went as low as **1.0-2.0 m**, i.e. **negative** true clearance once vehicle length is subtracted (−2.5 m to −3.5 m), a genuine body overlap — while `--collision-output` reported **zero** collisions both times. **Reject.**
+2. **A single literal one-directional lane** with symmetric connections attempted from both ends. **Does not compile** — `netconvert` errors (`Could not insert connection...`) because a one-directional edge has no legal "from" end for the direction that would need to enter from its far side. **Reject** — topologically invalid, not just unsafe.
+3. **A discretized chain of short local pockets, one per driveway**, using the same coincident-edge pattern as (1) but *not* stitched into a continuous span between driveways. **Compiles cleanly, and verifies safe**: because each pocket is short enough to be absorbed entirely into netconvert's own junction-interior geometry, access is arbitrated by SUMO's ordinary junction foe/priority machinery (compiled connection state `M`/`m`) — the same mechanism that *does* feed the collision checker, unlike (1)'s open span. An adversarial synced-arrival FCD test (forcing near-simultaneous opposing arrivals) found the two directions were **never** simultaneously present on the coincident lane pair, at any tested pocket. **Use this one.**
+
+**What the chosen encoding does and does not reproduce — state this every time it's used:**
+- **Not continuous.** A vehicle can only enter/exit "the median" at its own driveway's pocket; there is no median-running between non-adjacent driveways.
+- **Near-zero real storage, regardless of authored length.** `netconvert` absorbs almost the entire pocket into the junction polygon: a verified corridor build authored pockets up to 19 m (via `half = min(9.5, max(2.0, spacing/2.0 - 2.0))`) but the compiled lane length came out **0.13-0.80 m** (mean ~0.5 m at low driveway density, ~0.28 m at high density — it shrinks further as driveways get closer together). This makes the encoding a **single-vehicle-at-a-time refuge, never a multi-car queue-holding lane** — any claim about TWLTL performance at high per-driveway left-turn *volume* (several cars queued in the median simultaneously) is outside what this encoding can test.
+- **Right-in/right-out needs its own connection, or trips silently vanish onto a detour.** A first-pass implementation that wired only the left-turn movement into the pocket left right-turning driveway trips with no legal path — `duarouter` silently rerouted them kilometers out of the way via whatever alternate route existed, with no warning or error (see Gotchas). The working fix routes right-turners through the same short pocket lane, a further, disclosed compromise (right- and left-turners briefly share the pocket rather than staying independent, unlike real right-in/right-out).
+
+## Median variant comparison: build once, vary only the driveway connection pattern
+
+Build one shared corridor geometry (same node/edge/signal-timing spine) and let only the median/driveway-connection encoding differ between arms — this is what makes the comparison a genuine controlled experiment rather than three different networks:
+
+- **Undivided**: driveway left-turns made from/into the inside through lane directly (no median object at all).
+- **TWLTL**: the discretized-pocket encoding above.
+- **Raised median**: driveway left-turns physically prohibited; only right-in/right-out at driveways, with directional U-turn crossovers at intersections/designated points — reuse `design-restricted-crossing-uturn-and-michigan-left-intersections`'s crossover mechanics directly (`dir="t"` compiled connections, U-turn move `state="m"` yielding to the opposing through's `state="M"`), generalized from one junction to a corridor-wide policy applied at every median opening.
+
+**Verify banned movements reappear as detours, not vanish.** Under the raised-median arm, pull a sample of realized routes for driveway left-turn demand and confirm they show the expected U-turn pattern (pass the driveway, cross at the next opening, return) rather than checking only aggregate counts, which can't distinguish "rerouted" from "silently dropped."
+
+## Density sweep: hold total demand fixed, vary only how many points it's spread over
+
+The experimental control that makes an access-density study interpretable: **total corridor demand, the through/access split, and total driveway-trip volume must stay identical across every density level** — only the number of driveways that same access demand is distributed over changes. Generate demand once per (density, seed) pair, independent of median variant (so all three variants see byte-identical demand at a given density/seed — verify this directly: trip counts and every movement-class count should be bit-for-bit identical across variants at fixed density). This isolates the *spacing* effect from a confounded *volume* effect.
+
+## Decompose through vs. access — a pooled mean hides the tradeoff
+
+Report through-corridor delay/travel-time and driveway-access travel-time **separately**, not as one blended mean. Access management fundamentally trades one against the other, and a pooled corridor-wide average can show a flat or even improving trend while masking that through-traffic and access-traffic are moving in opposite directions. Verified pattern: a discretized-pocket TWLTL delivered materially better access travel time than undivided *at every density tested*, while its through-corridor delay ranking *flipped* with density — statistically tied at low density, measurably worse than undivided at moderate-to-high density. Reporting only a blended average would have missed that the answer to "is TWLTL worth it" depends on which population and which density you're asking about.
+
+## Conflict rate vs. density: a genuine, unresolved ambiguity worth stating plainly
+
+Don't assume SUMO's SSM conflict rate will rise with access-point density the way published crash-rate-vs-access-density curves do — verify it, and if it doesn't, say so rather than forcing the literature's shape onto the data. A verified sweep (fixed total demand, increasing density) found conflict rate *per million vehicle-km* **fell** as density rose, consistently in sign across every median variant and turn-movement category, though not always individually significant. Two candidate explanations, genuinely left open rather than resolved: (a) a real effect — fixed total demand means each individual driveway sees proportionally less traffic as density rises, so an SSM device counting proximity-based encounters per driveway sees fewer near-simultaneous pairs; or (b) an artifact — SSM's TTC/PET/DRAC-based detection cannot represent the driver scanning/distraction burden of frequent curb cuts, which is plausibly what the real-world crash-density relationship is partly capturing. Report both candidate explanations rather than picking one to make the result look cleaner than it is.
+
+## Driveway consolidation as a remedy — check safety, not just delay
+
+Consolidating several low-volume driveways into one higher-volume access point at fixed total demand recovers through-corridor delay substantially (verified: back to near the lowest-density arm's delay level). But **verify the conflict-rate direction too, not just delay** — a verified test found conflict rate *increased* materially (+22% to +36% per Mvkm) after consolidation, consistently across every replication seed, despite near-identical trip counts/VMT/spacing to the low-density baseline used for comparison. This is a genuinely surprising, disclosed-but-unresolved finding (fewer, busier driveways concentrating conflict-generating movements at each remaining point is a plausible mechanism, not yet confirmed) — don't assume a delay-improving remedy is unconditionally better; check the safety metric independently, and report a surprising result rather than smoothing it into "consolidation helps."
+
+## Gotchas
+
+- **`--collision-output` cannot be trusted for any shared/coincident-edge encoding.** It is structurally blind to vehicles occupying the same physical space on an open edge (only junction-arbitrated conflicts are visible to it). Always verify shared-lane safety from FCD position data directly, computing true center-to-center separation minus vehicle length — see `[[one-lane-two-way-alternating-flow-and-shared-lane-representation]]`.
+- **A missing connection for one movement doesn't error — it silently reroutes.** When the discretized TWLTL pocket only had a left-turn connection wired, right-turning driveway trips didn't fail; `duarouter` found *some* legal path (often kilometers out of the way via an unrelated route) with no warning. Verify realized routes for every movement class, not just that the network compiled without errors — the same discipline `conduct-driveway-signal-warrant-traffic-impact-analysis` documents for right-in/right-out conversions.
+- **netconvert absorbs short pocket/bay geometry into the junction polygon far more aggressively than the authored length suggests** — the same compiled-vs-authored gap `design-left-turn-storage-bay-length` documents for ordinary turn bays, but here total: an authored 19 m pocket compiled to well under 1 m. Always measure compiled lane length directly; never assume the authored geometry survived.
+- **Raw x/y coordinate matching for stop-bar/signal-position detection breaks near geometry a large auxiliary loop (e.g. an outer bypass route) distorts.** A netconvert-compiled junction polygon's actual coordinates can drift substantially (tens of meters) from the nominal authored position once other nearby geometry interacts with it. Use lane-ID-based detection via `sumolib` net topology instead of raw coordinates for anything position-sensitive.
+- **A `multiprocessing` pool cannot spawn workers from a script piped via a heredoc/stdin** on macOS's `spawn` start method — write the driver to a real `.py` file before parallelizing a sweep.
+
+## Related
+
+- `control-one-lane-two-way-alternating-flow-through-a-work-zone`, `[[one-lane-two-way-alternating-flow-and-shared-lane-representation]]` — the shared/bidirectional-lane representation methodology (enumerate candidates, verify via FCD not collision-output) this skill's TWLTL work directly follows and reconfirms in a new configuration.
+- `design-restricted-crossing-uturn-and-michigan-left-intersections`, `[[rcut-and-michigan-left-alternative-intersection-design]]` — the U-turn crossover mechanics reused for the raised-median arm, and the VMT-up/VHT-down framing tested (and here, not found to cross over) at corridor scale.
+- `design-left-turn-storage-bay-length`, `[[left-turn-storage-bay-length-design]]` — the compiled-vs-authored geometry calibration discipline, reused and found to apply even more extremely to the TWLTL pocket.
+- `analyze-intersection-safety-with-ssm`, `[[surrogate-safety-measures]]` — the SSM device and conflict-type classification this skill's conflict-vs-density analysis is built on.
+- `build-atspm-pipeline-and-retime-arterial` — percent-arrival-on-green machinery, reused in scoped-down form for the progression-quality check.
+- `conduct-driveway-signal-warrant-traffic-impact-analysis`, `[[mutcd-signal-warrants-and-the-demand-vs-served-volume-trap]]` — single-driveway demand-generation mechanics this skill generalizes to a corridor-wide distributed sweep, and the demand-vs-served-volume measurement trap relevant to interpreting driveway entry delay.
+- `quantify-sumo-run-to-run-variability` — CRN/replication conventions used for every density x variant cell.

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Two-way undivided rural highway: straight 2 km corridor.
+     Extra approach/exit stubs so vehicles can depart/arrive off the measured segment. -->
+<nodes>
+    <node id="W"  x="-300"  y="0.0" type="priority"/>
+    <node id="A"  x="0.0"   y="0.0" type="priority"/>
+    <node id="B"  x="2000"  y="0.0" type="priority"/>
+    <node id="E"  x="2300"  y="0.0" type="priority"/>
+</nodes>

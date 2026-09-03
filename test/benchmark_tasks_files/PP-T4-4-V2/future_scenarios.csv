@@ -1,0 +1,7 @@
+future_id,probability,car_demand_multiplier,transit_demand_multiplier,freight_multiplier,active_mode_multiplier,incident_elements,incident_action,incident_start_minute,incident_duration_minutes,carbon_price_per_tonne
+F1,0.20,0.90,1.25,0.90,1.20,none,none,,,120
+F2,0.20,1.10,0.95,1.15,0.95,none,none,,,80
+F3,0.15,1.25,0.85,1.30,0.85,N01-N02;N02-N01,full closure,45,30,60
+F4,0.15,0.80,1.40,1.00,1.30,N03-N13;N13-N03,full closure,60,20,150
+F5,0.15,1.05,1.10,1.40,1.10,N21 signal,flash all-way stop,50,20,100
+F6,0.15,1.20,0.90,0.85,0.90,N10-N20;N20-N10,full closure,30,30,70

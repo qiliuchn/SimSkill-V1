@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- At-grade rail/road level crossing.
+     Rail runs W - X - E (east-west, horizontal); road runs N - X - S
+     (north-south, vertical). Both share the single junction X.
+     X is authored as type="rail_crossing". netconvert VALIDATES this: it
+     keeps the type only because X genuinely joins pure-rail edges (allow=rail)
+     and non-rail road edges (allow=passenger); on a node lacking that mix it
+     reverts the type to priority. (Auto-detection from an unset type does NOT
+     fire for hand-authored plain XML in SUMO 1.27 - see results notes.) -->
+<nodes>
+    <!-- Road corridor endpoints -->
+    <node id="N" x="0"     y="600"  type="priority"/>
+    <node id="S" x="0"     y="-600" type="priority"/>
+    <!-- Rail corridor endpoints -->
+    <node id="W" x="-1200" y="0"    type="priority"/>
+    <node id="E" x="1200"  y="0"    type="priority"/>
+    <!-- Shared crossing junction -->
+    <node id="X" x="0"     y="0" type="rail_crossing"/>
+</nodes>

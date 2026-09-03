@@ -1,0 +1,70 @@
+# Dollar-cost conversion table for test/experiments.md §3.2.2. Pin a date whenever this
+# is updated, and re-check it before any real batch of runs — provider pricing changes
+# over time, which §7 ("Pricing/tokenizer drift") explicitly flags as a threat to validity.
+#
+# Rates are USD per 1,000,000 tokens. `null` means "not yet priced" — cost_time.py must
+# report cost as null (and log a warning) rather than silently treating a missing rate
+# as zero. Keys must match test/harness/models.yaml's `models.<key>`.
+#
+# Fill in real, current rates before Phase 1+ actually runs. This file intentionally
+# ships with the third-party rows blank rather than guessing plausible-looking numbers.
+
+price_table_date: "2026-08-17"
+currency: USD
+# DeepSeek publishes peak and off-peak prices. The experiment uses the peak
+# schedule as a fixed, conservative normalization so conditions run at different
+# wall-clock times remain comparable. Values below use 7 CNY = 1 USD.
+pricing_basis: peak
+
+rates:
+  claude-opus-5:
+    # https://platform.claude.com/docs/en/about-claude/pricing
+    input: 5.0
+    output: 25.0
+    cache_write: 10.0
+    cache_read: 0.5
+
+  claude-haiku-4-5:
+    # https://platform.claude.com/docs/en/about-claude/pricing
+    input: 1.0
+    output: 5.0
+    cache_write: 2.0
+    cache_read: 0.1
+
+  deepseek-v4-pro:
+    # https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
+    # Peak CNY/M: cache hit 0.30, cache miss 9.00, output 27.00.
+    input: 1.285714
+    output: 3.857143
+    # DeepSeek has no separate cache-write premium; a miss is ordinary input.
+    cache_write: 1.285714
+    cache_read: 0.042857
+
+  deepseek-v4-flash:
+    # https://api-docs.deepseek.com/zh-cn/quick_start/pricing/
+    # Peak CNY/M: cache hit 0.10, cache miss 3.00, output 9.00.
+    input: 0.428571
+    output: 1.285714
+    cache_write: 0.428571
+    cache_read: 0.014286
+
+  qwen3.7-max:
+    # https://help.aliyun.com/zh/model-studio/model-pricing
+    input: 1.714286
+    output: 5.142857
+    cache_write: 1.714286
+    cache_read: 0.171429
+
+  glm-5.2:
+    # https://help.aliyun.com/zh/model-studio/model-pricing
+    input: 1.142857
+    output: 4.0
+    cache_write: 1.142857
+    cache_read: 0.114286
+
+  kimi-k3:
+    # https://help.aliyun.com/zh/model-studio/model-pricing
+    input: 2.857142
+    output: 14.285714
+    cache_write: 2.857142
+    cache_read: 0.285714

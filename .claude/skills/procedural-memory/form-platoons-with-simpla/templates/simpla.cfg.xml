@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Maps original vType "pcav" to its four platoon roles. Path is relative to
+         this cfg file's directory. Line format:
+         orig : leader : follower : catchup : catchupFollower -->
+    <vTypeMapFile value="vtypes.map"/>
+
+    <!-- Only manage connected vehicles: any vType whose id contains "pcav".
+         Non-connected "hcav" vehicles are ignored (never platooned). -->
+    <vehicleSelectors value="pcav"/>
+
+    <controlRate value="1.0"/>
+    <maxVehicles value="8"/>            <!-- max platoon size (joining denied beyond) -->
+
+    <!-- Join thresholds. useHeadway=true => the *headway* thresholds govern; the
+         distance thresholds are kept as sensible fallbacks. -->
+    <!-- Join thresholds tuned for a fast (33 m/s) multi-lane freeway: on such a road
+         vehicles that are a few seconds apart should still be admitted as platoon
+         FOLLOWERS (CACC, tau=0.6) rather than lingering in CATCHUP (ACC, tau=1.4).
+         Tighter (1.5 s) thresholds left ~99% of managed vehicles stuck in catchup;
+         loosening maxPlatoonHeadway to 2.5 s converts them into real followers so the
+         CACC gap actually engages. -->
+    <useHeadway value="true"/>
+    <maxPlatoonGap value="45.0"/>       <!-- join if gap below this (distance fallback) -->
+    <maxPlatoonHeadway value="2.5"/>    <!-- join as FOLLOWER if headway below this (s) -->
+    <catchupDist value="100.0"/>        <!-- start catching up within this distance -->
+    <catchupHeadway value="6.0"/>       <!-- start catching up within this headway (s) -->
+
+    <platoonSplitTime value="3.0"/>     <!-- split after this long out of formation -->
+    <switchImpatienceFactor value="0.1"/>
+    <edgeLookAhead value="2"/>
+    <distLookAhead value="500.0"/>
+    <lcMinDist value="100.0"/>
+
+    <lcMode original="597" leader="597" follower="514" catchup="514" catchupFollower="514"/>
+    <speedFactor original="1.0" leader="1.0" follower="1.0" catchup="1.05" catchupFollower="1.0"/>
+
+    <verbosity value="1"/>
+</configuration>

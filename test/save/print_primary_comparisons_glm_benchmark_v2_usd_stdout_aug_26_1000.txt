@@ -1,0 +1,16 @@
+Cost accounting: repriced 80/80 run(s) from raw whole-tree modelUsage using /Users/liuqi/Desktop/simskill1/test/harness/price_table.yaml (price_table_date=2026-08-17, pricing_basis=peak).
+
+=== 80 run(s) loaded from /Users/liuqi/Desktop/simskill1/test/experiment_tasks.jsonl ===
+
+ condition   model  n  n_verified_success  n_verified_failure  n_unverified  n_costed  median_cost_usd  total_cost_usd  median_wall_clock_total_s  median_attempts  disagreements  success_rate
+  full-ver glm-5.2 40                  10                  30             0        40         2.292842      128.368753                   2008.234              2.0             29       0.25000
+vanilla-cc glm-5.2 40                  10                  29             1        40         2.439075      106.737320                   2899.006              1.0             28       0.25641
+
+=== §5 pre-registered primary comparisons ===
+
+  full-ver vs vanilla-cc  (model=glm-5.2):  success_rate  0.25 vs 0.26  |  median_cost_usd  2.29 vs 2.44  |  median_wall_clock_total_s  2008.23 vs 2899.01
+  full-ver vs proc-mem-ver  (model=glm-5.2):  no results for proc-mem-ver
+  full-ver vs sem-mem-ver  (model=glm-5.2):  no results for sem-mem-ver
+  full-ver vs infer-frame-only  (model=glm-5.2):  no results for infer-frame-only
+
+Plot saved to /Users/liuqi/Desktop/simskill1/test/success_at_budget_curves_cost_usd.png
