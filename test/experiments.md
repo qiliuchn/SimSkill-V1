@@ -150,12 +150,17 @@ The main repo is never modified by any of this (§2's contamination control).
 Each time you run run_experiment.py, it creates exactly one git worktree at the start (create_worktree) and tears it down at the end (remove_worktree, unless --keep-worktree).
 
 
-### 5.3 Scoring the task execution results (Optional)
+### 5.3 Result files
 
-If you want to score the task execution results, you can run:
-```bash
-python test/harness/score.py --experiment-tasks /path/to/experiment_tasks.jsonl --judge-model deepseek-v4-pro
-```
+Check `test/save/` for the result files generated during the experiment.
+- `experiment_tasks_deepseek_benchmark_v1_two_conditions.jsonl`: experiment results for `full-ver` and `vanilla-cc` conditions tested on Benchmark V1 using `deepseek-v4-pro` model.
+- `experiment_tasks_deepseek_benchmark_v1_all_conditions.jsonl`: experiment results for all conditions tested on Benchmark V1 using `deepseek-v4-pro` model.
+- `experiment_tasks_deepseek_benchmark_v2_two_conditions.jsonl`: experiment results for `full-ver` and `vanilla-cc` conditions tested on Benchmark V2 using `deepseek-v4-pro` model.
+- `experiment_tasks_qwen_benchmark_v1_two_conditions.jsonl`: experiment results for `full-ver` and `vanilla-cc` conditions tested on Benchmark V1 using `qwen-3.7-max` model.
+- `experiment_tasks_qwen_benchmark_v1_all_conditions.jsonl`: experiment results for all conditions tested on Benchmark V1 using `qwen-3.7-max` model.
+- `experiment_tasks_qwen_benchmark_v2_two_conditions.jsonl`: experiment results for `full-ver` and `vanilla-cc` conditions tested on Benchmark V2 using `qwen-3.7-max` model.
+- `experiment_tasks_glm_benchmark_v1_two_conditions.jsonl`: experiment results for `full-ver` and `vanilla-cc` conditions tested on Benchmark V1 using `glm-5.2` model.
+- `experiment_tasks_glm_benchmark_v2_two_conditions.jsonl`: experiment results for `full-ver` and `vanilla-cc` conditions tested on Benchmark V2 using `glm-5.2` model.
 
 
 ### 5.4 Reading results
@@ -175,4 +180,20 @@ To plot the score distributions, run:
 python test/harness/print_score_distribution.py \
         --experiment-tasks /path/to/experiment_tasks.jsonl
 ```
+
+Check the following files for output that we get from running the above command:
+- `print_primary_comparisons_deepseek_benchmark_v1_usd_stdout_aug_27_1142.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_deepseek_benchmark_v1_all_conditions.jsonl` and metric is `cost_usd`, tested on Benchmark V1.
+- `print_primary_comparisons_deepseek_benchmark_v1_wall_clock_total_s_stdout_aug_27_1142.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_deepseek_benchmark_v1_all_conditions.jsonl` and metric is `wall_clock_total_s`, tested on Benchmark V1.
+- `print_primary_comparisons_deepseek_benchmark_v2_usd_stdout_aug_22_1000.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_deepseek_benchmark_v2_all_conditions.jsonl` and metric is `cost_usd`, tested on Benchmark V2.
+- `print_primary_comparisons_deepseek_benchmark_v2_wall_clock_total_s_stdout_aug_22_1000.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_deepseek_benchmark_v2_all_conditions.jsonl` and metric is `wall_clock_total_s`, tested on Benchmark V2.
+- `print_primary_comparisons_qwen_benchmark_v1_usd_stdout_aug_26_1937.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_qwen_benchmark_v1_all_conditions.jsonl` and metric is `cost_usd`, tested on Benchmark V1.
+- `print_primary_comparisons_qwen_benchmark_v1_wall_clock_total_s_stdout_aug_26_1937.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_qwen_benchmark_v1_all_conditions.jsonl` and metric is `wall_clock_total_s`, tested on Benchmark V1.
+- `print_primary_comparisons_qwen_benchmark_v2_cost_usd_stdout_aug_29_0816.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_qwen_benchmark_v2_all_conditions.jsonl` and metric is `cost_usd`, tested on Benchmark V2.
+- `print_primary_comparisons_qwen_benchmark_v2_wall_clock_total_s_stdout_aug_29_0816.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_qwen_benchmark_v2_all_conditions.jsonl` and metric is `wall_clock_total_s`, tested on Benchmark V2.
+- `print_primary_comparisons_glm_benchmark_v1_usd_stdout_aug_26_1000.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_glm_benchmark_v1_two_conditions.jsonl` and metric is `cost_usd`, tested on Benchmark V1.
+- `print_primary_comparisons_glm_benchmark_v1_wall_clock_total_s_stdout_aug_26_1000.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_glm_benchmark_v1_two_conditions.jsonl` and metric is `wall_clock_total_s`, tested on Benchmark V1.
+- `print_primary_comparisons_glm_benchmark_v1_usd_stdout_aug_26_1000.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_glm_benchmark_v2_two_conditions.jsonl` and metric is `cost_usd`, tested on Benchmark V2.
+- `print_primary_comparisons_glm_benchmark_v2_wall_clock_total_s_stdout_aug_22_1000.txt`: The stdout of `print_primary_comparisons.py` when experiment task file is `experiment_tasks_glm_benchmark_v2_two_conditions.jsonl` and metric is `wall_clock_total_s`, tested on Benchmark V2.
+- `score_distribution_deepseek_benchmark_v2.pdf`: the score distribution when SimSkill LLM is `deepseek-v4-pro` tested on Benchmark V2.
+- `score_distribution_qwen_benchmark_v2.pdf`: the score distribution when SimSkill LLM is `qwen-3.7-max` tested on Benchmark V2.
 
