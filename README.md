@@ -21,26 +21,7 @@ This work is inspired by [Voyager](https://voyager.minedojo.org), the lifelong l
 Check out [Claude Code Official Installation Guide](https://code.claude.com/docs/en/quickstart) for installing Claude Code.
 
 **Configure LLMs for Claude Code (Optional)**
-You may use custom LLM by configuring `env` in `.claude/settings.json`. For example, here is a configuration for DeepSeek:
-```json
-{
-  "env": {
-    "ANTHROPIC_AUTH_TOKEN": "sk-xxx",
-    "ANTHROPIC_BASE_URL": "https://api.deepseek.com/anthropic",
-    "ANTHROPIC_MODEL": "deepseek-v4-pro[1m]",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "deepseek-v4-pro[1m]",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "deepseek-v4-flash",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "deepseek-v4-flash",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "deepseek-v4-flash",
-    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "32000"
-  },
-  "permissions": {
-    "allow": [],
-    "deny": []
-  },
-  "alwaysThinkingEnabled": false
-}
-```
+You may use custom LLM by configuring `env` in `.claude/settings.json`. An example is given by `.claude/settings.local.json.example`.
 
 **Install Claude Code plugins (Required)**
 The following skills are required. You can install them by running the following command in Claude Code:
