@@ -186,7 +186,8 @@ tasks:
     task: >-
       Coordinate three consecutive signals along a one-way arterial (signals spaced
       400 m apart, posted speed limit 50 km/h) into a green wave using tlsCoordinator,
-      at a progression speed 15% below the posted speed limit (42.5 km/h).
+      at a progression speed 15% below the posted speed limit (42.5 km/h). Use the same 
+      60 s cycle at each signal, comprising 27 s arterial green, 3 s yellow, and 30 s red.
 
   - id: SC-T3
     category: signal-control-optimization
@@ -385,10 +386,13 @@ tasks:
     category: multimodal-transit
     tier: 3
     task: >-
-      Import the GTFS feed in test/benchmark_tasks_files/MT-T3/gtfs/ for a small
-      single-route transit network (6 stops, hourly service), add transit signal
-      priority at its busiest signalized stop, and quantify the resulting
-      schedule-adherence improvement relative to no priority.
+      Import the GTFS feed in test/benchmark_tasks_files/MT-T3/gtfs/ for a small 
+      single-route transit network (6 stops, hourly service). Place a signalized 
+      cross street immediately upstream of stop S4. Use a 60 s fixed-time signal 
+      with 25 s arterial green, 25 s cross-street green, 3 s yellow, and 2 s 
+      all-red. Add background demand of 600 veh/h on the arterial and 300 veh/h on 
+      the cross street. Compare this baseline with transit signal priority at S4. 
+      Quantify the resulting schedule-adherence improvement relative to no priority.
     input_files:
       - test/benchmark_tasks_files/MT-T3/gtfs/
 
