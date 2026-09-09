@@ -85,6 +85,7 @@ Count: 153
 ```
 
 
+
 ## Architecture
 
 SimSkill has the following components:
@@ -126,6 +127,7 @@ SimSkill has the following components:
 
 ## Workflow
 ![Workflow Summary](assets/workflow.png)
+
 
 ### Inference flow
 
@@ -191,6 +193,7 @@ Return learning statistics
 `[S]` = a skill is used for this step. `[A]` = an agent is invoked for this step.
 
 
+
 ## Project Structure
 
 ```
@@ -208,6 +211,7 @@ Return learning statistics
 └── semantic-memory/                    # Semantic memory - a collection of knowledge pages (markdown files)
     └── index.md                        # Index of all knowledge pages (summary + keywords), for retrieval without opening every page
 ```
+
 
 
 ## Memory Representation
@@ -259,11 +263,13 @@ Note: Obsidian's `graph.json` sets:
 PS: Obsidian’s search matches any file whose full path contains the specified string. Therefore, avoid placing folders or files with names such as ``semantic-memory`` or ``procedural-memory-for-graph-view`` anywhere in their path unless you want them to appear in the graph.
 
 
+
 ## Experimentation
 
 Check out the [test](test/) directory for some ideas on how to experiment with SimSkill.
 [Experiments](test/experiments.md) introduces the experiment design and how to run them.
 Experiment results of the paper are documented in [save](test/save/).
+
 
 ### Main Results
 
