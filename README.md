@@ -166,7 +166,7 @@ Return result to main process
 `[S]` = a skill is used for this step. `[A]` = an agent is invoked for this step.
 
 
-### Learning flow
+### Flow diagram of Learning
 Flow diagram of skill `learn`:
 ```
 User input to start learning
