@@ -319,3 +319,9 @@ clock time.
 ![ablations](assets/ablations.png)
 
 Above figure compare all five conditions on V1. Procedural memory contributes slightly more than semantic memory for both backbones, but neither representation subsumes the other.
+
+
+
+## Contact
+
+For any questions, please contact Qi Liu at liuqi_tj[at]hotmail.com.
