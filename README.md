@@ -35,12 +35,14 @@ The following skills are required. You can install them by running the following
 
 ## Quickstart
 **Start open-ended autonomous learning**
+
 Type the following instruction in Claude Code:
 ```
 Start learning
 ```
 
 ***Start user-guided autonomous learning (example)***
+
 Type the following instruction in Claude Code:
 ```
 Start learning about urban traffic congestion mitigation. Construct a systematic curriculum covering mitigation strategies, 
