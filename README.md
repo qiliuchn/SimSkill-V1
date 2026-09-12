@@ -34,10 +34,17 @@ The following skills are required. You can install them by running the following
 
 
 ## Quickstart
-**Start autonomous learning**
-Start learning by starting Claude Code and typing the following instruction in Claude Code:
+**Start open-ended autonomous learning**
+Type the following instruction in Claude Code:
 ```
 Start learning
+```
+
+***Start user-guided autonomous learning (example)***
+Type the following instruction in Claude Code:
+```
+Start learning about urban traffic congestion mitigation. Construct a systematic curriculum covering mitigation strategies, 
+congestion visualization and analysis, and methods for evaluating congestion and the effects of interventions.
 ```
 
 You can resume a learning session by typing the following command in terminal:
