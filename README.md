@@ -41,7 +41,7 @@ Type the following instruction in Claude Code:
 Start learning
 ```
 
-***Start user-guided autonomous learning (example)***
+**Start user-guided autonomous learning (example)**
 
 Type the following instruction in Claude Code:
 ```
