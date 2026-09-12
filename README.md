@@ -41,6 +41,7 @@ Type the following instruction in Claude Code:
 Start learning
 ```
 
+Intuitive illustration of the SimSkill learning process:
 <img src="assets/quickstart.png" alt="Quickstart" width="300">
 
 **Start user-guided autonomous learning (example)**
