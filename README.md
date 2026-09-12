@@ -42,7 +42,8 @@ Start learning
 ```
 
 Intuitive illustration of the SimSkill learning process:
-<img src="assets/quickstart.png" alt="Quickstart" width="300">
+
+<img src="assets/quickstart.png" alt="Quickstart" width="400">
 
 **Start user-guided autonomous learning (example)**
 
