@@ -60,6 +60,7 @@ claude --resume <session-id>
 or you can just create a new Claude Code session to continue learning if there is no need to resume a previous session.
 
 **Run an inference**
+
 To run an inference on your task, you can type the following instruction in Claude Code:
 ```
 (Use /infer) <your task>
@@ -71,6 +72,7 @@ Claude Code:
 ```
 
 **Manual Memory Lint**
+
 You can manually lint your memory by running the following commands in Claude Code.
 For incremental mode memory lint:
 ```
@@ -82,6 +84,7 @@ run a full memory lint
 ```
 
 **Check Memory Status**
+
 To check the status of your memory, you can run the following command in terminal:
 ```bash
 python utils/get_memory_statistics.py
