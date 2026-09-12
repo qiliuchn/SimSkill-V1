@@ -41,6 +41,8 @@ Type the following instruction in Claude Code:
 Start learning
 ```
 
+<img src="assets/quickstart.png" alt="Quickstart" width="300">
+
 **Start user-guided autonomous learning (example)**
 
 Type the following instruction in Claude Code:
