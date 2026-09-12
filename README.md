@@ -315,6 +315,9 @@ Complete SimSkill versus vanilla Claude Code. Completion is reported as verified
   --------------------------------------------------------------------------------------
 ```
 
+We also provide a second evaluation of the Benchmark V2 outputs using GLM-5.2 pointwise judge. The continuous judge agrees with the direction of the Claude Opus~5 binary results for the two evaluated backbones while revealing substantial partial completion among most tasks that did not pass the binary threshold.
+![score](assets/score_distributions.png)
+
 **Findings**:
 - SimSkill performance is significantly better than vanilla Claude Code. SimSkill also enables some long-horizon completion even when the baseline does not.
 - The result is not universal across models. GLM-5.2 shows no gain.
