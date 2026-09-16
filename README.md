@@ -284,199 +284,263 @@ PS: Obsidian’s search matches any file whose full path contains the specified 
 
 In approximately 80 hours of autonomous operation over five days, SimSkill accumulated 150 procedural skills and 153 semantic-memory pages spanning the major stages of traffic-simulation practice. The resulting artifacts are inspectable, editable, composable, and transferable across LLM backbones and agent frameworks. 
 
-**Scenario construction, execution, and vehicle-state operations**
+<b>Scenario construction, execution, and vehicle-state operations</b>
 
-| Knowledge pages (6) | Procedural skills (6) |
-|---|---|
-| `change-vehicle-state` | `analyze-simulation-outputs` |
-| `mesoscopic-simulation` | `choose-time-discretization-and-integration-method` |
-| `sumo-command-line` | `get-vehicles-state` |
-| `sumo-output-files` | `run-mesoscopic-simulation` |
-| `sumo-time-discretization` | `run-simulation` |
-| `traci` | `set-vehicle-state` |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (6)</th>
+<th>Procedural skills (6)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>change-vehicle-state</code></sub></td><td><sub><code>analyze-simulation-outputs</code></sub></td></tr>
+<tr><td><sub><code>mesoscopic-simulation</code></sub></td><td><sub><code>choose-time-discretization-and-integration-method</code></sub></td></tr>
+<tr><td><sub><code>sumo-command-line</code></sub></td><td><sub><code>get-vehicles-state</code></sub></td></tr>
+<tr><td><sub><code>sumo-output-files</code></sub></td><td><sub><code>run-mesoscopic-simulation</code></sub></td></tr>
+<tr><td><sub><code>sumo-time-discretization</code></sub></td><td><sub><code>run-simulation</code></sub></td></tr>
+<tr><td><sub><code>traci</code></sub></td><td><sub><code>set-vehicle-state</code></sub></td></tr>
+</tbody>
+</table>
 
-**Network and infrastructure design**
+<b>Network and infrastructure design</b>
 
-| Knowledge pages (11) | Procedural skills (12) |
-|---|---|
-| `abstract-network-generation` | `audit-repair-and-persist-imported-network-defects` |
-| `cutroutes-and-subnetwork-extraction` | `compare-one-way-vs-two-way-street-grid-conversion` |
-| `horizontal-curvature-and-curve-speed-in-sumo` | `create-grid-network` |
-| `imported-network-defect-classes-and-traffic-impact` | `create-roundabout-network` |
-| `multi-resolution-modeling-buffer-sizing-and-boundary-handoff` | `create-single-intersection` |
-| `one-way-vs-two-way-grid-performance-crossover` | `create-spider-network` |
-| `opendrive-and-network-format-interoperability` | `extract-subnetwork-scenario-with-boundary-demand` |
-| `openstreetmap` | `load-osm-network` |
-| `road-gradient-and-energy-consumption` | `model-horizontal-curvature-and-evaluate-design-consistency` |
-| `roundabout-modeling-and-comparison` | `model-road-gradient-effects-on-energy` |
-| `vehicle-class-lane-permissions` | `model-vclass-lane-permissions` |
-|  | `quantify-opendrive-roundtrip-fidelity` |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (11)</th>
+<th>Procedural skills (12)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>abstract-network-generation</code></sub></td><td><sub><code>audit-repair-and-persist-imported-network-defects</code></sub></td></tr>
+<tr><td><sub><code>cutroutes-and-subnetwork-extraction</code></sub></td><td><sub><code>compare-one-way-vs-two-way-street-grid-conversion</code></sub></td></tr>
+<tr><td><sub><code>horizontal-curvature-and-curve-speed-in-sumo</code></sub></td><td><sub><code>create-grid-network</code></sub></td></tr>
+<tr><td><sub><code>imported-network-defect-classes-and-traffic-impact</code></sub></td><td><sub><code>create-roundabout-network</code></sub></td></tr>
+<tr><td><sub><code>multi-resolution-modeling-buffer-sizing-and-boundary-handoff</code></sub></td><td><sub><code>create-single-intersection</code></sub></td></tr>
+<tr><td><sub><code>one-way-vs-two-way-grid-performance-crossover</code></sub></td><td><sub><code>create-spider-network</code></sub></td></tr>
+<tr><td><sub><code>opendrive-and-network-format-interoperability</code></sub></td><td><sub><code>extract-subnetwork-scenario-with-boundary-demand</code></sub></td></tr>
+<tr><td><sub><code>openstreetmap</code></sub></td><td><sub><code>load-osm-network</code></sub></td></tr>
+<tr><td><sub><code>road-gradient-and-energy-consumption</code></sub></td><td><sub><code>model-horizontal-curvature-and-evaluate-design-consistency</code></sub></td></tr>
+<tr><td><sub><code>roundabout-modeling-and-comparison</code></sub></td><td><sub><code>model-road-gradient-effects-on-energy</code></sub></td></tr>
+<tr><td><sub><code>vehicle-class-lane-permissions</code></sub></td><td><sub><code>model-vclass-lane-permissions</code></sub></td></tr>
+<tr><td></td><td><sub><code>quantify-opendrive-roundtrip-fidelity</code></sub></td></tr>
+</tbody>
+</table>
 
-**Demand, routing, and assignment**
+<b>Demand, routing, and assignment</b>
 
-| Knowledge pages (17) | Procedural skills (17) |
-|---|---|
-| `activitygen` | `assign-traffic-with-marouter` |
-| `braess-paradox-in-sumo` | `build-four-step-model-with-feedback-loop` |
-| `dfrouter-detector-based-demand-reconstruction` | `compute-dynamic-user-equilibrium` |
-| `downs-thomson-paradox-and-mode-choice-equilibrium` | `construct-and-verify-braess-paradox` |
-| `duarouter` | `convert-od-matrix-to-trips` |
-| `dynamic-user-equilibrium-and-wardrop` | `convert-trips-to-routes` |
-| `effort-based-routing-and-eco-routing` | `equilibrate-departure-time-choice-in-bottleneck-model` |
-| `field-counts-to-simulation-demand-and-the-saturated-count-truncation-trap` | `equilibrate-endogenous-mode-choice-with-transit-supply-feedback` |
-| `four-step-model-feedback-loop-convergence` | `generate-activity-based-demand` |
-| `gps-map-matching-and-probe-demand-reconstruction` | `generate-demand-with-jtrrouter` |
-| `jtrrouter` | `generate-random-trips` |
-| `marouter-macroscopic-assignment` | `implement-eco-routing` |
-| `od2trips` | `map-match-gps-traces-to-reconstruct-demand` |
-| `population-synthesis-and-aggregation-bias` | `reconstruct-demand-with-dfrouter` |
-| `random-trips` | `reconstruct-simulation-demand-from-field-turning-movement-counts` |
-| `route-choice-model-verification-overlap-and-route-set-effects` | `specify-route-choice-models-and-generate-route-sets` |
-| `vickrey-bottleneck-departure-time-equilibrium` | `synthesize-population-and-generate-disaggregate-demand` |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (17)</th>
+<th>Procedural skills (17)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>activitygen</code></sub></td><td><sub><code>assign-traffic-with-marouter</code></sub></td></tr>
+<tr><td><sub><code>braess-paradox-in-sumo</code></sub></td><td><sub><code>build-four-step-model-with-feedback-loop</code></sub></td></tr>
+<tr><td><sub><code>dfrouter-detector-based-demand-reconstruction</code></sub></td><td><sub><code>compute-dynamic-user-equilibrium</code></sub></td></tr>
+<tr><td><sub><code>downs-thomson-paradox-and-mode-choice-equilibrium</code></sub></td><td><sub><code>construct-and-verify-braess-paradox</code></sub></td></tr>
+<tr><td><sub><code>duarouter</code></sub></td><td><sub><code>convert-od-matrix-to-trips</code></sub></td></tr>
+<tr><td><sub><code>dynamic-user-equilibrium-and-wardrop</code></sub></td><td><sub><code>convert-trips-to-routes</code></sub></td></tr>
+<tr><td><sub><code>effort-based-routing-and-eco-routing</code></sub></td><td><sub><code>equilibrate-departure-time-choice-in-bottleneck-model</code></sub></td></tr>
+<tr><td><sub><code>field-counts-to-simulation-demand-and-the-saturated-count-truncation-trap</code></sub></td><td><sub><code>equilibrate-endogenous-mode-choice-with-transit-supply-feedback</code></sub></td></tr>
+<tr><td><sub><code>four-step-model-feedback-loop-convergence</code></sub></td><td><sub><code>generate-activity-based-demand</code></sub></td></tr>
+<tr><td><sub><code>gps-map-matching-and-probe-demand-reconstruction</code></sub></td><td><sub><code>generate-demand-with-jtrrouter</code></sub></td></tr>
+<tr><td><sub><code>jtrrouter</code></sub></td><td><sub><code>generate-random-trips</code></sub></td></tr>
+<tr><td><sub><code>marouter-macroscopic-assignment</code></sub></td><td><sub><code>implement-eco-routing</code></sub></td></tr>
+<tr><td><sub><code>od2trips</code></sub></td><td><sub><code>map-match-gps-traces-to-reconstruct-demand</code></sub></td></tr>
+<tr><td><sub><code>population-synthesis-and-aggregation-bias</code></sub></td><td><sub><code>reconstruct-demand-with-dfrouter</code></sub></td></tr>
+<tr><td><sub><code>random-trips</code></sub></td><td><sub><code>reconstruct-simulation-demand-from-field-turning-movement-counts</code></sub></td></tr>
+<tr><td><sub><code>route-choice-model-verification-overlap-and-route-set-effects</code></sub></td><td><sub><code>specify-route-choice-models-and-generate-route-sets</code></sub></td></tr>
+<tr><td><sub><code>vickrey-bottleneck-departure-time-equilibrium</code></sub></td><td><sub><code>synthesize-population-and-generate-disaggregate-demand</code></sub></td></tr>
+</tbody>
+</table>
 
-**Signals and intersection control**
+<b>Signals and intersection control</b>
 
-| Knowledge pages (31) | Procedural skills (30) |
-|---|---|
-| `actuated-signal-detector-design-and-fault-tolerance` | `build-atspm-pipeline-and-retime-arterial` |
-| `actuated-traffic-signals` | `build-pedestrian-crossings-and-phasing` |
-| `arterial-signal-progression-resonance-bandwidth-and-delay` | `compare-left-turn-signal-treatments` |
-| `automated-traffic-signal-performance-measures` | `compare-unsignalized-intersection-control-types` |
-| `autonomous-intersection-management-safety-and-performance-envelope` | `conduct-driveway-signal-warrant-traffic-impact-analysis` |
-| `connected-vehicle-penetration-and-detector-free-signal-control` | `control-signals-with-actuated-tls` |
-| `coordinated-adaptive-signal-control-detector-bias-and-transition-cost` | `design-actuated-signal-detector-placement-and-fault-tolerance` |
-| `emergency-vehicle-preemption-and-bluelight` | `design-arterial-signal-progression-and-verify-bandwidth` |
-| `glosa-eco-driving` | `design-left-turn-storage-bay-length` |
-| `intersection-sight-distance-and-sumo-visibility-parameter` | `design-multimodal-signal-progression-for-bicycles-and-cars` |
-| `left-turn-storage-bay-length-design` | `design-restricted-crossing-uturn-and-michigan-left-intersections` |
-| `left-turn-treatment-tradeoffs` | `design-signal-change-and-clearance-intervals` |
-| `max-pressure-signal-control` | `evaluate-right-turn-on-red-and-leading-pedestrian-interval` |
-| `multimodal-signal-progression-and-the-bicycle-green-wave` | `implement-detector-free-cv-adaptive-signal-control` |
-| `mutcd-signal-warrants-and-the-demand-vs-served-volume-trap` | `implement-emergency-vehicle-preemption` |
-| `nema-dual-ring-controller` | `implement-glosa-speed-advisory-controller` |
-| `pedestrian-crossings-and-signal-phasing` | `implement-maxpressure-traci-controller` |
-| `q-learning-agent` | `implement-nema-dual-ring-controller` |
-| `railroad-preemption-of-nearby-signalized-intersections` | `implement-predictive-rolling-horizon-signal-control` |
-| `rcut-and-michigan-left-alternative-intersection-design` | `implement-railroad-preemption-at-a-signalized-intersection` |
-| `right-turn-on-red-and-leading-pedestrian-interval` | `implement-reservation-based-autonomous-intersection-management` |
-| `roundabout-capacity-law-and-demand-metering` | `implement-scats-style-coordinated-adaptive-signal-control` |
-| `signal-clearance-intervals-dilemma-zone-and-safety-capacity-tradeoff` | `implement-transit-signal-priority` |
-| `simulation-in-the-loop-ga-signal-optimization` | `measure-roundabout-capacity-and-implement-metering` |
-| `sumo-rl-environment` | `model-intersection-sight-distance-restriction-at-a-twsc-junction` |
-| `tlscoordinator` | `optimize-signal-plan-with-simulation-in-the-loop-ga` |
-| `tlscycleadaptation` | `optimize-signals-by-qlearning` |
-| `transit-signal-priority` | `optimize-signals-by-tlscoordinator` |
-| `unsignalized-vs-signalized-intersection-control` | `optimize-signals-by-tlscycleadaptation` |
-| `value-of-anticipation-in-predictive-signal-control` | `switch-signal-plans-by-time-of-day-with-waut` |
-| `waut-time-of-day-signal-plan-switching` |  |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (31)</th>
+<th>Procedural skills (30)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>actuated-signal-detector-design-and-fault-tolerance</code></sub></td><td><sub><code>build-atspm-pipeline-and-retime-arterial</code></sub></td></tr>
+<tr><td><sub><code>actuated-traffic-signals</code></sub></td><td><sub><code>build-pedestrian-crossings-and-phasing</code></sub></td></tr>
+<tr><td><sub><code>arterial-signal-progression-resonance-bandwidth-and-delay</code></sub></td><td><sub><code>compare-left-turn-signal-treatments</code></sub></td></tr>
+<tr><td><sub><code>automated-traffic-signal-performance-measures</code></sub></td><td><sub><code>compare-unsignalized-intersection-control-types</code></sub></td></tr>
+<tr><td><sub><code>autonomous-intersection-management-safety-and-performance-envelope</code></sub></td><td><sub><code>conduct-driveway-signal-warrant-traffic-impact-analysis</code></sub></td></tr>
+<tr><td><sub><code>connected-vehicle-penetration-and-detector-free-signal-control</code></sub></td><td><sub><code>control-signals-with-actuated-tls</code></sub></td></tr>
+<tr><td><sub><code>coordinated-adaptive-signal-control-detector-bias-and-transition-cost</code></sub></td><td><sub><code>design-actuated-signal-detector-placement-and-fault-tolerance</code></sub></td></tr>
+<tr><td><sub><code>emergency-vehicle-preemption-and-bluelight</code></sub></td><td><sub><code>design-arterial-signal-progression-and-verify-bandwidth</code></sub></td></tr>
+<tr><td><sub><code>glosa-eco-driving</code></sub></td><td><sub><code>design-left-turn-storage-bay-length</code></sub></td></tr>
+<tr><td><sub><code>intersection-sight-distance-and-sumo-visibility-parameter</code></sub></td><td><sub><code>design-multimodal-signal-progression-for-bicycles-and-cars</code></sub></td></tr>
+<tr><td><sub><code>left-turn-storage-bay-length-design</code></sub></td><td><sub><code>design-restricted-crossing-uturn-and-michigan-left-intersections</code></sub></td></tr>
+<tr><td><sub><code>left-turn-treatment-tradeoffs</code></sub></td><td><sub><code>design-signal-change-and-clearance-intervals</code></sub></td></tr>
+<tr><td><sub><code>max-pressure-signal-control</code></sub></td><td><sub><code>evaluate-right-turn-on-red-and-leading-pedestrian-interval</code></sub></td></tr>
+<tr><td><sub><code>multimodal-signal-progression-and-the-bicycle-green-wave</code></sub></td><td><sub><code>implement-detector-free-cv-adaptive-signal-control</code></sub></td></tr>
+<tr><td><sub><code>mutcd-signal-warrants-and-the-demand-vs-served-volume-trap</code></sub></td><td><sub><code>implement-emergency-vehicle-preemption</code></sub></td></tr>
+<tr><td><sub><code>nema-dual-ring-controller</code></sub></td><td><sub><code>implement-glosa-speed-advisory-controller</code></sub></td></tr>
+<tr><td><sub><code>pedestrian-crossings-and-signal-phasing</code></sub></td><td><sub><code>implement-maxpressure-traci-controller</code></sub></td></tr>
+<tr><td><sub><code>q-learning-agent</code></sub></td><td><sub><code>implement-nema-dual-ring-controller</code></sub></td></tr>
+<tr><td><sub><code>railroad-preemption-of-nearby-signalized-intersections</code></sub></td><td><sub><code>implement-predictive-rolling-horizon-signal-control</code></sub></td></tr>
+<tr><td><sub><code>rcut-and-michigan-left-alternative-intersection-design</code></sub></td><td><sub><code>implement-railroad-preemption-at-a-signalized-intersection</code></sub></td></tr>
+<tr><td><sub><code>right-turn-on-red-and-leading-pedestrian-interval</code></sub></td><td><sub><code>implement-reservation-based-autonomous-intersection-management</code></sub></td></tr>
+<tr><td><sub><code>roundabout-capacity-law-and-demand-metering</code></sub></td><td><sub><code>implement-scats-style-coordinated-adaptive-signal-control</code></sub></td></tr>
+<tr><td><sub><code>signal-clearance-intervals-dilemma-zone-and-safety-capacity-tradeoff</code></sub></td><td><sub><code>implement-transit-signal-priority</code></sub></td></tr>
+<tr><td><sub><code>simulation-in-the-loop-ga-signal-optimization</code></sub></td><td><sub><code>measure-roundabout-capacity-and-implement-metering</code></sub></td></tr>
+<tr><td><sub><code>sumo-rl-environment</code></sub></td><td><sub><code>model-intersection-sight-distance-restriction-at-a-twsc-junction</code></sub></td></tr>
+<tr><td><sub><code>tlscoordinator</code></sub></td><td><sub><code>optimize-signal-plan-with-simulation-in-the-loop-ga</code></sub></td></tr>
+<tr><td><sub><code>tlscycleadaptation</code></sub></td><td><sub><code>optimize-signals-by-qlearning</code></sub></td></tr>
+<tr><td><sub><code>transit-signal-priority</code></sub></td><td><sub><code>optimize-signals-by-tlscoordinator</code></sub></td></tr>
+<tr><td><sub><code>unsignalized-vs-signalized-intersection-control</code></sub></td><td><sub><code>optimize-signals-by-tlscycleadaptation</code></sub></td></tr>
+<tr><td><sub><code>value-of-anticipation-in-predictive-signal-control</code></sub></td><td><sub><code>switch-signal-plans-by-time-of-day-with-waut</code></sub></td></tr>
+<tr><td><sub><code>waut-time-of-day-signal-plan-switching</code></sub></td><td></td></tr>
+</tbody>
+</table>
 
-**Freeway, corridor, and network operations**
+<b>Freeway, corridor, and network operations</b>
 
-| Knowledge pages (31) | Procedural skills (31) |
-|---|---|
-| `automatic-incident-detection-algorithms` | `build-and-benchmark-freeway-incident-detection` |
-| `coordinated-ramp-metering-delay-transfer-and-ramp-storage` | `build-and-evaluate-system-interchange` |
-| `cordon-tolling-and-e3-detectors` | `build-diamond-interchange-with-signal-offset-spillback` |
-| `corridor-access-management-twltl-representation-and-density-effects` | `build-diverging-diamond-interchange` |
-| `diamond-interchange-signal-offset-and-spillback` | `compare-zipper-vs-default-merge-at-lane-drop` |
-| `discrete-network-design-and-project-interaction` | `control-one-lane-two-way-alternating-flow-through-a-work-zone` |
-| `diverging-diamond-interchange-unopposed-lefts` | `demonstrate-and-stabilize-phantom-traffic-jams` |
-| `dynamic-hard-shoulder-running-with-traci-lane-permissions` | `design-and-control-freeway-work-zone-lane-closures` |
-| `evacuation-clearance-time-analysis` | `evaluate-corridor-access-management-and-median-treatments` |
-| `freeway-weaving-segment-turbulence` | `evaluate-integrated-corridor-management-with-factorial-interaction-design` |
-| `freeway-work-zone-capacity-closure-representation-and-merge-control` | `evaluate-neighborhood-traffic-calming-and-cut-through-displacement` |
-| `grade-aware-heavy-vehicle-physics-and-climbing-lane-warrants` | `evaluate-two-lane-highway-with-hcm-and-passing-lanes` |
-| `incident-rerouting-and-closures` | `form-platoons-with-simpla` |
-| `information-penetration-and-congestible-routing` | `implement-alinea-ramp-metering` |
-| `integrated-corridor-management-factorial-interaction-findings` | `implement-coordinated-corridor-ramp-metering` |
-| `managed-lanes-empty-lane-paradox-and-person-throughput` | `implement-dynamic-hard-shoulder-running` |
-| `mfd-based-perimeter-gating` | `implement-mfd-based-perimeter-gating` |
-| `neighborhood-traffic-calming-displacement-and-evaporation` | `implement-variable-speed-limits` |
-| `network-link-criticality-and-proxy-validation` | `model-adverse-weather-effects-on-freeway-traffic` |
-| `one-lane-two-way-alternating-flow-and-shared-lane-representation` | `model-cordon-tolling-with-generalized-cost-surcharge` |
-| `opposite-direction-overtaking-mechanics` | `model-freeway-weaving-segment` |
-| `phantom-traffic-jams-and-single-av-stabilization` | `model-grade-aware-heavy-vehicle-performance-and-climbing-lanes` |
-| `ramp-metering-with-alinea` | `model-managed-lanes-with-dynamic-tolling-and-self-selection` |
-| `reversible-lane-encoding-and-changeover-safety` | `model-opposite-direction-overtaking` |
-| `simpla-platooning` | `model-toll-plaza-as-queueing-facility` |
-| `system-interchange-weaving-and-design-selection` | `operate-reversible-tidal-flow-lane` |
-| `toll-plaza-queueing-and-the-service-headway-floor` | `scan-network-link-criticality-and-vulnerability` |
-| `two-lane-highway-follower-density-and-passing-lane-effectiveness` | `simulate-emergency-evacuation` |
-| `variable-speed-limits-and-e2-detectors` | `simulate-incident-rerouting` |
-| `weather-friction-effects-on-capacity-and-safety` | `solve-budget-constrained-network-design-problem` |
-| `zipper-merge-lane-drop-discharge` | `sweep-rerouting-device-market-penetration` |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (31)</th>
+<th>Procedural skills (31)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>automatic-incident-detection-algorithms</code></sub></td><td><sub><code>build-and-benchmark-freeway-incident-detection</code></sub></td></tr>
+<tr><td><sub><code>coordinated-ramp-metering-delay-transfer-and-ramp-storage</code></sub></td><td><sub><code>build-and-evaluate-system-interchange</code></sub></td></tr>
+<tr><td><sub><code>cordon-tolling-and-e3-detectors</code></sub></td><td><sub><code>build-diamond-interchange-with-signal-offset-spillback</code></sub></td></tr>
+<tr><td><sub><code>corridor-access-management-twltl-representation-and-density-effects</code></sub></td><td><sub><code>build-diverging-diamond-interchange</code></sub></td></tr>
+<tr><td><sub><code>diamond-interchange-signal-offset-and-spillback</code></sub></td><td><sub><code>compare-zipper-vs-default-merge-at-lane-drop</code></sub></td></tr>
+<tr><td><sub><code>discrete-network-design-and-project-interaction</code></sub></td><td><sub><code>control-one-lane-two-way-alternating-flow-through-a-work-zone</code></sub></td></tr>
+<tr><td><sub><code>diverging-diamond-interchange-unopposed-lefts</code></sub></td><td><sub><code>demonstrate-and-stabilize-phantom-traffic-jams</code></sub></td></tr>
+<tr><td><sub><code>dynamic-hard-shoulder-running-with-traci-lane-permissions</code></sub></td><td><sub><code>design-and-control-freeway-work-zone-lane-closures</code></sub></td></tr>
+<tr><td><sub><code>evacuation-clearance-time-analysis</code></sub></td><td><sub><code>evaluate-corridor-access-management-and-median-treatments</code></sub></td></tr>
+<tr><td><sub><code>freeway-weaving-segment-turbulence</code></sub></td><td><sub><code>evaluate-integrated-corridor-management-with-factorial-interaction-design</code></sub></td></tr>
+<tr><td><sub><code>freeway-work-zone-capacity-closure-representation-and-merge-control</code></sub></td><td><sub><code>evaluate-neighborhood-traffic-calming-and-cut-through-displacement</code></sub></td></tr>
+<tr><td><sub><code>grade-aware-heavy-vehicle-physics-and-climbing-lane-warrants</code></sub></td><td><sub><code>evaluate-two-lane-highway-with-hcm-and-passing-lanes</code></sub></td></tr>
+<tr><td><sub><code>incident-rerouting-and-closures</code></sub></td><td><sub><code>form-platoons-with-simpla</code></sub></td></tr>
+<tr><td><sub><code>information-penetration-and-congestible-routing</code></sub></td><td><sub><code>implement-alinea-ramp-metering</code></sub></td></tr>
+<tr><td><sub><code>integrated-corridor-management-factorial-interaction-findings</code></sub></td><td><sub><code>implement-coordinated-corridor-ramp-metering</code></sub></td></tr>
+<tr><td><sub><code>managed-lanes-empty-lane-paradox-and-person-throughput</code></sub></td><td><sub><code>implement-dynamic-hard-shoulder-running</code></sub></td></tr>
+<tr><td><sub><code>mfd-based-perimeter-gating</code></sub></td><td><sub><code>implement-mfd-based-perimeter-gating</code></sub></td></tr>
+<tr><td><sub><code>neighborhood-traffic-calming-displacement-and-evaporation</code></sub></td><td><sub><code>implement-variable-speed-limits</code></sub></td></tr>
+<tr><td><sub><code>network-link-criticality-and-proxy-validation</code></sub></td><td><sub><code>model-adverse-weather-effects-on-freeway-traffic</code></sub></td></tr>
+<tr><td><sub><code>one-lane-two-way-alternating-flow-and-shared-lane-representation</code></sub></td><td><sub><code>model-cordon-tolling-with-generalized-cost-surcharge</code></sub></td></tr>
+<tr><td><sub><code>opposite-direction-overtaking-mechanics</code></sub></td><td><sub><code>model-freeway-weaving-segment</code></sub></td></tr>
+<tr><td><sub><code>phantom-traffic-jams-and-single-av-stabilization</code></sub></td><td><sub><code>model-grade-aware-heavy-vehicle-performance-and-climbing-lanes</code></sub></td></tr>
+<tr><td><sub><code>ramp-metering-with-alinea</code></sub></td><td><sub><code>model-managed-lanes-with-dynamic-tolling-and-self-selection</code></sub></td></tr>
+<tr><td><sub><code>reversible-lane-encoding-and-changeover-safety</code></sub></td><td><sub><code>model-opposite-direction-overtaking</code></sub></td></tr>
+<tr><td><sub><code>simpla-platooning</code></sub></td><td><sub><code>model-toll-plaza-as-queueing-facility</code></sub></td></tr>
+<tr><td><sub><code>system-interchange-weaving-and-design-selection</code></sub></td><td><sub><code>operate-reversible-tidal-flow-lane</code></sub></td></tr>
+<tr><td><sub><code>toll-plaza-queueing-and-the-service-headway-floor</code></sub></td><td><sub><code>scan-network-link-criticality-and-vulnerability</code></sub></td></tr>
+<tr><td><sub><code>two-lane-highway-follower-density-and-passing-lane-effectiveness</code></sub></td><td><sub><code>simulate-emergency-evacuation</code></sub></td></tr>
+<tr><td><sub><code>variable-speed-limits-and-e2-detectors</code></sub></td><td><sub><code>simulate-incident-rerouting</code></sub></td></tr>
+<tr><td><sub><code>weather-friction-effects-on-capacity-and-safety</code></sub></td><td><sub><code>solve-budget-constrained-network-design-problem</code></sub></td></tr>
+<tr><td><sub><code>zipper-merge-lane-drop-discharge</code></sub></td><td><sub><code>sweep-rerouting-device-market-penetration</code></sub></td></tr>
+</tbody>
+</table>
 
-**Transit, multimodal, fleet, and parking systems**
+<b>Transit, multimodal, fleet, and parking systems</b>
 
-| Knowledge pages (22) | Procedural skills (20) |
-|---|---|
-| `battery-electric-bus-energy-and-charger-sizing` | `build-and-evaluate-park-and-ride-corridor` |
-| `bus-bunching-and-forward-headway-holding` | `build-gtfs-transit-scenario` |
-| `bus-stop-infrastructure-design-parking-mechanism-and-tsp-interaction` | `build-rail-corridor-with-railsignal` |
-| `car-to-transit-intermodal-transfer-and-park-and-ride` | `build-rail-road-grade-crossing` |
-| `cruising-for-parking-search-externality-and-remedies` | `demonstrate-and-control-bus-bunching` |
-| `curbside-delivery-blocking-externality` | `design-bus-stop-placement-type-and-spacing` |
-| `dedicated-bicycle-lanes-and-mode-share` | `design-transit-service-plan-under-a-bus-hour-budget` |
-| `electric-vehicle-battery-and-charging` | `evaluate-protected-bicycle-intersection-design` |
-| `gtfs-import-and-pt-representation-semantics` | `model-capacity-constrained-transit-passenger-loading` |
-| `intermodal-transfer-and-person-stage-semantics-in-sumo` | `model-cruising-for-parking-search-externality` |
-| `parking-areas-and-rerouters` | `model-curbside-delivery-and-lane-blocking-externality` |
-| `protected-bicycle-intersection-design-and-right-hook-mechanics` | `model-dedicated-bicycle-lane-infrastructure` |
-| `public-transport-and-intermodal-routing` | `model-parking-with-rerouting` |
-| `rail-crossing-junction-mechanics` | `model-urban-freight-delivery-tours` |
-| `rail-simulation-and-railsignal` | `simulate-ev-charging` |
-| `station-based-shared-micromobility-in-sumo` | `simulate-motorcycle-lane-filtering-with-sublane-model` |
-| `street-running-tram-reservation-and-right-of-way-tradeoffs` | `simulate-multimodal-transit` |
-| `sublane-model-and-lane-filtering` | `simulate-street-running-tram-corridor` |
-| `taxi-and-drt-dispatch` | `simulate-taxi-and-drt-dispatch` |
-| `transit-capacity-passenger-loading-and-pass-up-dynamics` | `size-battery-electric-bus-fleet-and-chargers` |
-| `transit-network-design-and-frequency-setting` |  |
-| `urban-freight-delivery-tours-container-semantics-and-policy-levers` |  |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (22)</th>
+<th>Procedural skills (20)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>battery-electric-bus-energy-and-charger-sizing</code></sub></td><td><sub><code>build-and-evaluate-park-and-ride-corridor</code></sub></td></tr>
+<tr><td><sub><code>bus-bunching-and-forward-headway-holding</code></sub></td><td><sub><code>build-gtfs-transit-scenario</code></sub></td></tr>
+<tr><td><sub><code>bus-stop-infrastructure-design-parking-mechanism-and-tsp-interaction</code></sub></td><td><sub><code>build-rail-corridor-with-railsignal</code></sub></td></tr>
+<tr><td><sub><code>car-to-transit-intermodal-transfer-and-park-and-ride</code></sub></td><td><sub><code>build-rail-road-grade-crossing</code></sub></td></tr>
+<tr><td><sub><code>cruising-for-parking-search-externality-and-remedies</code></sub></td><td><sub><code>demonstrate-and-control-bus-bunching</code></sub></td></tr>
+<tr><td><sub><code>curbside-delivery-blocking-externality</code></sub></td><td><sub><code>design-bus-stop-placement-type-and-spacing</code></sub></td></tr>
+<tr><td><sub><code>dedicated-bicycle-lanes-and-mode-share</code></sub></td><td><sub><code>design-transit-service-plan-under-a-bus-hour-budget</code></sub></td></tr>
+<tr><td><sub><code>electric-vehicle-battery-and-charging</code></sub></td><td><sub><code>evaluate-protected-bicycle-intersection-design</code></sub></td></tr>
+<tr><td><sub><code>gtfs-import-and-pt-representation-semantics</code></sub></td><td><sub><code>model-capacity-constrained-transit-passenger-loading</code></sub></td></tr>
+<tr><td><sub><code>intermodal-transfer-and-person-stage-semantics-in-sumo</code></sub></td><td><sub><code>model-cruising-for-parking-search-externality</code></sub></td></tr>
+<tr><td><sub><code>parking-areas-and-rerouters</code></sub></td><td><sub><code>model-curbside-delivery-and-lane-blocking-externality</code></sub></td></tr>
+<tr><td><sub><code>protected-bicycle-intersection-design-and-right-hook-mechanics</code></sub></td><td><sub><code>model-dedicated-bicycle-lane-infrastructure</code></sub></td></tr>
+<tr><td><sub><code>public-transport-and-intermodal-routing</code></sub></td><td><sub><code>model-parking-with-rerouting</code></sub></td></tr>
+<tr><td><sub><code>rail-crossing-junction-mechanics</code></sub></td><td><sub><code>model-urban-freight-delivery-tours</code></sub></td></tr>
+<tr><td><sub><code>rail-simulation-and-railsignal</code></sub></td><td><sub><code>simulate-ev-charging</code></sub></td></tr>
+<tr><td><sub><code>station-based-shared-micromobility-in-sumo</code></sub></td><td><sub><code>simulate-motorcycle-lane-filtering-with-sublane-model</code></sub></td></tr>
+<tr><td><sub><code>street-running-tram-reservation-and-right-of-way-tradeoffs</code></sub></td><td><sub><code>simulate-multimodal-transit</code></sub></td></tr>
+<tr><td><sub><code>sublane-model-and-lane-filtering</code></sub></td><td><sub><code>simulate-street-running-tram-corridor</code></sub></td></tr>
+<tr><td><sub><code>taxi-and-drt-dispatch</code></sub></td><td><sub><code>simulate-taxi-and-drt-dispatch</code></sub></td></tr>
+<tr><td><sub><code>transit-capacity-passenger-loading-and-pass-up-dynamics</code></sub></td><td><sub><code>size-battery-electric-bus-fleet-and-chargers</code></sub></td></tr>
+<tr><td><sub><code>transit-network-design-and-frequency-setting</code></sub></td><td></td></tr>
+<tr><td><sub><code>urban-freight-delivery-tours-container-semantics-and-policy-levers</code></sub></td><td></td></tr>
+</tbody>
+</table>
 
-**Calibration, estimation, and experimental design**
+<b>Calibration, estimation, and experimental design</b>
 
-| Knowledge pages (22) | Procedural skills (21) |
-|---|---|
-| `av-penetration-and-carfollowing-model-mechanism` | `build-macroscopic-fundamental-diagram` |
-| `car-following-parameter-calibration-and-identifiability` | `build-rolling-horizon-traffic-forecast-with-state-warm-start` |
-| `demand-arrival-process-and-unsignalized-capacity` | `calibrate-car-following-parameters-against-field-targets` |
-| `driver-desired-speed-and-speed-enforcement-evaluation` | `calibrate-demand-with-routesampler` |
-| `geh-statistic` | `calibrate-desired-speed-and-evaluate-speed-enforcement` |
-| `global-sensitivity-analysis-and-parameter-interactions-in-sumo` | `calibrate-flow-with-in-simulation-calibrator` |
-| `heavy-vehicle-passenger-car-equivalent-in-sumo` | `calibrate-lane-changing-parameters-at-a-freeway-diverge` |
-| `kinematic-wave-theory-validity-across-car-following-models` | `calibrate-motorist-yielding-and-select-midblock-crossing-treatment` |
-| `lane-change-model-calibration-and-identifiability-at-a-diverge` | `characterize-pedestrian-flow-and-striping-model-artifacts` |
-| `macroscopic-fundamental-diagram` | `design-count-station-locations-for-od-estimation` |
-| `motorist-yielding-calibration-and-midblock-crossing-treatment-selection` | `emulate-and-evaluate-partial-sensor-traffic-state-estimation` |
-| `od-matrix-estimation-and-underdetermination` | `estimate-od-matrix-with-odme` |
-| `pedestrian-flow-theory-and-striping-model-artifacts` | `estimate-stochastic-freeway-capacity-and-breakdown-probability` |
-| `routesampler` | `measure-av-penetration-effect-on-bottleneck-capacity` |
-| `sensor-location-design-for-od-estimation` | `measure-heavy-vehicle-passenger-car-equivalent` |
-| `simulation-based-optimization-under-noise-and-seed-overfitting` | `measure-saturation-flow-and-validate-webster-method` |
-| `state-serialization-and-rolling-horizon-traffic-forecasting` | `model-demand-arrival-process-and-its-effect-on-capacity-and-delay` |
-| `stochastic-freeway-capacity-and-breakdown-probability` | `optimize-under-simulation-noise-with-a-fixed-budget` |
-| `sumo-calibrator` | `quantify-sumo-run-to-run-variability` |
-| `sumo-stochastic-variability-and-replication-design` | `screen-and-decompose-sumo-parameter-sensitivity` |
-| `traffic-state-estimation-sensor-bias-and-sensing-tradeoffs` | `validate-kinematic-wave-theory-across-car-following-models` |
-| `webster-method` |  |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (22)</th>
+<th>Procedural skills (21)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>av-penetration-and-carfollowing-model-mechanism</code></sub></td><td><sub><code>build-macroscopic-fundamental-diagram</code></sub></td></tr>
+<tr><td><sub><code>car-following-parameter-calibration-and-identifiability</code></sub></td><td><sub><code>build-rolling-horizon-traffic-forecast-with-state-warm-start</code></sub></td></tr>
+<tr><td><sub><code>demand-arrival-process-and-unsignalized-capacity</code></sub></td><td><sub><code>calibrate-car-following-parameters-against-field-targets</code></sub></td></tr>
+<tr><td><sub><code>driver-desired-speed-and-speed-enforcement-evaluation</code></sub></td><td><sub><code>calibrate-demand-with-routesampler</code></sub></td></tr>
+<tr><td><sub><code>geh-statistic</code></sub></td><td><sub><code>calibrate-desired-speed-and-evaluate-speed-enforcement</code></sub></td></tr>
+<tr><td><sub><code>global-sensitivity-analysis-and-parameter-interactions-in-sumo</code></sub></td><td><sub><code>calibrate-flow-with-in-simulation-calibrator</code></sub></td></tr>
+<tr><td><sub><code>heavy-vehicle-passenger-car-equivalent-in-sumo</code></sub></td><td><sub><code>calibrate-lane-changing-parameters-at-a-freeway-diverge</code></sub></td></tr>
+<tr><td><sub><code>kinematic-wave-theory-validity-across-car-following-models</code></sub></td><td><sub><code>calibrate-motorist-yielding-and-select-midblock-crossing-treatment</code></sub></td></tr>
+<tr><td><sub><code>lane-change-model-calibration-and-identifiability-at-a-diverge</code></sub></td><td><sub><code>characterize-pedestrian-flow-and-striping-model-artifacts</code></sub></td></tr>
+<tr><td><sub><code>macroscopic-fundamental-diagram</code></sub></td><td><sub><code>design-count-station-locations-for-od-estimation</code></sub></td></tr>
+<tr><td><sub><code>motorist-yielding-calibration-and-midblock-crossing-treatment-selection</code></sub></td><td><sub><code>emulate-and-evaluate-partial-sensor-traffic-state-estimation</code></sub></td></tr>
+<tr><td><sub><code>od-matrix-estimation-and-underdetermination</code></sub></td><td><sub><code>estimate-od-matrix-with-odme</code></sub></td></tr>
+<tr><td><sub><code>pedestrian-flow-theory-and-striping-model-artifacts</code></sub></td><td><sub><code>estimate-stochastic-freeway-capacity-and-breakdown-probability</code></sub></td></tr>
+<tr><td><sub><code>routesampler</code></sub></td><td><sub><code>measure-av-penetration-effect-on-bottleneck-capacity</code></sub></td></tr>
+<tr><td><sub><code>sensor-location-design-for-od-estimation</code></sub></td><td><sub><code>measure-heavy-vehicle-passenger-car-equivalent</code></sub></td></tr>
+<tr><td><sub><code>simulation-based-optimization-under-noise-and-seed-overfitting</code></sub></td><td><sub><code>measure-saturation-flow-and-validate-webster-method</code></sub></td></tr>
+<tr><td><sub><code>state-serialization-and-rolling-horizon-traffic-forecasting</code></sub></td><td><sub><code>model-demand-arrival-process-and-its-effect-on-capacity-and-delay</code></sub></td></tr>
+<tr><td><sub><code>stochastic-freeway-capacity-and-breakdown-probability</code></sub></td><td><sub><code>optimize-under-simulation-noise-with-a-fixed-budget</code></sub></td></tr>
+<tr><td><sub><code>sumo-calibrator</code></sub></td><td><sub><code>quantify-sumo-run-to-run-variability</code></sub></td></tr>
+<tr><td><sub><code>sumo-stochastic-variability-and-replication-design</code></sub></td><td><sub><code>screen-and-decompose-sumo-parameter-sensitivity</code></sub></td></tr>
+<tr><td><sub><code>traffic-state-estimation-sensor-bias-and-sensing-tradeoffs</code></sub></td><td><sub><code>validate-kinematic-wave-theory-across-car-following-models</code></sub></td></tr>
+<tr><td><sub><code>webster-method</code></sub></td><td></td></tr>
+</tbody>
+</table>
 
-**Impact analysis, validation, and visualization**
+<b>Impact analysis, validation, and visualization</b>
 
-| Knowledge pages (13) | Procedural skills (13) |
-|---|---|
-| `accessibility-measurement-and-transport-equity` | `analyze-intersection-air-quality-hot-spots-from-microsimulation` |
-| `georeferencing-sumo-output-and-cartographic-fidelity` | `analyze-intersection-safety-with-ssm` |
-| `harmonoise-traffic-noise-modeling` | `analyze-traffic-noise-with-harmonoise` |
-| `hcm-control-delay-vs-sumo-delay-metrics` | `appraise-project-alternatives-with-benefit-cost-analysis` |
-| `intersection-air-quality-hot-spot-analysis` | `evaluate-multimodal-accessibility-and-equity` |
-| `network-safety-screening-and-crash-prediction` | `generate-hcm-los-report-and-validate-against-microsimulation` |
-| `spatial-congestion-heatmap-with-plot-net-dump` | `measure-travel-time-reliability-with-simulated-days` |
-| `sumo-plotting-tools` | `publish-georeferenced-and-animated-results` |
-| `surrogate-safety-measures` | `screen-network-safety-with-spf-and-empirical-bayes` |
-| `teleport-artifacts-and-gridlock-resolution-validity` | `simulate-fleet-emissions` |
-| `transport-economic-appraisal-from-microsimulation` | `validate-congested-scenario-results-against-teleport-artifacts` |
-| `travel-time-reliability-metrics-in-sumo` | `visualize-network-congestion-heatmap` |
-| `vehicle-emissions-modeling` | `visualize-trajectories-and-timeseries` |
+<table>
+<thead>
+<tr>
+<th>Knowledge pages (13)</th>
+<th>Procedural skills (13)</th>
+</tr>
+</thead>
+<tbody>
+<tr><td><sub><code>accessibility-measurement-and-transport-equity</code></sub></td><td><sub><code>analyze-intersection-air-quality-hot-spots-from-microsimulation</code></sub></td></tr>
+<tr><td><sub><code>georeferencing-sumo-output-and-cartographic-fidelity</code></sub></td><td><sub><code>analyze-intersection-safety-with-ssm</code></sub></td></tr>
+<tr><td><sub><code>harmonoise-traffic-noise-modeling</code></sub></td><td><sub><code>analyze-traffic-noise-with-harmonoise</code></sub></td></tr>
+<tr><td><sub><code>hcm-control-delay-vs-sumo-delay-metrics</code></sub></td><td><sub><code>appraise-project-alternatives-with-benefit-cost-analysis</code></sub></td></tr>
+<tr><td><sub><code>intersection-air-quality-hot-spot-analysis</code></sub></td><td><sub><code>evaluate-multimodal-accessibility-and-equity</code></sub></td></tr>
+<tr><td><sub><code>network-safety-screening-and-crash-prediction</code></sub></td><td><sub><code>generate-hcm-los-report-and-validate-against-microsimulation</code></sub></td></tr>
+<tr><td><sub><code>spatial-congestion-heatmap-with-plot-net-dump</code></sub></td><td><sub><code>measure-travel-time-reliability-with-simulated-days</code></sub></td></tr>
+<tr><td><sub><code>sumo-plotting-tools</code></sub></td><td><sub><code>publish-georeferenced-and-animated-results</code></sub></td></tr>
+<tr><td><sub><code>surrogate-safety-measures</code></sub></td><td><sub><code>screen-network-safety-with-spf-and-empirical-bayes</code></sub></td></tr>
+<tr><td><sub><code>teleport-artifacts-and-gridlock-resolution-validity</code></sub></td><td><sub><code>simulate-fleet-emissions</code></sub></td></tr>
+<tr><td><sub><code>transport-economic-appraisal-from-microsimulation</code></sub></td><td><sub><code>validate-congested-scenario-results-against-teleport-artifacts</code></sub></td></tr>
+<tr><td><sub><code>travel-time-reliability-metrics-in-sumo</code></sub></td><td><sub><code>visualize-network-congestion-heatmap</code></sub></td></tr>
+<tr><td><sub><code>vehicle-emissions-modeling</code></sub></td><td><sub><code>visualize-trajectories-and-timeseries</code></sub></td></tr>
+</tbody>
+</table>
 
 
 Check out the [test](test/) directory experiment design. [Experiments](test/experiments.md) introduces the experiment design and how to run them.
