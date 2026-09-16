@@ -289,8 +289,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (6)</th>
-<th>Procedural skills (6)</th>
+<th><sub>Knowledge pages (6)<sub></th>
+<th><sub>Procedural skills (6)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -308,8 +308,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (11)</th>
-<th>Procedural skills (12)</th>
+<th><sub>Knowledge pages (11)<sub></th>
+<th><sub>Procedural skills (12)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -333,8 +333,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (17)</th>
-<th>Procedural skills (17)</th>
+<th><sub>Knowledge pages (17)<sub></th>
+<th><sub>Procedural skills (17)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -363,8 +363,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (31)</th>
-<th>Procedural skills (30)</th>
+<th><sub>Knowledge pages (31)<sub></th>
+<th><sub>Procedural skills (30)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -407,8 +407,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (31)</th>
-<th>Procedural skills (31)</th>
+<th><sub>Knowledge pages (31)<sub></th>
+<th><sub>Procedural skills (31)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -451,8 +451,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (22)</th>
-<th>Procedural skills (20)</th>
+<th><sub>Knowledge pages (22)<sub></th>
+<th><sub>Procedural skills (20)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -486,8 +486,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (22)</th>
-<th>Procedural skills (21)</th>
+<th><sub>Knowledge pages (22)<sub></th>
+<th><sub>Procedural skills (21)<sub></th>
 </tr>
 </thead>
 <tbody>
@@ -521,8 +521,8 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 <table>
 <thead>
 <tr>
-<th>Knowledge pages (13)</th>
-<th>Procedural skills (13)</th>
+<th><sub>Knowledge pages (13)<sub></th>
+<th><sub>Procedural skills (13)<sub></th>
 </tr>
 </thead>
 <tbody>
