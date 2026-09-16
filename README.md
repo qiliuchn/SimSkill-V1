@@ -18,6 +18,26 @@ This work is inspired by [Voyager](https://voyager.minedojo.org), the lifelong l
 
 
 
+## Contents
+- [Setup](#setup)
+- [Quickstart](#quickstart)
+- [Architecture](#architecture)
+- [Workflow](#workflow)
+  - [Inference flow](#inference-flow)
+  - [Learning flow](#learning-flow)
+- [Project Structure](#project-structure)
+- [Memory Representation](#memory-representation)
+  - [Procedural Memory Formatting](#procedural-memory-formatting)
+  - [Semantic Memory Formatting](#semantic-memory-formatting)
+  - [Graph View](#graph-view)
+- [Experimentation](#experimentation)
+  - [Skills and Knowledge Found](#skills-and-knowledge-found)
+  - [Experiment Design](#experiment-design)
+  - [Main Results](#main-results)
+  - [Ablations](#ablations)
+- [Contact](#contact)
+
+
 ## Setup
 **Install Claude Code (Required)**
 Check out [Claude Code Official Installation Guide](https://code.claude.com/docs/en/quickstart) for installing Claude Code.
@@ -282,6 +302,8 @@ PS: Obsidian’s search matches any file whose full path contains the specified 
 
 ## Experimentation
 
+### Skills and Knowledge Found
+
 In approximately 80 hours of autonomous operation over five days, SimSkill accumulated 150 procedural skills and 153 semantic-memory pages spanning the major stages of traffic-simulation practice. The resulting artifacts are inspectable, editable, composable, and transferable across LLM backbones and agent frameworks. 
 
 <b>Scenario construction, execution, and vehicle-state operations</b>
@@ -543,6 +565,7 @@ In approximately 80 hours of autonomous operation over five days, SimSkill accum
 </table>
 
 
+### Experiment Design
 Check out the [test](test/) directory experiment design. [Experiments](test/experiments.md) introduces the experiment design and how to run them.
 Experiment results of the paper are stored in [save](test/save/).
 
