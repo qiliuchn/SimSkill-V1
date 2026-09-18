@@ -580,7 +580,7 @@ and markers locate verified failures at their consumed resource levels.
 
 Verified completion on the hard Benchmark V2 as a function of observed monetary or wall-
 clock budget.
-![benchmark v2](assets/performance_benchmark_v1.png)
+![benchmark v2](assets/performance_benchmark_v2.png)
 
 
 Complete SimSkill versus vanilla Claude Code. Completion is reported as verified tasks out of 40, with percentages in parentheses. Cost and time entries are per-run medians in the form full/vanilla.
